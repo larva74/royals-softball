@@ -34,6 +34,9 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .card-purple:hover{box-shadow:0 4px 16px rgba(91,33,182,.12)}
 .card-blue{border-left:4px solid #1A45C0}
 .card-blue:hover{box-shadow:0 4px 16px rgba(26,69,192,.12)}
+.card-upcoming{background:#FFF8E7;border:1px solid #F5E6BC;border-left:4px solid #F0B429;border-radius:14px;padding:18px;margin-bottom:14px;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-upcoming .nm{font-size:18px;font-weight:800;color:#0D1B3E;margin-bottom:2px}
+.card-upcoming .meta{font-size:13px;color:#5A6B8A}
 .card-mini{background:#FFFFFF;border:1px solid #D4DAF0;border-radius:10px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .card-mini:hover{background:#F4F6FC}
 .sched-card{background:#FFFFFF;border:1px solid #D4DAF0;border-radius:10px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -165,6 +168,13 @@ const TOURNAMENTS = [
     "location": "Sesquicentennial Park, Brampton",
     "date": "May 2, 2026",
     "startDate": "2026-05-02"
+  },
+  {
+    "id": "t2",
+    "name": "SPN Grand Slam 2",
+    "location": "Sesquicentennial Park, Brampton",
+    "date": "June 6, 2026",
+    "startDate": "2026-06-06"
   }
 ];
 
@@ -1177,6 +1187,15 @@ function renderHome(){
   const sortedT = TOURNAMENTS.slice().sort((a,b)=>(a.startDate||'').localeCompare(b.startDate||''));
   for(const t of sortedT){
     const gs = gamesForTour(t.id);
+    if(gs.length === 0){
+      // Upcoming tournament — no games yet, show preview card
+      h += `<div class="card-upcoming">
+        <div class="lbl lbl-gold">Coming Up Next</div>
+        <div class="nm">${t.name}</div>
+        <div class="meta">${t.location} &nbsp;&middot;&nbsp; ${t.date}</div>
+      </div>`;
+      continue;
+    }
     let tw=0, tl=0, trf=0, tra=0;
     for(const g of gs){
       if(g.result==='W') tw++; else if(g.result==='L') tl++;
@@ -1186,17 +1205,16 @@ function renderHome(){
     h += `<div class="card card-blue" onclick="showTour('${t.id}')">
       <div class="lbl lbl-blue">Tournament</div>
       <div class="nm">${t.name}</div>
-      <div class="meta">${t.location} &nbsp;&middot;&nbsp; ${t.date}</div>`;
-    if(gs.length > 0){
-      h += `<div class="record-row">
+      <div class="meta">${t.location} &nbsp;&middot;&nbsp; ${t.date}</div>
+      <div class="record-row">
         <div><div class="record-big">${tw}&ndash;${tl}</div><div class="record-lbl">Record</div></div>
         <div class="record-divider"></div>
         <div class="record-stat"><div class="record-num">${trf}</div><div class="record-lbl">Runs For</div></div>
         <div class="record-stat"><div class="record-num">${tra}</div><div class="record-lbl">Against</div></div>
         <div class="record-stat"><div class="record-num">${diff>=0?'+':''}${diff}</div><div class="record-lbl">Diff</div></div>
-      </div>`;
-    }
-    h += `<div class="cta">Tap to view games &rsaquo;</div></div>`;
+      </div>
+      <div class="cta">Tap to view games &rsaquo;</div>
+    </div>`;
   }
   
   document.getElementById('view-home').innerHTML = h;
