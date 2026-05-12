@@ -35,6 +35,20 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .card-blue{border-left:4px solid #1A45C0}
 .card-blue:hover{box-shadow:0 4px 16px rgba(26,69,192,.12)}
 .card-upcoming{background:#FFF8E7;border:1px solid #F5E6BC;border-left:4px solid #F0B429;border-radius:14px;padding:18px;margin-bottom:14px;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.tour-box{background:#FFFFFF;border:1px solid #D4DAF0;border-left:4px solid #1A45C0;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px;overflow:hidden}
+.tour-row{padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;border-bottom:1px solid #EEF1F8;transition:background .15s}
+.tour-row:last-child{border-bottom:none}
+.tour-row:hover{background:#F4F6FC}
+.tour-row .info{flex:1;min-width:0}
+.tour-row .name{font-size:15px;font-weight:700;color:#0D1B3E}
+.tour-row .meta{font-size:12px;color:#5A6B8A;margin-top:2px}
+.tour-row .stats{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.tour-row .rec{font-size:18px;font-weight:800;color:#0A1F6B;font-family:monospace;letter-spacing:.5px}
+.tour-row .diff{font-size:12px;font-weight:700;letter-spacing:.5px;font-family:monospace}
+.tour-row .diff.pos{color:#1A7A40}
+.tour-row .diff.neg{color:#B02020}
+.tour-row .diff.zero{color:#5A6B8A}
+.tour-row .arr{color:#A0AABF;font-size:18px;flex-shrink:0}
 .card-upcoming .nm{font-size:18px;font-weight:800;color:#0D1B3E;margin-bottom:2px}
 .card-upcoming .meta{font-size:13px;color:#5A6B8A}
 .card-mini{background:#FFFFFF;border:1px solid #D4DAF0;border-radius:10px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -906,7 +920,24 @@ const LEAGUE_GAMES = [
     "opponent": "Blitz",
     "date": "2026-05-11",
     "time": "7:15 PM",
-    "field": "Mintleaf"
+    "field": "Mintleaf",
+    "result": "W",
+    "rf": 15,
+    "ra": 7,
+    "stats": {
+      "Flora Sennett":    {"pa":4, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":2, "rbi":1, "bb":1, "k":0},
+      "Amanda Kwan":      {"pa":3, "ab":2, "h":1, "b1":0, "b2":0, "b3":0, "hr":1, "r":2, "rbi":3, "bb":1, "k":0},
+      "Milagros Roman":   {"pa":3, "ab":3, "h":2, "b1":1, "b2":1, "b3":0, "hr":0, "r":0, "rbi":2, "bb":0, "k":0},
+      "Emily Chan":       {"pa":3, "ab":3, "h":2, "b1":1, "b2":1, "b3":0, "hr":0, "r":1, "rbi":0, "bb":0, "k":0},
+      "Michelle Ito":     {"pa":3, "ab":3, "h":2, "b1":2, "b2":0, "b3":0, "hr":0, "r":1, "rbi":2, "bb":0, "k":0},
+      "Kaitlyn Huynh":    {"pa":3, "ab":3, "h":2, "b1":0, "b2":2, "b3":0, "hr":0, "r":2, "rbi":1, "bb":0, "k":0},
+      "Ashley Georgi":    {"pa":3, "ab":2, "h":2, "b1":1, "b2":1, "b3":0, "hr":0, "r":1, "rbi":2, "bb":1, "k":0},
+      "Evaine Chan":      {"pa":3, "ab":1, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":0, "bb":2, "k":0},
+      "Sandra Cordeiro":  {"pa":3, "ab":1, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":2, "rbi":0, "bb":2, "k":0},
+      "Holly Lee":        {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":2, "bb":0, "k":0},
+      "Joyce Lai":        {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":2, "bb":0, "k":1},
+      "Michelle Lim":     {"pa":3, "ab":3, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":2, "rbi":0, "bb":0, "k":0}
+    }
   },
   {
     "venue": "home",
@@ -1071,7 +1102,7 @@ const LEAGUE_GAMES = [
   }
 ];
 
-const LEAGUE_ROSTER = ["Amanda Kwan", "Ashley Georgi", "Emily Chan", "Evaine Chan", "Evelyn Koh", "Flora Sennett", "Joyce Lai", "Kaitlyn Huynh", "Megan Abellera", "Michelle Ito", "Michelle Lim", "Michelle Yuen", "Milagros Roman", "Sandra Cordeiro", "Stephanie Szeto"];
+const LEAGUE_ROSTER = ["Amanda Kwan", "Ashley Georgi", "Emily Chan", "Evaine Chan", "Evelyn Koh", "Flora Sennett", "Holly Lee", "Joyce Lai", "Kaitlyn Huynh", "Megan Abellera", "Michelle Ito", "Michelle Lim", "Michelle Yuen", "Milagros Roman", "Sandra Cordeiro", "Stephanie Szeto"];
 
 
 // ============== HELPERS ==============
@@ -1183,37 +1214,54 @@ function renderHome(){
   // Tournament cards
   h += '<div class="lbl lbl-blue">2026 Tournaments</div>';
   
-  // Sort tournaments by start date
-  const sortedT = TOURNAMENTS.slice().sort((a,b)=>(a.startDate||'').localeCompare(b.startDate||''));
-  for(const t of sortedT){
-    const gs = gamesForTour(t.id);
-    if(gs.length === 0){
-      // Upcoming tournament — no games yet, show preview card
-      h += `<div class="card-upcoming">
-        <div class="lbl lbl-gold">Coming Up Next</div>
-        <div class="nm">${t.name}</div>
-        <div class="meta">${t.location} &nbsp;&middot;&nbsp; ${t.date}</div>
+  // Split into completed (have games) and upcoming (no games yet)
+  const completed = TOURNAMENTS.filter(t => gamesForTour(t.id).length > 0);
+  const upcoming = TOURNAMENTS.filter(t => gamesForTour(t.id).length === 0);
+  
+  // Completed: newest first (descending startDate)
+  completed.sort((a,b) => (b.startDate||'').localeCompare(a.startDate||''));
+  // Upcoming: nearest first (ascending startDate)
+  upcoming.sort((a,b) => (a.startDate||'').localeCompare(b.startDate||''));
+  
+  if(completed.length > 0){
+    h += '<div class="lbl lbl-blue">2026 Tournaments</div>';
+    h += '<div class="tour-box">';
+    for(const t of completed){
+      const gs = gamesForTour(t.id);
+      let tw=0, tl=0, trf=0, tra=0;
+      for(const g of gs){
+        if(g.result==='W') tw++; else if(g.result==='L') tl++;
+        trf += g.rf||0; tra += g.ra||0;
+      }
+      const diff = trf - tra;
+      const diffCls = diff > 0 ? 'pos' : (diff < 0 ? 'neg' : 'zero');
+      const diffStr = (diff >= 0 ? '+' : '') + diff;
+      h += `<div class="tour-row" onclick="showTour('${t.id}')">
+        <div class="info">
+          <div class="name">${t.name}</div>
+          <div class="meta">${t.date} &nbsp;&middot;&nbsp; ${t.location}</div>
+        </div>
+        <div class="stats">
+          <div class="rec">${tw}&ndash;${tl}</div>
+          <div class="diff ${diffCls}">${diffStr}</div>
+        </div>
+        <div class="arr">&rsaquo;</div>
       </div>`;
-      continue;
     }
-    let tw=0, tl=0, trf=0, tra=0;
-    for(const g of gs){
-      if(g.result==='W') tw++; else if(g.result==='L') tl++;
-      trf += g.rf||0; tra += g.ra||0;
+    h += '</div>';
+  }
+  
+  // Show only the NEXT upcoming tournament (the closest one)
+  if(upcoming.length > 0){
+    const t = upcoming[0];
+    if(completed.length === 0){
+      // No completed yet — still need a section label
+      h += '<div class="lbl lbl-blue">2026 Tournaments</div>';
     }
-    const diff = trf - tra;
-    h += `<div class="card card-blue" onclick="showTour('${t.id}')">
-      <div class="lbl lbl-blue">Tournament</div>
+    h += `<div class="card-upcoming">
+      <div class="lbl lbl-gold">Coming Up Next</div>
       <div class="nm">${t.name}</div>
       <div class="meta">${t.location} &nbsp;&middot;&nbsp; ${t.date}</div>
-      <div class="record-row">
-        <div><div class="record-big">${tw}&ndash;${tl}</div><div class="record-lbl">Record</div></div>
-        <div class="record-divider"></div>
-        <div class="record-stat"><div class="record-num">${trf}</div><div class="record-lbl">Runs For</div></div>
-        <div class="record-stat"><div class="record-num">${tra}</div><div class="record-lbl">Against</div></div>
-        <div class="record-stat"><div class="record-num">${diff>=0?'+':''}${diff}</div><div class="record-lbl">Diff</div></div>
-      </div>
-      <div class="cta">Tap to view games &rsaquo;</div>
     </div>`;
   }
   
