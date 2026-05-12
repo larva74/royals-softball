@@ -34,13 +34,13 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .card-purple:hover{box-shadow:0 4px 16px rgba(91,33,182,.12)}
 .card-blue{border-left:4px solid #1A45C0}
 .card-blue:hover{box-shadow:0 4px 16px rgba(26,69,192,.12)}
-.card-upcoming{background:#FFF8E7;border:1px solid #F5E6BC;border-left:4px solid #F0B429;border-radius:14px;padding:18px;margin-bottom:14px;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-upcoming{background:#FFFFFF;border:1px solid #D4DAF0;border-left:4px solid #F0B429;border-radius:14px;padding:18px;margin-bottom:14px;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 .tour-box{background:#FFFFFF;border:1px solid #D4DAF0;border-left:4px solid #1A45C0;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px;overflow:hidden}
 .tour-row{padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;border-bottom:1px solid #EEF1F8;transition:background .15s}
 .tour-row:last-child{border-bottom:none}
 .tour-row:hover{background:#F4F6FC}
 .tour-row .info{flex:1;min-width:0}
-.tour-row .name{font-size:15px;font-weight:700;color:#0D1B3E}
+.tour-row .name{font-size:16px;font-weight:800;color:#0D1B3E}
 .tour-row .meta{font-size:12px;color:#5A6B8A;margin-top:2px}
 .tour-row .stats{display:flex;align-items:center;gap:14px;flex-shrink:0}
 .tour-row .rec{font-size:18px;font-weight:800;color:#0A1F6B;font-family:monospace;letter-spacing:.5px}
@@ -49,7 +49,7 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .tour-row .diff.neg{color:#B02020}
 .tour-row .diff.zero{color:#5A6B8A}
 .tour-row .arr{color:#A0AABF;font-size:18px;flex-shrink:0}
-.card-upcoming .nm{font-size:18px;font-weight:800;color:#0D1B3E;margin-bottom:2px}
+.card-upcoming .nm{font-size:16px;font-weight:800;color:#0D1B3E;margin-bottom:2px}
 .card-upcoming .meta{font-size:13px;color:#5A6B8A}
 .card-mini{background:#FFFFFF;border:1px solid #D4DAF0;border-radius:10px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .card-mini:hover{background:#F4F6FC}
@@ -94,7 +94,7 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 
 /* Badges */
 .bdg{font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 9px;border-radius:5px;flex-shrink:0;min-width:46px;text-align:center}
-.bdg-home{background:#DCFCE7;color:#166534}
+.bdg-home{background:#FEF3C7;color:#92400E}
 .bdg-away{background:#EEF2FF;color:#1A45C0}
 .bdg-w{background:#E6F7EE;color:#1A7A40;font-size:12px;padding:4px 11px}
 .bdg-l{background:#FDEAEA;color:#B02020;font-size:12px;padding:4px 11px}
@@ -1175,6 +1175,15 @@ function allTourGames(){return TOURNEY_GAMES;}
 function gamesForTour(tid){return TOURNEY_GAMES.filter(g=>g.tournament===tid);}
 function leaguePlayed(){return LEAGUE_GAMES.filter(g=>g.stats);}
 
+// Get next upcoming league game(s) — if multiple games on same date, return all
+function nextLeagueGames(){
+  const upcoming = LEAGUE_GAMES.filter(g => !g.stats);
+  if(upcoming.length === 0) return [];
+  upcoming.sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  const nextDate = upcoming[0].date;
+  return upcoming.filter(g => g.date === nextDate);
+}
+
 // Get unique sorted player roster from a list of games
 function rosterFrom(games){
   const set = new Set();
@@ -1211,8 +1220,35 @@ function renderHome(){
     <div class="cta">Tap to view schedule &rsaquo;</div>
   </div>`;
   
-  // Tournament cards
-  h += '<div class="lbl lbl-blue">2026 Tournaments</div>';
+  // Coming Up Next — League games (one card showing the next game, or both if same day)
+  const nextLg = nextLeagueGames();
+  if(nextLg.length > 0){
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const [y,m,d] = nextLg[0].date.split('-').map(Number);
+    const dt = new Date(Date.UTC(y, m-1, d));
+    const dateStr = days[dt.getUTCDay()] + ' ' + months[m-1] + ' ' + d;
+    
+    h += `<div class="card-upcoming">
+      <div class="lbl lbl-gold">Coming Up Next</div>
+      <div class="nm" style="margin-bottom:10px">${dateStr}</div>`;
+    
+    for(let i=0; i<nextLg.length; i++){
+      const g = nextLg[i];
+      const prefix = g.venue==='home' ? 'vs' : '@';
+      const bdgCls = g.venue==='home' ? 'bdg-home' : 'bdg-away';
+      const bdgLbl = g.venue==='home' ? 'HOME' : 'AWAY';
+      const sep = i>0 ? 'margin-top:10px;padding-top:10px;border-top:1px dashed #D4DAF0;' : '';
+      h += `<div style="display:flex;align-items:center;gap:12px;${sep}">
+        <div class="bdg ${bdgCls}">${bdgLbl}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:#0D1B3E">${prefix} ${g.opponent}</div>
+          <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${g.time} &nbsp;&middot;&nbsp; ${g.field}</div>
+        </div>
+      </div>`;
+    }
+    h += '</div>';
+  }
   
   // Split into completed (have games) and upcoming (no games yet)
   const completed = TOURNAMENTS.filter(t => gamesForTour(t.id).length > 0);
@@ -1294,32 +1330,48 @@ function renderLeague(){
 
 // ============== RENDER: REGULAR SEASON SCHEDULE ==============
 function renderLeagueRS(){
+  const playedCount = leaguePlayed().length;
   let h = `<div class="back" onclick="showLeague()">&lsaquo; YRLSPL 2026</div>
     <div class="h1">Regular Season Schedule</div>
-    <div class="sub-soft tight">${LEAGUE_GAMES.length} games &nbsp;&middot;&nbsp; All Mondays &nbsp;&middot;&nbsp; May 11 &ndash; Sep 14, 2026</div>`;
+    <div class="sub-soft tight">${LEAGUE_GAMES.length} games &nbsp;&middot;&nbsp; ${playedCount} played &nbsp;&middot;&nbsp; May 11 &ndash; Sep 14, 2026</div>`;
   
   // Sort by date
   const sorted = LEAGUE_GAMES.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  
   for(const g of sorted){
-    const bdg = g.venue==='home' ? 'bdg-home' : 'bdg-away';
-    const lbl = g.venue==='home' ? 'HOME' : 'AWAY';
     const prefix = g.venue==='home' ? 'vs' : '@';
-    // Convert date "2026-05-11" to "Mon May 11"
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     let dateStr = '';
     if(g.date){
       const [y,m,d] = g.date.split('-').map(Number);
       const dt = new Date(Date.UTC(y, m-1, d));
       dateStr = days[dt.getUTCDay()] + ' ' + months[m-1] + ' ' + d;
     }
-    h += `<div class="sched-card">
-      <div class="bdg ${bdg}">${lbl}</div>
-      <div>
-        <div style="font-size:15px;font-weight:700;color:#0D1B3E">${prefix} ${g.opponent}</div>
-        <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.time} &nbsp;&middot;&nbsp; ${g.field}</div>
-      </div>
-    </div>`;
+    
+    if(g.stats){
+      // Played game — show W/L badge + score, opponent, date
+      const bdgCls = g.result==='W' ? 'bdg-w' : 'bdg-l';
+      h += `<div class="sched-card" style="cursor:default">
+        <div class="bdg ${bdgCls}">${g.result}</div>
+        <div style="font-size:20px;font-weight:800;color:#0D1B3E;font-family:monospace;flex-shrink:0;min-width:65px">${g.rf}&ndash;${g.ra}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:#0D1B3E">${prefix} ${g.opponent}</div>
+          <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.field}</div>
+        </div>
+      </div>`;
+    } else {
+      // Upcoming game — show HOME/AWAY badge + opponent + time + field
+      const bdgCls = g.venue==='home' ? 'bdg-home' : 'bdg-away';
+      const lbl = g.venue==='home' ? 'HOME' : 'AWAY';
+      h += `<div class="sched-card">
+        <div class="bdg ${bdgCls}">${lbl}</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#0D1B3E">${prefix} ${g.opponent}</div>
+          <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.time} &nbsp;&middot;&nbsp; ${g.field}</div>
+        </div>
+      </div>`;
+    }
   }
   
   document.getElementById('view-league-rs').innerHTML = h;
