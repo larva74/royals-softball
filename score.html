@@ -358,11 +358,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     <div class="lastplay" id="lastplay"></div>
     <div class="diamond-wrap">
       <div class="diamond">
-        <div class="base b2" id="base-2" onclick="resTapDest('2B')"><div class="bn"></div></div>
-        <div class="base b3" id="base-3" onclick="resTapDest('3B')"><div class="bn"></div></div>
-        <div class="base b1" id="base-1" onclick="resTapDest('1B')"><div class="bn"></div></div>
-        <div class="base home" id="base-home" onclick="resTapDest('HOME')"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
-        <div class="out-zone" id="out-zone" onclick="resTapDest('OUT')">OUT</div>
+        <div class="base b2" id="base-2" onclick="baseTap(2)"><div class="bn"></div></div>
+        <div class="base b3" id="base-3" onclick="baseTap(3)"><div class="bn"></div></div>
+        <div class="base b1" id="base-1" onclick="baseTap(1)"><div class="bn"></div></div>
+        <div class="base home" id="base-home" onclick="homeTap()"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
+        <div class="out-zone" id="out-zone" onclick="outTap()">OUT</div>
       </div>
     </div>
     <div class="statestack">
@@ -401,8 +401,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     <div class="resolve-hint" id="resolve-hint"></div>
     <div class="rstrip" id="rstrip"></div>
     <div class="resolve-actions">
-      <button class="ra-cancel" onclick="cancelPending()">Cancel</button>
-      <button class="ra-confirm" id="ra-confirm" disabled onclick="confirmResolution()">Confirm play</button>
+      <button class="ra-cancel" onclick="resolveCancel()">Cancel</button>
+      <button class="ra-confirm" id="ra-confirm" disabled onclick="resolveConfirm()">Confirm play</button>
     </div>
   </div>
 
@@ -630,6 +630,14 @@ function replay(){
     else if(e.t==="REENTER"){ const i=e.slot; const oi=st.subbedOut.indexOf(e.in); if(oi>=0)st.subbedOut.splice(oi,1); st.subbedOut.push(st.lineup[i]); st.lineup[i]=e.in; }
     else if(e.t==="SKIP"){ st.slot=(st.slot+1)%G.lineupSize; }
     else if(e.t==="ENDINN"){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
+    else if(e.t==="BR"){
+      // standalone baserunning: move runner from origin to dest (or off on HOME/OUT)
+      const fromIdx=baseIdx(e.from);
+      if(fromIdx && st.bases[fromIdx]===e.name) st.bases[fromIdx]=null;
+      if(e.to!=="OUT" && e.to!=="HOME"){ st.bases[baseIdx(e.to)]=e.name; }
+      st.outs += e.out||0;
+      if(st.outs>=3){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
+    }
     else if(e.t==="PA"){
       // Start from current bases; only listed runners change. Unlisted runners hold.
       const nb={1:st.bases[1], 2:st.bases[2], 3:st.bases[3]};
@@ -662,6 +670,7 @@ function aggregate(){
   G.allPlayers.forEach(ensure);
   let teamR=0, teamRBI=0;
   for(const e of G.events){
+    if(e.t==="BR"){ if(e.run){ ensure(e.name).r++; teamR++; } continue; }
     if(e.t!=="PA") continue;
     const s = ensure(e.batter);
     s.pa++;
@@ -698,6 +707,8 @@ function render(){
   else { rc.className="recon bad"; rc.textContent="!"; rc.title=`RBI ${agg.teamRBI} > Runs ${agg.teamR}`; }
   // bases
   renderBase(1, st.bases[1], st); renderBase(2, st.bases[2], st); renderBase(3, st.bases[3], st);
+  document.getElementById("base-home").classList.remove("target");
+  document.getElementById("out-zone").classList.remove("target");
   // last play
   renderLastPlay();
   // at bat
@@ -712,6 +723,7 @@ function render(){
 }
 function renderBase(n, name, st){
   const el = document.getElementById("base-"+n);
+  el.classList.remove("target");
   const bn = el.querySelector(".bn");
   if(name){ el.classList.add("occ"); bn.innerHTML = `<div class="who">${escHtml(firstName(name))}</div>`; }
   else { el.classList.remove("occ"); bn.innerHTML=""; }
@@ -720,6 +732,16 @@ function firstName(n){ return n.split(" ")[0]; }
 
 function renderLastPlay(){
   const host=document.getElementById("lastplay");
+  // if the most recent event is a baserunning move, show that
+  const lastEv = G.events[G.events.length-1];
+  if(lastEv && lastEv.t==="BR"){
+    host.className="lastplay";
+    const toTxt = lastEv.to==="HOME"?"home":lastEv.to;
+    let cls = lastEv.to==="OUT"?"out":(lastEv.to==="HOME"?"scored":"");
+    let tag = lastEv.to==="OUT"?'<span class="tag">OUT</span>':(lastEv.to==="HOME"?'<span class="tag">✓ RUN</span>':'');
+    host.innerHTML=`<div class="lp-hd">BASERUNNING</div><div class="lp-run ${cls}">${escHtml(firstName(lastEv.name))} <span class="arr">→</span> <span class="dest">${toTxt==="OUT"?"out":toTxt}</span> ${tag}</div>`;
+    return;
+  }
   // find last PA event
   let pa=null;
   for(let i=G.events.length-1;i>=0;i--){ if(G.events[i].t==="PA"){ pa=G.events[i]; break; } }
@@ -888,8 +910,30 @@ function legalTargetsFor(it){
 
 function selToken(key){ pending.selKey=key; renderResolve(); }
 
+// Dispatchers: route a base/home/out tap to the right handler depending on mode.
+function baseTap(n){
+  const dest = n===1?"1B":n===2?"2B":"3B";
+  if(pending){ resTapDest(dest); return; }       // resolving a batter play
+  if(brPending){ brTapDest(dest); return; }      // resolving a baserunning move
+  // idle: tapping an OCCUPIED base starts baserunning for that runner
+  if(G && G._st && G._st.bases[n]) startBaserunning(n);
+}
+function homeTap(){
+  if(pending){ resTapDest("HOME"); return; }
+  if(brPending){ brTapDest("HOME"); return; }
+}
+function outTap(){
+  if(pending){ resTapDest("OUT"); return; }
+  if(brPending){ brTapDest("OUT"); return; }
+}
+
 function resTapDest(dest){
-  const p=pending; if(!p)return;
+  // If not resolving a batter play: a tap on an occupied base starts standalone baserunning.
+  if(!pending){
+    if(brPending){ brTapDest(dest); }
+    return;
+  }
+  const p=pending;
   const sel=p.items.find(it=>it.key===p.selKey);
   if(!sel){ toast("Tap a player first"); return; }
   if(!legalTargetsFor(sel).includes(dest)){ toast("Can't send "+firstName(sel.name)+" there"); return; }
@@ -900,6 +944,80 @@ function resTapDest(dest){
   p.selKey = next ? next.key : null;
   renderResolve();
 }
+
+/* ===== STANDALONE BASERUNNING (steal / pickoff / advance between plays) ===== */
+// Tap an occupied base (no active play) -> resolve just that runner.
+let brPending=null;
+function startBaserunning(fromBase){
+  if(pending){ return; } // a play is being resolved; ignore
+  const st=G._st;
+  const name=st.bases[fromBase];
+  if(!name) return; // empty base
+  brPending={ from:fromBase, name, to:null, safe:true };
+  document.getElementById("game").classList.add("resolving");
+  renderBaserunning();
+}
+function renderBaserunning(){
+  const b=brPending; if(!b)return;
+  document.getElementById("resolve-hint").innerHTML = `<b>${escHtml(firstName(b.name))}</b> on ${b.from===1?'1st':b.from===2?'2nd':'3rd'} — tap where she ended (or OUT)`;
+  // strip: single token
+  const placed=b.to!==null;
+  const toTxt = b.to===null?"":`<span class="to">→ ${b.to==="HOME"?"home":b.to}${b.to!=="OUT"&&!b.safe?" (out)":""}</span>`;
+  let so="";
+  if(placed && b.to!=="OUT"){
+    so=`<span class="so">
+      <button class="safe ${b.safe?'on':''}" onclick="event.stopPropagation();brSetSafe(true)">✓</button>
+      <button class="out ${!b.safe?'on':''}" onclick="event.stopPropagation();brSetSafe(false)">✗</button>
+    </span>`;
+  }
+  const cls = placed ? (b.safe?"placed":"placedout") : "sel";
+  document.getElementById("rstrip").innerHTML =
+    `<div class="rtok ${cls}"><span class="nm">${escHtml(firstName(b.name))}</span>${toTxt}${so}</div>`;
+  // diamond: keep current runners shown, highlight legal targets for this runner
+  render(); // repaint bases as they currently are
+  document.getElementById("game").classList.add("resolving");
+  // highlight targets
+  [1,2,3].forEach(n=>document.getElementById("base-"+n).classList.remove("target"));
+  document.getElementById("base-home").classList.remove("target");
+  document.getElementById("out-zone").classList.remove("target");
+  brLegalTargets().forEach(t=>{
+    if(t==="HOME") document.getElementById("base-home").classList.add("target");
+    else if(t==="OUT") document.getElementById("out-zone").classList.add("target");
+    else document.getElementById("base-"+baseIdx(t)).classList.add("target");
+  });
+  document.getElementById("ra-confirm").disabled = (b.to===null);
+}
+function brLegalTargets(){
+  const b=brPending; const out=[];
+  if(b.from<2) out.push("2B");
+  if(b.from<3) out.push("3B");
+  out.push("HOME","OUT");
+  return out;
+}
+function brTapDest(dest){
+  const b=brPending; if(!b)return;
+  if(!brLegalTargets().includes(dest)){ toast("Can't send "+firstName(b.name)+" there"); return; }
+  b.to=dest; b.safe=(dest!=="OUT");
+  renderBaserunning();
+}
+function brSetSafe(safe){ if(!brPending)return; brPending.safe=safe; renderBaserunning(); }
+function confirmBaserunning(){
+  const b=brPending; if(!b||b.to===null)return;
+  const to = b.to==="OUT" ? "OUT" : (b.safe ? b.to : "OUT");
+  const from = b.from===1?"1B":b.from===2?"2B":"3B";
+  const ev={ t:"BR", name:b.name, from, to,
+    run: to==="HOME"?1:0, out: to==="OUT"?1:0 };
+  brPending=null;
+  document.getElementById("game").classList.remove("resolving");
+  G.events.push(ev);
+  if(ev.run){ /* run scored on bases; tracked in aggregate */ }
+  render();
+  toast(`${firstName(b.name)} ${to==="OUT"?"out":to==="HOME"?"scored":"to "+to}`);
+}
+function cancelBaserunning(){ brPending=null; document.getElementById("game").classList.remove("resolving"); render(); }
+
+function resolveConfirm(){ if(pending) confirmResolution(); else if(brPending) confirmBaserunning(); }
+function resolveCancel(){ if(pending) cancelPending(); else if(brPending) cancelBaserunning(); }
 
 function setSafe(key, safe){
   const it=pending.items.find(x=>x.key===key); if(!it)return;
@@ -1105,6 +1223,7 @@ function aggregateGame(g){
   (g.allPlayers||[]).forEach(ensure);
   let teamR=0,teamRBI=0;
   for(const e of g.events){
+    if(e.t==="BR"){ if(e.run){ ensure(e.name).r++; teamR++; } continue; }
     if(e.t!=="PA")continue;
     const s=ensure(e.batter); s.pa++; const res=e.result;
     if(res==="1B"){s.ab++;s.h++;s.b1++;}else if(res==="2B"){s.ab++;s.h++;s.b2++;}else if(res==="3B"){s.ab++;s.h++;s.b3++;}
@@ -1330,6 +1449,7 @@ function evLabel(e){
   if(e.t==="REENTER")return `Re-enter: ${e.in}`;
   if(e.t==="SKIP")return `Skip ${e.batter}`;
   if(e.t==="ENDINN")return `End inning`;
+  if(e.t==="BR")return `${firstName(e.name)} ${e.to==="OUT"?"out":e.to==="HOME"?"scored":"to "+e.to}`;
   const map={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"strikeout","Kl":"strikeout (looking)","SAC":"sacrifice","FC":"fielder's choice","OUT":"out"};
   let s=map[e.result]||e.result;
   if(e.rbi)s+=`, ${e.rbi} RBI`;
