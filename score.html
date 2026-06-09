@@ -128,6 +128,42 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .base.occ .bn .who{color:var(--navy)}
 .base .bn .pos{font-size:9px;font-weight:700;color:#6B7BC0;letter-spacing:.5px}
 .base.occ .bn .pos{color:var(--navy-d)}
+
+/* ===== RESOLVE MODE (tap-to-draw on the diamond) ===== */
+#game.resolving .outcomes{display:none}
+#game.resolving .atbat{display:none}
+.resolve-bar{display:none;flex-shrink:0;background:var(--navy);border-top:2px solid var(--gold);padding:8px 10px}
+#game.resolving .resolve-bar{display:block}
+.resolve-hint{color:#9BB0FF;font-size:12px;font-weight:700;text-align:center;margin-bottom:8px;min-height:16px}
+.resolve-hint b{color:var(--gold)}
+.rstrip{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:9px}
+.rtok{display:flex;align-items:center;gap:6px;background:#243681;border:2px solid #3A4A95;border-radius:20px;padding:5px 6px 5px 11px;font-weight:800;font-size:13px;color:#fff}
+.rtok.sel{border-color:var(--gold);background:#2E429A;box-shadow:0 0 0 2px rgba(240,180,41,.3)}
+.rtok.placed{background:#1F8C4F;border-color:#1F8C4F}
+.rtok.placedout{background:var(--red);border-color:var(--red)}
+.rtok .nm{}
+.rtok .to{font-size:11px;font-weight:700;opacity:.85}
+.rtok .so{display:flex;gap:2px;margin-left:2px}
+.rtok .so button{width:24px;height:24px;border-radius:50%;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff}
+.rtok .so button.on.safe{background:var(--gold);color:var(--navy)}
+.rtok .so button.on.out{background:#fff;color:var(--red)}
+.rtok.batter{border-style:dashed}
+.resolve-actions{display:flex;gap:8px}
+.resolve-actions button{flex:1;padding:13px;border-radius:11px;font-weight:800;font-size:15px;letter-spacing:.3px}
+.ra-cancel{background:#3A2A2A;color:#FFB3A8}
+.ra-confirm{background:var(--green);color:#fff}
+.ra-confirm:disabled{background:#2A3A55;color:#6B7BC0}
+
+/* interactive diamond during resolve */
+#game.resolving .base{cursor:pointer}
+.base.target{border-color:var(--gold);border-style:dashed;background:rgba(240,180,41,.12);animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.0)}50%{box-shadow:0 0 14px 2px rgba(240,180,41,.35)}}
+.base.home.target{background:rgba(240,180,41,.12)}
+.base .drop-name{transform:rotate(-45deg);font-size:12px;font-weight:900;color:var(--navy);line-height:1.05}
+/* OUT zone overlaid on diamond center */
+.out-zone{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34%;height:22%;background:rgba(192,57,43,.15);border:2px dashed var(--red);border-radius:12px;align-items:center;justify-content:center;color:#FF8A7A;font-weight:900;font-size:14px;letter-spacing:1px;cursor:pointer;z-index:5}
+#game.resolving .out-zone{display:flex}
+.out-zone.target{background:rgba(192,57,43,.3);box-shadow:0 0 14px rgba(192,57,43,.4)}
 .base.b2{top:0;left:35%}
 .base.b3{top:35%;left:0}
 .base.b1{top:35%;right:0}
@@ -322,10 +358,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     <div class="lastplay" id="lastplay"></div>
     <div class="diamond-wrap">
       <div class="diamond">
-        <div class="base b2" id="base-2"><div class="bn"></div></div>
-        <div class="base b3" id="base-3"><div class="bn"></div></div>
-        <div class="base b1" id="base-1"><div class="bn"></div></div>
-        <div class="base home"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
+        <div class="base b2" id="base-2" onclick="resTapDest('2B')"><div class="bn"></div></div>
+        <div class="base b3" id="base-3" onclick="resTapDest('3B')"><div class="bn"></div></div>
+        <div class="base b1" id="base-1" onclick="resTapDest('1B')"><div class="bn"></div></div>
+        <div class="base home" id="base-home" onclick="resTapDest('HOME')"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
+        <div class="out-zone" id="out-zone" onclick="resTapDest('OUT')">OUT</div>
       </div>
     </div>
     <div class="statestack">
@@ -357,6 +394,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <button class="ob sac" onclick="outcome('SAC')">SAC</button>
       <button class="ob fc" onclick="outcome('FC')">FC</button>
       <button class="ob out" onclick="outcome('OUT')">OUT</button>
+    </div>
+  </div>
+
+  <div class="resolve-bar">
+    <div class="resolve-hint" id="resolve-hint"></div>
+    <div class="rstrip" id="rstrip"></div>
+    <div class="resolve-actions">
+      <button class="ra-cancel" onclick="cancelPending()">Cancel</button>
+      <button class="ra-confirm" id="ra-confirm" disabled onclick="confirmResolution()">Confirm play</button>
     </div>
   </div>
 
@@ -751,118 +797,134 @@ function forceWalk(bases, batter){
   return {newRunners:runners, runs};
 }
 
-/* ---- resolution panel ---- */
+/* ---- TAP-TO-DRAW RESOLUTION (on the diamond) ---- */
+// pending.items = [{key,name,kind:'runner'|'batter',from(0=batter/1/2/3), to:null|'1B'|'2B'|'3B'|'HOME'|'OUT', safe:true}]
 function openResolution(res, batter, slot, runners, st){
-  pending = {res, batter, slot, runners, st, sel:{}, batterTo:res, batterOut:false, allowBatterOut:(res==="FC")};
-  // default selections: none (explicit). batter pre-set by hit type (FC: batter editable).
-  const label = {"1B":"Single","2B":"Double","3B":"Triple","SAC":"Sacrifice","FC":"Fielder's Choice"}[res]||res;
-  let body = `<div class="quick-row">
-      <button class="alt" onclick="resQuick('hold')">Hold all</button>
-      <button onclick="resQuick('adv')">All +${res==="SAC"||res==="FC"?1:(ADV[res]||1)}</button>
-      <button onclick="resQuick('home')">All score</button>
-    </div>`;
-  runners.forEach((r,i)=>{
-    body += runnerRowHtml(r,i,res);
-  });
-  // batter row
-  body += `<div class="runner">
-      <div class="top"><div class="from">BAT</div><div class="rn">${escHtml(firstName(batter))} <small>batter</small></div></div>
-      <div class="dests" id="bat-dests">${batterDestsHtml(res, pending.allowBatterOut)}</div>
-    </div>`;
-  panelOpen(`<div class="panel-hd"><h2>${label} — set runners</h2><span class="pill" id="res-rbi">0 RBI</span></div>
-    <div class="panel-body">${body}</div>
-    <div class="panel-foot"><button class="pf-cancel" onclick="cancelPending()">Cancel</button><button class="pf-confirm" id="res-confirm" disabled onclick="confirmResolution()">Confirm</button></div>`);
-  // pre-select batter default (not for FC where it's a choice, but default to base)
-  selBatter(pending.batterTo);
-  updateResState();
+  const items = runners.map((r,i)=>({key:"r"+i, name:r.name, kind:"runner", from:r.from, to:null, safe:true}));
+  // batter default landing
+  const batterBase = (res==="1B"||res==="2B"||res==="3B") ? res : (res==="SAC" ? "OUT" : "1B");
+  items.push({key:"bat", name:batter, kind:"batter", from:0, to:batterBase, safe:(batterBase!=="OUT")});
+  pending = {res, batter, slot, st, items, selKey:null, runners};
+  // auto-select the most-advanced unset runner (or batter) to start
+  pending.selKey = items.find(it=>it.to===null)?.key || items[0].key;
+  document.getElementById("game").classList.add("resolving");
+  renderResolve();
 }
-function runnerRowHtml(r,i,res){
-  const legal = legalDests(r.from, res);
-  let btns = legal.map(d=>{
-    const cls = d==="HOME"?"home":"";
-    return `<button class="${cls}" data-i="${i}" data-d="${d}" onclick="selRunner(${i},'${d}')">${d==="HOME"?"HOME":d}</button>`;
+
+function renderResolve(){
+  const p=pending; if(!p)return;
+  const label={"1B":"Single","2B":"Double","3B":"Triple","SAC":"Sacrifice","FC":"Fielder's choice"}[p.res]||p.res;
+  // hint
+  const sel=p.items.find(it=>it.key===p.selKey);
+  const hint=document.getElementById("resolve-hint");
+  if(sel) hint.innerHTML = `<b>${escHtml(firstName(sel.name))}</b> — tap a base, HOME, or OUT`;
+  else hint.innerHTML = `${label}: tap a player, then where they ended`;
+  // strip tokens
+  const strip=document.getElementById("rstrip");
+  strip.innerHTML = p.items.map(it=>{
+    const placed = it.to!==null;
+    const cls = it.key===p.selKey ? "sel" : (placed ? (it.safe?"placed":"placedout") : "");
+    const toTxt = it.to===null ? "" : `<span class="to">→ ${it.to==="HOME"?"home":it.to}${it.to!=="OUT"?(it.safe?"":" (out)"):""}</span>`;
+    // safe/out toggle only meaningful for a placed base/home (not for the OUT zone which is inherently out)
+    let so="";
+    if(placed && it.to!=="OUT"){
+      so=`<span class="so">
+        <button class="safe ${it.safe?'on':''}" onclick="event.stopPropagation();setSafe('${it.key}',true)">✓</button>
+        <button class="out ${!it.safe?'on':''}" onclick="event.stopPropagation();setSafe('${it.key}',false)">✗</button>
+      </span>`;
+    }
+    return `<div class="rtok ${cls} ${it.kind==='batter'?'batter':''}" onclick="selToken('${it.key}')">
+      <span class="nm">${escHtml(firstName(it.name))}</span>${toTxt}${so}
+    </div>`;
   }).join("");
-  btns += `<button data-i="${i}" data-d="OUT" onclick="selRunner(${i},'OUT')">OUT</button>`;
-  return `<div class="runner">
-      <div class="top"><div class="from">${r.from==1?'1B':r.from==2?'2B':'3B'}</div><div class="rn">${escHtml(firstName(r.name))}</div></div>
-      <div class="dests" id="run-${i}">${btns}</div>
-    </div>`;
+  // diamond: show placed runners at destinations; highlight legal targets for selected
+  renderResolveDiamond();
+  // confirm enabled when every item has a destination
+  const allSet = p.items.every(it=>it.to!==null);
+  document.getElementById("ra-confirm").disabled = !allSet;
 }
-function legalDests(from, res){
-  // can advance to any base ahead of current, plus HOME. cannot go back.
-  const out=[];
-  if(from<=1) out.push("2B");
-  if(from<=2) out.push("3B");
-  out.push("HOME");
-  // also allow staying? For hits a runner could hold. include current base.
-  const cur = from===1?"1B":from===2?"2B":"3B";
-  return [cur, ...out];
-}
-function batterDestsHtml(res, allowOut){
-  let bases;
-  if(res==="SAC") bases=["1B"]; // batter out on sac typically; but allow safe? keep 1B + OUT
-  else if(res==="FC") bases=["1B"];
-  else bases=[res]; // hit: batter to that base (could be more on extra bases but keep simple = hit value)
-  // For singles batter could stretch — allow advancing too
-  if(res==="1B") bases=["1B","2B"];
-  if(res==="2B") bases=["2B","3B"];
-  if(res==="3B") bases=["3B","HOME"];
-  let h = bases.map(d=>`<button class="${d==='HOME'?'home':''}" data-d="${d}" onclick="selBatter('${d}')">${d==="HOME"?"HOME":d}</button>`).join("");
-  if(allowOut || res==="SAC") h += `<button data-d="OUT" onclick="selBatter('OUT')">OUT</button>`;
-  return h;
-}
-function resQuick(mode){
-  const {runners,res} = pending;
-  runners.forEach((r,i)=>{
-    if(mode==="hold") selRunner(i, r.from===1?"1B":r.from===2?"2B":"3B");
-    else if(mode==="home") selRunner(i,"HOME");
-    else if(mode==="adv"){
-      const step = (res==="SAC"||res==="FC")?1:(ADV[res]||1);
-      let to = r.from+step;
-      selRunner(i, to>=4?"HOME":(to===2?"2B":to===3?"3B":"1B"));
+
+function renderResolveDiamond(){
+  const p=pending;
+  // clear base labels
+  [1,2,3].forEach(n=>{ const el=document.getElementById("base-"+n); el.classList.remove("occ","target"); el.querySelector(".bn").innerHTML=""; });
+  const home=document.getElementById("base-home"); home.classList.remove("target");
+  const oz=document.getElementById("out-zone"); oz.classList.remove("target");
+  // place items that landed on a base
+  const atBase={1:[],2:[],3:[]};
+  p.items.forEach(it=>{
+    if(it.to==="1B")atBase[1].push(it); else if(it.to==="2B")atBase[2].push(it); else if(it.to==="3B")atBase[3].push(it);
+  });
+  [1,2,3].forEach(n=>{
+    if(atBase[n].length){
+      const el=document.getElementById("base-"+n);
+      el.classList.add("occ");
+      el.querySelector(".bn").innerHTML=`<div class="drop-name">${atBase[n].map(it=>escHtml(firstName(it.name))).join("<br>")}</div>`;
     }
   });
+  // highlight targets if a token is selected
+  const sel=p.items.find(it=>it.key===p.selKey);
+  if(sel){
+    legalTargetsFor(sel).forEach(t=>{
+      if(t==="HOME") home.classList.add("target");
+      else if(t==="OUT") oz.classList.add("target");
+      else document.getElementById("base-"+baseIdx(t)).classList.add("target");
+    });
+  }
 }
-function selRunner(i,d){
-  pending.sel[i]=d;
-  const host=document.getElementById("run-"+i);
-  host.querySelectorAll("button").forEach(b=>{
-    b.classList.toggle("sel", b.dataset.d===d);
-    b.classList.toggle("outsel", b.dataset.d===d && d==="OUT");
-    b.classList.toggle("homesel", b.dataset.d===d && d==="HOME");
-  });
-  updateResState();
+
+function legalTargetsFor(it){
+  // forward bases only; can't go back. batter (from 0) can reach 1B+. always HOME and OUT allowed.
+  const out=[];
+  const from = it.from; // 0 batter, 1/2/3 runner origin
+  if(from<1) out.push("1B");
+  if(from<2) out.push("2B");
+  if(from<3) out.push("3B");
+  out.push("HOME","OUT");
+  // a runner may also hold their current base (stay)
+  if(from>=1) out.unshift(from===1?"1B":from===2?"2B":"3B");
+  return out;
 }
-function selBatter(d){
-  pending.batterTo=d; pending.batterOut=(d==="OUT");
-  const host=document.getElementById("bat-dests");
-  host.querySelectorAll("button").forEach(b=>{
-    b.classList.toggle("sel", b.dataset.d===d);
-    b.classList.toggle("outsel", b.dataset.d===d && d==="OUT");
-    b.classList.toggle("homesel", b.dataset.d===d && d==="HOME");
-  });
-  updateResState();
+
+function selToken(key){ pending.selKey=key; renderResolve(); }
+
+function resTapDest(dest){
+  const p=pending; if(!p)return;
+  const sel=p.items.find(it=>it.key===p.selKey);
+  if(!sel){ toast("Tap a player first"); return; }
+  if(!legalTargetsFor(sel).includes(dest)){ toast("Can't send "+firstName(sel.name)+" there"); return; }
+  sel.to=dest;
+  sel.safe = (dest!=="OUT"); // base/home = safe; OUT zone = out
+  // auto-advance selection to next unset item for speed
+  const next=p.items.find(it=>it.to===null);
+  p.selKey = next ? next.key : null;
+  renderResolve();
 }
-function updateResState(){
-  const allSet = pending.runners.every((_,i)=>pending.sel[i]) && pending.batterTo;
-  let runs=0, outs=0;
-  pending.runners.forEach((_,i)=>{ if(pending.sel[i]==="HOME")runs++; if(pending.sel[i]==="OUT")outs++; });
-  if(pending.batterTo==="HOME")runs++; if(pending.batterTo==="OUT")outs++;
-  document.getElementById("res-rbi").textContent = `${runs} RBI`;
-  document.getElementById("res-confirm").disabled = !allSet;
-  pending._runs=runs; pending._outs=outs;
+
+function setSafe(key, safe){
+  const it=pending.items.find(x=>x.key===key); if(!it)return;
+  it.safe=safe;
+  renderResolve();
 }
+
 function confirmResolution(){
   const p=pending;
-  const runners = p.runners.map((r,i)=>({name:r.name, from:(r.from===1?"1B":r.from===2?"2B":"3B"), to:p.sel[i]}));
+  const runners = p.items.filter(it=>it.kind==="runner").map(it=>({
+    name:it.name,
+    from:(it.from===1?"1B":it.from===2?"2B":"3B"),
+    to: it.to==="OUT" ? "OUT" : (it.safe ? it.to : "OUT")
+  }));
+  const bat=p.items.find(it=>it.kind==="batter");
+  const batterTo = bat.to==="OUT" ? "OUT" : (bat.safe ? bat.to : "OUT");
   const runs=[];
   runners.forEach(r=>{ if(r.to==="HOME")runs.push(r.name); });
-  if(p.batterTo==="HOME")runs.push(p.batter);
-  let outs=0; runners.forEach(r=>{ if(r.to==="OUT")outs++; }); if(p.batterTo==="OUT")outs++;
-  commitPA({result:p.res, batter:p.batter, slot:p.slot, runners, batterTo:p.batterTo, runs, rbi:runs.length, outsAdded:outs});
-  pending=null; panelClose();
+  if(batterTo==="HOME")runs.push(p.batter);
+  let outs=0; runners.forEach(r=>{ if(r.to==="OUT")outs++; }); if(batterTo==="OUT")outs++;
+  document.getElementById("game").classList.remove("resolving");
+  commitPA({result:p.res, batter:p.batter, slot:p.slot, runners, batterTo, runs, rbi:runs.length, outsAdded:outs});
+  pending=null;
 }
-function cancelPending(){ if(!pending)return; pending=null; panelClose(); render(); }
+function cancelPending(){ if(!pending)return; pending=null; document.getElementById("game").classList.remove("resolving"); render(); }
 
 function commitPA(ev){
   ev.t="PA";
