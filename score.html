@@ -74,17 +74,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .g-hd .opp .vs{color:#9BB0FF;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .g-hd .opp .name{color:#fff;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
 .g-hd .name.tap{text-decoration:underline dotted #9BB0FF 1px;text-underline-offset:3px}
-.g-hd .inn{text-align:center;color:#fff;flex-shrink:0}
-.g-hd .inn .num{font-size:18px;font-weight:900;line-height:1}
-.g-hd .inn .lbl{font-size:9px;color:#9BB0FF;font-weight:700;letter-spacing:.5px}
-.g-hd .outs{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
-.g-hd .outs .dots{display:flex;gap:4px}
-.g-hd .outs .dot{width:13px;height:13px;border-radius:50%;border:2px solid #6B7BC0}
-.g-hd .outs .dot.on{background:var(--red);border-color:var(--red)}
-.g-hd .outs .lbl{font-size:9px;color:#9BB0FF;font-weight:700;letter-spacing:.5px}
-.g-hd .score{text-align:center;flex-shrink:0;padding:0 4px}
-.g-hd .score .r{font-size:22px;font-weight:900;color:var(--gold);line-height:1}
-.g-hd .score .lbl{font-size:9px;color:#9BB0FF;font-weight:700;letter-spacing:.5px}
 .g-hd .recon{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900}
 .g-hd .recon.ok{background:var(--green-l);color:var(--green)}
 .g-hd .recon.bad{background:var(--amber);color:#fff}
@@ -94,8 +83,46 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .g-sub button:active{background:rgba(255,255,255,.2)}
 
 /* diamond */
-.diamond-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:6px}
-.diamond{position:relative;width:min(54vh,330px);height:min(54vh,330px);max-height:100%}
+.diamond-row{flex:1;display:flex;align-items:stretch;min-height:0;gap:4px}
+.diamond-wrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:6px}
+.diamond{position:relative;width:min(48vh,300px);height:min(48vh,300px);max-height:100%}
+
+/* last play readout (left gutter) */
+.lastplay{flex:0 0 30%;max-width:200px;min-width:0;padding:10px 8px 10px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.lastplay.empty{opacity:0}
+.lp-hd{font-size:9px;font-weight:800;color:#5C6BB0;letter-spacing:1.5px;margin-bottom:7px}
+.lp-bat{font-size:15px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:8px;word-break:break-word}
+.lp-bat .res{color:var(--gold)}
+.lp-bat .rbi{display:block;font-size:11px;font-weight:700;color:#9BB0FF;margin-top:1px}
+.lp-run{font-size:13px;font-weight:600;color:#C2CBF0;line-height:1.3;margin-bottom:5px;word-break:break-word}
+.lp-run .arr{color:#5C6BB0}
+.lp-run.scored{color:#fff}
+.lp-run.scored .tag{color:var(--gold);font-weight:800;font-size:10px;letter-spacing:.3px}
+.lp-run.out .tag{color:#FF8A7A;font-weight:800;font-size:10px;letter-spacing:.3px}
+.lp-run .dest{color:#fff;font-weight:700}
+
+/* state stack (right gutter) */
+.statestack{flex:0 0 22%;max-width:120px;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:0 10px 0 4px}
+.ss-block{text-align:center}
+.ss-num{font-size:34px;font-weight:900;color:#fff;line-height:1}
+.ss-num.gold{color:var(--gold)}
+.ss-lbl{font-size:9px;font-weight:800;color:#5C6BB0;letter-spacing:1.5px;margin-top:2px}
+.ss-dots{display:flex;gap:6px;justify-content:center}
+.ss-dot{width:18px;height:18px;border-radius:50%;border:2px solid #4356A0}
+.ss-dot.on{background:var(--red);border-color:var(--red)}
+
+/* portrait: collapse gutters, last play becomes a thin strip above at-bat */
+@media (orientation:portrait){
+  .diamond-row{flex-direction:column;gap:0}
+  .lastplay{flex:0 0 auto;max-width:none;width:100%;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:8px 14px;order:2}
+  .lp-hd{margin-bottom:0;width:100%}
+  .lp-bat{margin-bottom:0;font-size:14px}
+  .lp-run{margin-bottom:0;font-size:12px}
+  .diamond-wrap{order:1}
+  .statestack{flex:0 0 auto;flex-direction:row;max-width:none;width:100%;justify-content:space-around;gap:0;padding:6px 0;order:0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .ss-num{font-size:24px}
+  .ss-dot{width:14px;height:14px}
+}
 .base{position:absolute;width:30%;height:30%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .base.occ{background:var(--gold);border-color:#fff;box-shadow:0 0 18px rgba(240,180,41,.5)}
 .base .bn{transform:rotate(-45deg);text-align:center;max-width:90%}
@@ -286,9 +313,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <div id="game" class="screen">
   <div class="g-hd">
     <div class="opp"><div class="vs">VS</div><div class="name tap" id="g-opp" onclick="openEditField('opp')">—</div></div>
-    <div class="inn"><div class="num" id="g-inn">1</div><div class="lbl">INN</div></div>
-    <div class="outs"><div class="dots" id="g-outs"></div><div class="lbl">OUTS</div></div>
-    <div class="score"><div class="r" id="g-rf">0</div><div class="lbl">RUNS</div></div>
     <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
   </div>
   <div class="g-sub">
@@ -296,12 +320,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     <button onclick="openMenu()">⋯ Menu</button>
   </div>
 
-  <div class="diamond-wrap">
-    <div class="diamond">
-      <div class="base b2" id="base-2"><div class="bn"></div></div>
-      <div class="base b3" id="base-3"><div class="bn"></div></div>
-      <div class="base b1" id="base-1"><div class="bn"></div></div>
-      <div class="base home"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
+  <div class="diamond-row">
+    <div class="lastplay" id="lastplay"></div>
+    <div class="diamond-wrap">
+      <div class="diamond">
+        <div class="base b2" id="base-2"><div class="bn"></div></div>
+        <div class="base b3" id="base-3"><div class="bn"></div></div>
+        <div class="base b1" id="base-1"><div class="bn"></div></div>
+        <div class="base home"><div class="bn"><div class="who" style="color:#6B7BC0">HOME</div></div></div>
+      </div>
+    </div>
+    <div class="statestack">
+      <div class="ss-block"><div class="ss-num" id="g-inn">1</div><div class="ss-lbl">INNING</div></div>
+      <div class="ss-block"><div class="ss-dots" id="g-outs"></div><div class="ss-lbl">OUTS</div></div>
+      <div class="ss-block"><div class="ss-num gold" id="g-rf">0</div><div class="ss-lbl">RUNS</div></div>
     </div>
   </div>
 
@@ -614,7 +646,7 @@ function render(){
   document.getElementById("g-inn").textContent = st.inning;
   document.getElementById("g-rf").textContent = agg.teamR;
   // outs dots
-  let dots=""; for(let i=0;i<3;i++) dots+=`<div class="dot ${i<st.outs?'on':''}"></div>`;
+  let dots=""; for(let i=0;i<3;i++) dots+=`<div class="ss-dot ${i<st.outs?'on':''}"></div>`;
   document.getElementById("g-outs").innerHTML = dots;
   // recon
   const rc = document.getElementById("g-recon");
@@ -622,6 +654,8 @@ function render(){
   else { rc.className="recon bad"; rc.textContent="!"; rc.title=`RBI ${agg.teamRBI} > Runs ${agg.teamR}`; }
   // bases
   renderBase(1, st.bases[1], st); renderBase(2, st.bases[2], st); renderBase(3, st.bases[3], st);
+  // last play
+  renderLastPlay();
   // at bat
   const cur = st.lineup[st.slot];
   document.getElementById("ab-ord").textContent = st.slot+1;
@@ -639,6 +673,36 @@ function renderBase(n, name, st){
   else { el.classList.remove("occ"); bn.innerHTML=""; }
 }
 function firstName(n){ return n.split(" ")[0]; }
+
+function renderLastPlay(){
+  const host=document.getElementById("lastplay");
+  // find last PA event
+  let pa=null;
+  for(let i=G.events.length-1;i>=0;i--){ if(G.events[i].t==="PA"){ pa=G.events[i]; break; } }
+  if(!pa){ host.className="lastplay empty"; host.innerHTML=""; return; }
+  host.className="lastplay";
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"OUT"};
+  const resTxt=resMap[pa.result]||pa.result;
+  // batter line: name · result · RBI total
+  let h=`<div class="lp-hd">LAST PLAY</div>`;
+  h+=`<div class="lp-bat">${escHtml(firstName(pa.batter))} · <span class="res">${resTxt}</span>`;
+  if(pa.rbi>0) h+=`<span class="rbi">${pa.rbi} RBI</span>`;
+  h+=`</div>`;
+  // runners: pa.runners is already ordered far-to-near (3B,2B,1B). render in that order.
+  const baseRank={"3B":3,"2B":2,"1B":1};
+  const ordered=(pa.runners||[]).slice().sort((a,b)=>(baseRank[b.from]||0)-(baseRank[a.from]||0));
+  for(const r of ordered){
+    const nm=escHtml(firstName(r.name));
+    if(r.to==="HOME"){
+      h+=`<div class="lp-run scored">${nm} <span class="arr">→</span> <span class="dest">home</span> <span class="tag">✓ RUN</span></div>`;
+    } else if(r.to==="OUT"){
+      h+=`<div class="lp-run out">${nm} <span class="arr">→</span> out <span class="tag">OUT</span></div>`;
+    } else {
+      h+=`<div class="lp-run">${nm} <span class="arr">→</span> <span class="dest">${r.to}</span></div>`;
+    }
+  }
+  host.innerHTML=h;
+}
 
 /* ============ OUTCOME ENTRY ============ */
 function outcome(res){
