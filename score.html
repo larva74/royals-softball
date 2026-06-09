@@ -111,17 +111,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .ss-dot{width:18px;height:18px;border-radius:50%;border:2px solid #4356A0}
 .ss-dot.on{background:var(--red);border-color:var(--red)}
 
-/* portrait: collapse gutters, last play becomes a thin strip above at-bat */
+/* portrait: keep side gutters, just tighten widths so diamond fits the narrower screen */
 @media (orientation:portrait){
-  .diamond-row{flex-direction:column;gap:0}
-  .lastplay{flex:0 0 auto;max-width:none;width:100%;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:8px 14px;order:2}
-  .lp-hd{margin-bottom:0;width:100%}
-  .lp-bat{margin-bottom:0;font-size:14px}
-  .lp-run{margin-bottom:0;font-size:12px}
-  .diamond-wrap{order:1}
-  .statestack{flex:0 0 auto;flex-direction:row;max-width:none;width:100%;justify-content:space-around;gap:0;padding:6px 0;order:0;border-bottom:1px solid rgba(255,255,255,.08)}
-  .ss-num{font-size:24px}
-  .ss-dot{width:14px;height:14px}
+  .lastplay{flex:0 0 32%;padding:8px 6px 8px 9px}
+  .lp-bat{font-size:14px}
+  .lp-run{font-size:12px}
+  .statestack{flex:0 0 22%;padding:0 6px 0 2px;gap:10px}
+  .ss-num{font-size:28px}
+  .ss-dot{width:15px;height:15px}
+  .diamond{width:min(40vh,52vw);height:min(40vh,52vw)}
 }
 .base{position:absolute;width:30%;height:30%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .base.occ{background:var(--gold);border-color:#fff;box-shadow:0 0 18px rgba(240,180,41,.5)}
