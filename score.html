@@ -223,7 +223,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .bh-name{font-size:12px;margin-bottom:3px}
   .bh-row{font-size:10px;margin-bottom:1px;line-height:1.25}
   .atbat{padding:0 10px 4px}
-  .wrap-btn{width:100%;padding:10px;margin-bottom:6px;border-radius:10px;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:14px;letter-spacing:.3px}
+  .wrap-btn{width:100%;padding:14px 10px;margin-bottom:8px;border-radius:12px;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:15px;line-height:1.25;letter-spacing:.2px;border:3px solid #fff;box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3);animation:wrapPulse 1.6s ease-in-out infinite}
+.wrap-btn .wb-sub{display:block;font-size:11px;font-weight:700;opacity:.8;margin-top:2px}
+@keyframes wrapPulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 4px #fff,0 3px 16px rgba(240,180,41,.6)}}
   .atbat .card{padding:6px 12px;gap:8px}
   .atbat .ord{width:30px;height:30px;font-size:15px}
   .atbat .meta .nm{font-size:16px}
@@ -504,7 +506,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
           <div class="fld"><label>Game #</label><input id="f-gnum" inputmode="numeric" placeholder="—"></div>
         </div>
         <div class="fld-row">
-          <div class="fld"><label>Time</label><input id="f-time" placeholder="e.g. 8:00 AM"></div>
+          <div class="fld"><label>Time</label><input id="f-time" type="time" step="300"></div>
           <div class="fld"><label>Field</label><input id="f-field" placeholder="e.g. SQ5" list="field-list" autocomplete="off"><datalist id="field-list"></datalist></div>
         </div>
       </div>
@@ -606,7 +608,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   </div>
 
   <div class="atbat">
-    <button class="wrap-btn" id="wrap-btn" style="display:none" onclick="wrapToTop()">\u27F2 Back to top of order</button>
+    <button class="wrap-btn" id="wrap-btn" style="display:none" onclick="wrapToTop()">\u27F2 LAST BATTER? Tap to loop back to #1<span class="wb-sub">Locks the opponent order here</span></button>
     <div class="card" id="atbat-card" onclick="openBatterMenu()">
       <div class="ord" id="ab-ord">1</div>
       <div class="meta"><div class="lbl">At Bat</div><div class="nm" id="ab-name">—</div></div>
@@ -1608,6 +1610,7 @@ function openBatterMenu(){
         ${bombBtn}
         <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
         <button onclick="openAddBatter()"><span class="ic">+</span><div class="col"><span>Add batter (late arrival)</span><span class="sub">Insert into an upcoming slot or the bottom</span></div></button>
+        ${G.oppLineupLocked ? '' : `<button onclick="panelClose();wrapToTop()"><span class="ic">\u27F2</span><div class="col"><span>End of lineup \u2014 loop to #1</span><span class="sub">Locks the order; next batter is #1</span></div></button>`}
         <button onclick="doSkip()"><span class="ic">⤼</span><div class="col"><span>Skip this spot</span><span class="sub">Advance without a plate appearance</span></div></button>
       </div></div>
       <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
@@ -1867,7 +1870,7 @@ function openEditField(which){
       ${f('opp','Opponent',m.opp,'opp-list')}
       ${f('date','Date (YYYY-MM-DD)',m.date)}
       ${f('gnum','Game #',m.gnum)}
-      ${f('time','Time',m.time)}
+      <label>Time</label><input id="ef-time" type="time" step="300" value="${escAttr(m.time||'')}">
       ${f('field','Field',m.field,'field-list')}
       <label style="margin-top:10px">Royals are</label>
       <div class="ha-seg">
