@@ -20,10 +20,11 @@
   --red:#C0392B; --red-l:#FBEAE8;
   --amber:#E8A33D; --blue:#1A45C0;
   --hit:#1F8C4F; --out:#C0392B; --walk:#1A45C0;
+  --them:#7A1020; --them-d:#5C0A18; --them-l:#9E1A2E;
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;font-size:16px;overscroll-behavior:none;position:fixed;width:100%;height:100%}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 .screen.active{display:flex}
 .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
@@ -45,15 +46,39 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .fld input,.fld select{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;outline:none;font-family:inherit;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
 .fld input:focus,.fld select:focus{border-color:var(--navy)}
 .fld-row{display:flex;gap:10px}.fld-row .fld{flex:1}
+.track-mode{display:flex;gap:8px}
+.opp-lineup-list{display:flex;flex-direction:column;gap:6px}
+.opp-lu-row{display:flex;align-items:center;gap:8px}
+.opp-lu-row .n{width:26px;height:26px;border-radius:7px;background:var(--them);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opp-lu-row input{flex:1;padding:9px 11px;border:2px solid var(--line);border-radius:9px;font-size:14px;font-weight:600;outline:none;-webkit-user-select:text;user-select:text}
+.opp-lu-row input:focus{border-color:var(--them)}
+.opp-lu-rm{width:30px;height:30px;border-radius:7px;background:var(--red-l);color:var(--red);font-weight:900;font-size:16px;flex-shrink:0}
+.opp-lu-add{margin-top:4px;padding:10px;border-radius:9px;background:rgba(122,16,32,.1);color:var(--them);font-weight:800;font-size:13px;border:2px dashed var(--them)}
+.ha-seg{display:flex;gap:8px}
+.ha-btn{flex:1;padding:11px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:14px;color:var(--ink)}
+.ha-btn.on{border-color:var(--navy);background:#EEF2FF;color:var(--navy)}
+.tm-btn{flex:1;padding:12px;border-radius:11px;background:#fff;border:2px solid var(--line);text-align:left;display:flex;flex-direction:column;gap:2px}
+.tm-btn.active{border-color:var(--navy);background:#EEF2FF}
+.tm-btn .tm-t{font-weight:800;font-size:15px;color:var(--navy)}
+.tm-btn .tm-s{font-size:11px;color:var(--muted);font-weight:600}
 .roster-chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:11px 14px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:700;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:7px}
 .chip.picked{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.chip.benched{background:#FEF6E3;border-color:var(--gold-d);color:var(--gold-d)}
+.chip .num.b{background:var(--gold-d)}
 .chip .num{background:var(--green);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
 .chip.add{border-style:dashed;color:var(--navy);border-color:var(--navy)}
 .lineup-list{display:flex;flex-direction:column;gap:6px}
 .lu-row{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .lu-row .ord{width:26px;height:26px;border-radius:7px;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .lu-row .nm{flex:1;font-weight:700;font-size:15px}
+.lu-row .jersey{width:54px;flex-shrink:0;padding:7px 6px;border:2px solid var(--line);border-radius:8px;font-size:14px;font-weight:700;text-align:center;outline:none;-webkit-user-select:text;user-select:text}
+.lu-row .jersey:focus{border-color:var(--navy)}
+.pick-mode{display:flex;gap:8px;margin-bottom:10px}
+.pm-btn{flex:1;padding:10px;border-radius:9px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:13px;color:var(--ink)}
+.pm-btn.on{border-color:var(--navy);background:#EEF2FF;color:var(--navy)}
+.pm-btn#pm-bench.on{border-color:var(--gold-d);background:#FEF6E3;color:var(--gold-d)}
+.lu-row.bench .ord{background:var(--gold-d)}
 .lu-row .mv{display:flex;gap:4px}
 .lu-row .mv button,.lu-row .rm{width:34px;height:34px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--navy)}
 .lu-row .rm{color:var(--red);font-size:20px}
@@ -69,31 +94,102 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 /* ===== GAME ===== */
 #game{background:var(--navy-d)}
-.g-hd{background:var(--navy);border-bottom:2px solid var(--gold);padding:8px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.g-hd .opp{flex:1;min-width:0}
-.g-hd .opp .vs{color:#9BB0FF;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.g-hd .opp .name{color:#fff;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
-.g-hd .name.tap{text-decoration:underline dotted #9BB0FF 1px;text-underline-offset:3px}
-.g-hd .recon{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900}
-.g-hd .recon.ok{background:var(--green-l);color:var(--green)}
-.g-hd .recon.bad{background:var(--amber);color:#fff}
+.side-toggle{display:flex;flex-shrink:0}
+.side-toggle.home{flex-direction:row-reverse}
+.st-btn{flex:1;padding:9px;font-weight:900;font-size:14px;letter-spacing:1px;color:rgba(255,255,255,.55);background:var(--navy-d);border-bottom:3px solid transparent}
+.st-btn.us.active{background:var(--navy);color:#fff;border-bottom-color:var(--gold)}
+.st-btn.them.active{background:var(--them);color:#fff;border-bottom-color:#fff}
+#game.them-batting{background:var(--them-d)}
+#game.them-batting .g-state{background:var(--them)}
+#game.them-batting .linescore{border-bottom-color:#fff}
+#game.them-batting .gs-item b.gold{color:#fff}
+#game.them-batting .atbat .card{background:var(--them-l)}
+#game.them-batting .atbat .card .ord{background:var(--them-d)}
+#game.them-batting .atbat .card .meta .lbl,#game.them-batting .atbat .card .meta .nm,#game.them-batting .atbat .card .hint{color:#fff}
+#game.them-batting .outcomes{background:var(--them)}
+#game.them-batting .ob.k{background:var(--them-d)}
+/* full-width state strip */
+.g-state{background:var(--navy);padding:6px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.gs-opp{flex:1;min-width:0;color:#fff;font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-opp .vs{color:#9BB0FF;font-size:10px;font-weight:700}
+.gs-opp .name.tap{text-decoration:underline dotted #9BB0FF 1px;text-underline-offset:3px}
+.gs-mid{display:flex;gap:16px;flex-shrink:0}
+.gs-item{display:flex;flex-direction:column;align-items:center;line-height:1}
+.gs-item b{font-size:18px;font-weight:900;color:#fff}
+.gs-item b.gold{color:var(--gold)}
+.gs-item i{font-size:8px;font-weight:800;color:#5C6BB0;letter-spacing:1px;margin-top:2px;font-style:normal}
+.gs-dots{display:flex;gap:4px;height:18px;align-items:center}
+.gs-dots .ss-dot{width:14px;height:14px;border-radius:50%;border:2px solid #4356A0}
+.gs-dots .ss-dot.on{background:var(--red);border-color:var(--red)}
+.recon{flex-shrink:0;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900}
+.recon.ok{background:var(--green-l);color:var(--green)}
+.recon.bad{background:var(--amber);color:#fff}
+.gs-menu{flex-shrink:0;width:34px;height:28px;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-weight:900;font-size:16px}
 
-.g-sub{display:flex;gap:8px;padding:7px 12px;flex-shrink:0}
-.g-sub button{flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,.1);color:#cdd6f5;font-weight:700;font-size:12px;letter-spacing:.3px}
-.g-sub button:active{background:rgba(255,255,255,.2)}
+/* full-width linescore */
+.linescore{background:var(--navy-d);border-top:1px solid rgba(255,255,255,.06);border-bottom:2px solid var(--gold);flex-shrink:0;overflow-x:auto}
+.linescore table{width:100%;border-collapse:collapse;font-family:ui-monospace,monospace}
+.linescore th,.linescore td{text-align:center;padding:3px 0;font-size:12px;font-weight:700;color:#C2CBF0;min-width:24px;border-right:1px solid rgba(255,255,255,.04)}
+.linescore th{font-size:9px;color:#5C6BB0;font-weight:800}
+.linescore .lbl{text-align:left;padding-left:10px;color:#9BB0FF;font-weight:800;min-width:46px;font-family:system-ui}
+.linescore .tot{color:var(--gold);font-weight:900;font-size:14px;border-left:2px solid rgba(240,180,41,.3);border-right:none}
+.linescore td.cur{background:rgba(240,180,41,.12)}
+.linescore td.them-cell{cursor:pointer}
+.linescore td.them-cell:active{background:rgba(255,255,255,.1)}
+.linescore tr.them td{color:#FF9E8F}
+.linescore tr.them .tot{color:#FF9E8F}
 
 /* diamond */
 .diamond-row{flex:1;display:flex;align-items:stretch;min-height:0;gap:4px}
 .diamond-wrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:6px}
-.diamond{position:relative;width:min(48vh,300px);height:min(48vh,300px);max-height:100%}
+.diamond{position:relative;width:min(44vh,300px);height:min(44vh,300px);max-height:100%;max-width:100%;aspect-ratio:1}
+/* fielder overlay (location mode) */
+.field-overlay{position:absolute;inset:0;z-index:8;display:none}
+#game.loc-mode .field-overlay{display:block}
+#game.loc-mode .base{opacity:.25;pointer-events:none}
+#game.loc-mode .out-zone{display:none}
+.field-overlay svg{width:100%;height:100%;overflow:visible}
+.field-overlay .fz circle{fill:var(--navy);opacity:.92;stroke:#fff;stroke-width:1.5}
+.field-overlay .fz text{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;pointer-events:none}
+.field-overlay .fz:active circle{fill:var(--gold)}
+.field-overlay .fz-gap{fill:rgba(240,180,41,.22);stroke:var(--gold);stroke-width:1;stroke-dasharray:3 3}
+.field-overlay .fz-gap:active{fill:var(--gold);opacity:.55}
+.field-overlay.disabled .fz,.field-overlay.disabled .fz-gap{opacity:.3;pointer-events:none}
+/* location bar */
+.loc-bar{flex:0 0 auto;padding:8px 10px;background:var(--navy-d);border-top:2px solid var(--gold)}
+.loc-prompt{text-align:center;color:#fff;font-weight:800;font-size:14px;margin-bottom:7px}
+.loc-prompt b{color:var(--gold)}
+.glf-pick{display:flex;gap:8px}
+.glf2{flex:1;height:48px;border-radius:11px;background:#1B2C66;color:#fff;font-weight:900;font-size:20px;border:2px solid transparent}
+.glf2.on{background:var(--gold);color:var(--navy-d);border-color:#fff}
+.glf-skip{flex:1;height:48px;border-radius:11px;background:#3A2A2A;color:#FFB4A8;font-weight:800;font-size:14px}
 
-/* last play readout (left gutter) */
-.lastplay{flex:0 0 30%;max-width:200px;min-width:0;padding:10px 8px 10px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-.lastplay.empty{opacity:0}
-.lp-hd{font-size:9px;font-weight:800;color:#5C6BB0;letter-spacing:1.5px;margin-bottom:7px}
-.lp-bat{font-size:15px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:8px;word-break:break-word}
+/* batter history (left gutter) */
+.lastplay{flex:0 0 30%;max-width:210px;min-width:0;padding:8px 8px 8px 12px;display:flex;flex-direction:column;overflow:hidden}
+.lastplay.empty{opacity:1}
+.lp-section{min-height:0}
+#lp-lastplay{flex:0 0 auto;max-height:38%;overflow-y:auto;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+#lp-history{flex:1 1 auto;overflow-y:auto}
+#lp-lastplay:empty,#lp-history:empty{display:none}
+.lp-hd{font-size:9px;font-weight:800;color:#5C6BB0;letter-spacing:1.5px;margin-bottom:6px}
+.lp-play{margin-bottom:6px;opacity:.55}
+.lp-play.newest{opacity:1}
+.lp-bat{font-size:13px;font-weight:900;color:#fff;line-height:1.15;word-break:break-word}
 .lp-bat .res{color:var(--gold)}
-.lp-bat .rbi{display:block;font-size:11px;font-weight:700;color:#9BB0FF;margin-top:1px}
+.rbi-inline{font-size:10px;font-weight:800;color:#9BB0FF}
+.lp-run{font-size:11px;font-weight:600;color:#C2CBF0;line-height:1.3;margin-top:3px;word-break:break-word}
+.lp-run .arr{color:#5C6BB0}
+.lp-run.scored{color:#fff}
+.lp-run.scored .tag{color:var(--gold);font-weight:800;font-size:9px}
+.lp-run.out .tag{color:#FF8A7A;font-weight:800;font-size:9px}
+.lp-run .dest{color:#fff;font-weight:700}
+/* per-batter history rows */
+.bh-name{font-size:15px;font-weight:900;color:#fff;margin-bottom:6px;word-break:break-word}
+.bh-row{font-size:12px;font-weight:600;color:#C2CBF0;line-height:1.4;margin-bottom:3px;word-break:break-word}
+.bh-row .inn{color:#9BB0FF;font-weight:700}
+.bh-row .r{color:var(--gold);font-weight:800}
+.bh-row .loc{color:#9BB0FF;font-weight:700}
+.bh-empty{font-size:12px;color:#5C6BB0;font-style:italic}
 .lp-run{font-size:13px;font-weight:600;color:#C2CBF0;line-height:1.3;margin-bottom:5px;word-break:break-word}
 .lp-run .arr{color:#5C6BB0}
 .lp-run.scored{color:#fff}
@@ -101,25 +197,46 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .lp-run.out .tag{color:#FF8A7A;font-weight:800;font-size:10px;letter-spacing:.3px}
 .lp-run .dest{color:#fff;font-weight:700}
 
-/* state stack (right gutter) */
-.statestack{flex:0 0 22%;max-width:120px;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:0 10px 0 4px}
-.ss-block{text-align:center}
-.ss-num{font-size:34px;font-weight:900;color:#fff;line-height:1}
-.ss-num.gold{color:var(--gold)}
-.ss-lbl{font-size:9px;font-weight:800;color:#5C6BB0;letter-spacing:1.5px;margin-top:2px}
-.ss-dots{display:flex;gap:6px;justify-content:center}
-.ss-dot{width:18px;height:18px;border-radius:50%;border:2px solid #4356A0}
-.ss-dot.on{background:var(--red);border-color:var(--red)}
-
-/* portrait: keep side gutters, just tighten widths so diamond fits the narrower screen */
+/* portrait: tighten gutter + diamond so it fits narrower screen */
 @media (orientation:portrait){
-  .lastplay{flex:0 0 32%;padding:8px 6px 8px 9px}
-  .lp-bat{font-size:14px}
-  .lp-run{font-size:12px}
-  .statestack{flex:0 0 22%;padding:0 6px 0 2px;gap:10px}
-  .ss-num{font-size:28px}
-  .ss-dot{width:15px;height:15px}
-  .diamond{width:min(40vh,52vw);height:min(40vh,52vw)}
+  .lastplay{flex:0 0 34%;padding:8px 6px 8px 9px}
+  .bh-row{font-size:11px}
+  .diamond{width:min(38vh,56vw);height:min(38vh,56vw)}
+  .gs-mid{gap:10px}
+  .gs-item b{font-size:16px}
+}
+/* short landscape (phone landscape) — compact so everything fits the short height */
+@media (orientation:landscape) and (max-height:500px){
+  .g-state{padding:3px 10px;gap:8px}
+  .gs-opp{font-size:13px}
+  .gs-item b{font-size:14px}
+  .gs-item i{font-size:7px}
+  .gs-dots{height:14px}
+  .gs-dots .ss-dot{width:11px;height:11px}
+  .recon{width:24px;height:24px;font-size:13px}
+  .linescore th,.linescore td{padding:1px 0;font-size:11px;min-width:20px}
+  .diamond{width:min(40vh,32vw);height:min(40vh,32vw)}
+  .lastplay{flex:0 0 26%;padding:4px 6px}
+  .lp-hd{margin-bottom:3px}
+  .lp-bat{font-size:12px}
+  .lp-run{font-size:11px;margin-top:2px}
+  .bh-name{font-size:12px;margin-bottom:3px}
+  .bh-row{font-size:10px;margin-bottom:1px;line-height:1.25}
+  .atbat{padding:0 10px 4px}
+  .wrap-btn{width:100%;padding:10px;margin-bottom:6px;border-radius:10px;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:14px;letter-spacing:.3px}
+  .atbat .card{padding:6px 12px;gap:8px}
+  .atbat .ord{width:30px;height:30px;font-size:15px}
+  .atbat .meta .nm{font-size:16px}
+  .atbat .meta .lbl{font-size:8px}
+  .outcomes{padding:5px 8px 4px}
+  .out-row{gap:5px;margin-bottom:5px}
+  .ob{padding:9px 4px;font-size:15px;border-radius:9px}
+  .ob small{font-size:8px;margin-top:1px}
+  .g-foot{padding:4px 8px;gap:6px}
+  .g-foot button{padding:8px;font-size:13px}
+  .resolve-bar{padding:5px 8px}
+  .resolve-hint{font-size:11px;margin-bottom:5px;min-height:0}
+  .resolve-actions button{padding:9px;font-size:13px}
 }
 .base{position:absolute;width:30%;height:30%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .base.occ{background:var(--gold);border-color:#fff;box-shadow:0 0 18px rgba(240,180,41,.5)}
@@ -197,11 +314,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .g-foot button{flex:1;padding:13px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:6px}
 .g-foot .back{background:#3A2A2A;color:#FFB3A8}
 .g-foot .undo{background:#2A2A3A;color:#B8C0E8}
-.g-foot .menu{background:#243681;color:#fff;flex:0 0 64px}
+.g-foot .inn-end{background:#243681;color:#fff}
 .g-foot button:disabled{opacity:.35}
 
 /* ===== MODAL / PANEL ===== */
-.overlay{position:absolute;inset:0;background:rgba(7,21,73,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.overlay{position:absolute;inset:0;background:rgba(7,21,73,.55);display:none;align-items:flex-end;justify-content:center;z-index:70;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .overlay.show{display:flex}
 .panel{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;max-height:92%;display:flex;flex-direction:column;animation:slideup .12s ease-out}
 @keyframes slideup{from{transform:translateY(20px)}to{transform:translateY(0)}}
@@ -240,6 +357,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .menu-list button .col{display:flex;flex-direction:column}
 .sub-pick{display:flex;flex-direction:column;gap:7px}
 .sub-pick button{padding:14px 16px;border-radius:11px;background:var(--bg);font-weight:700;font-size:16px;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.sub-pick button.pick-done{opacity:.5;text-decoration:line-through;background:#EEE}
 .sub-pick button .tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:14px;background:#E9ECF6;color:var(--muted)}
 .sub-pick button .tag.in{background:var(--green-l);color:var(--green)}
 .field-edit input{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;outline:none;font-family:inherit;-webkit-user-select:text;user-select:text;margin-bottom:12px}
@@ -254,6 +372,71 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .play-row .pd b{font-weight:800;color:var(--navy)}
 .play-row .pd .rs{font-size:12px;color:var(--muted);margin-top:1px}
 .play-row .pe{background:var(--navy);color:#fff;padding:7px 13px;border-radius:8px;font-weight:800;font-size:12px}
+
+/* play log (full-screen, split halves) */
+.fullscreen{position:fixed;inset:0;background:var(--card);z-index:60;display:none;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.fullscreen.show{display:flex}
+.fs-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:2px solid var(--line);flex-shrink:0}
+.fs-hd h2{font-size:18px;font-weight:900;color:var(--navy)}
+.fs-close{background:var(--navy);color:#fff;padding:9px 18px;border-radius:9px;font-weight:800;font-size:14px}
+.fs-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px}
+/* hit-location field */
+.glf-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.glf-lbl{font-size:13px;font-weight:800;color:var(--ink)}
+.glf{width:46px;height:40px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:900;font-size:17px;color:var(--ink)}
+.glf.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.glf-key{font-size:11px;color:var(--muted);font-weight:600}
+.field-wrap{max-width:380px;margin:0 auto}
+.field-svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.fz circle{fill:var(--navy);opacity:.85}
+.fz text{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;pointer-events:none}
+.fz:active circle{fill:var(--gold)}
+.fz.static circle{fill:#5566aa;opacity:.5}
+.fz-gap{fill:rgba(240,180,41,.18);stroke:var(--gold);stroke-width:1;stroke-dasharray:3 3}
+.fz-gap:active{fill:var(--gold);opacity:.5}
+.field-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+.field-cur{text-align:center;font-size:14px;margin-bottom:10px;color:var(--ink)}
+.field-clear{background:var(--red);color:#fff;padding:4px 10px;border-radius:7px;font-weight:700;font-size:12px;margin-left:6px}
+.spray-legend{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:12px;font-weight:700}
+.spray-legend .sl.g{color:#FF7A00}.spray-legend .sl.l{color:#00B358}.spray-legend .sl.f{color:#5B3FD9}.spray-legend .sl.p{color:#E0218A}
+/* lineup scoresheet */
+.ls-row{display:flex;align-items:center;gap:10px;padding:11px 10px;border-bottom:1px solid var(--line)}
+.ls-row.cur{background:#FEF6E3;border-left:4px solid var(--gold)}
+.ls-row.next{background:#F4F7FF}
+.ls-row.done{opacity:.5}
+.ls-row .ls-ord{width:26px;height:26px;border-radius:7px;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ls-row.done .ls-ord{background:var(--muted)}
+.ls-nm{flex:1;min-width:0}
+.ls-nm .nm{font-weight:800;font-size:15px;color:var(--ink)}
+.ls-nm .nm .jno{color:var(--muted);font-weight:700;font-size:13px}
+.ls-codes{font-family:ui-monospace,monospace;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-top:2px;white-space:nowrap;overflow-x:auto}
+.ls-codes .c-hit{color:var(--green)}.ls-codes .c-out{color:var(--red)}.ls-codes .c-walk{color:var(--blue)}
+.ls-chev{color:var(--muted);font-size:18px;flex-shrink:0}
+.ls-tag{font-size:10px;font-weight:800;padding:2px 6px;border-radius:8px;background:var(--gold);color:var(--navy-d);margin-left:6px}
+.ls-tag.bench{background:var(--gold-d);color:#fff}
+.pd-actions{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.pd-actions button{flex:1;min-width:90px;padding:11px;border-radius:10px;font-weight:800;font-size:13px;background:var(--navy);color:#fff}
+.pd-actions button.warn{background:var(--gold);color:var(--navy-d)}
+/* location chip in last-play gutter */
+.loc-chip{display:inline-block;margin-top:5px;background:var(--blue);color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:12px}
+.loc-add{display:inline-block;margin-top:5px;background:rgba(26,69,192,.15);color:var(--blue);font-size:11px;font-weight:800;padding:3px 9px;border-radius:12px;border:1px dashed var(--blue)}
+.plog-inn-block{margin-bottom:18px}
+.plog-inn-num{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.plog-half{margin-bottom:8px}
+.plog-half-hd{font-size:13px;font-weight:900;padding:6px 10px;border-radius:8px;margin-bottom:6px}
+.plog-half-hd.us{background:var(--navy);color:#fff}
+.plog-half-hd.them{background:var(--them);color:#fff}
+.plog-half-hd .sc{float:right;font-weight:800;opacity:.85}
+.plog-line{font-size:14px;color:var(--ink);padding:5px 10px;line-height:1.4}
+.plog-line:nth-child(even){background:var(--bg);border-radius:6px}
+.plog-name{font-weight:800;color:var(--navy)}
+.plog-half.them-half .plog-name{color:var(--them)}
+.plog-loc{font-weight:800;color:var(--blue);font-family:ui-monospace,monospace}
+.plog-rbi{font-size:12px;font-weight:700;color:var(--gold-d)}
+.plog-run{font-size:12px;font-weight:700;color:var(--green)}
+.plog-out{font-size:12px;font-weight:700;color:var(--red)}
+.plog-sub{font-style:italic;color:var(--blue);font-size:13px}
+.plog-empty{color:var(--muted);font-style:italic;font-size:13px}
 
 /* export */
 .exp-block{margin-bottom:16px}
@@ -327,13 +510,45 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       </div>
 
       <div class="sect">
-        <div class="sect-lbl">Tap players into batting order <span style="font-weight:600;text-transform:none;letter-spacing:0" id="roster-src-lbl"></span></div>
+        <div class="sect-lbl">Royals are…</div>
+        <div class="ha-seg">
+          <button class="ha-btn on" id="ha-away" onclick="setHomeAway('away')">Away (bat first)</button>
+          <button class="ha-btn" id="ha-home" onclick="setHomeAway('home')">Home (bat last)</button>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-lbl">Tracking mode</div>
+        <div class="track-mode">
+          <button class="tm-btn active" id="tm-us" onclick="setTrackMode('us')"><span class="tm-t">Royals only</span><span class="tm-s">Score our offense — fast</span></button>
+          <button class="tm-btn" id="tm-both" onclick="setTrackMode('both')"><span class="tm-t">Both teams</span><span class="tm-s">Score both sides — full scorebook</span></button>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-lbl">Tap players — adding to <span id="roster-src-lbl" style="font-weight:600;text-transform:none;letter-spacing:0"></span></div>
+        <div class="pick-mode">
+          <button class="pm-btn on" id="pm-order" onclick="setPickMode('order')">Batting order</button>
+          <button class="pm-btn" id="pm-bench" onclick="setPickMode('bench')">Bench / subs</button>
+        </div>
         <div class="roster-chips" id="roster-chips"></div>
       </div>
 
       <div class="sect">
-        <div class="sect-lbl">Batting order — lineup locks at game start</div>
+        <div class="sect-lbl">Batting order — locks at game start</div>
         <div class="lineup-list" id="lineup-list"><div class="lineup-empty">Tap players above to build the order (min 10).</div></div>
+      </div>
+
+      <div class="sect" id="bench-sect" style="display:none">
+        <div class="sect-lbl">Bench / subs <span style="font-weight:600;text-transform:none;letter-spacing:0">(available to sub in; optional)</span></div>
+        <div class="lineup-list" id="bench-list"></div>
+      </div>
+
+      <div class="sect" id="opp-lineup-sect" style="display:none">
+        <div class="sect-lbl">Opponent lineup <span style="font-weight:600;text-transform:none;letter-spacing:0">(name &amp; #; blanks become "Opp N"; edit anytime in game)</span></div>
+        <div class="opp-lineup-list" id="opp-lineup-list"></div>
+        <div class="sect-lbl" style="margin-top:12px">Opponent subs <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional)</span></div>
+        <div class="opp-lineup-list" id="opp-sub-list"></div>
       </div>
     </div>
   </div>
@@ -345,19 +560,32 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 <!-- ============ GAME SCREEN ============ -->
 <div id="game" class="screen">
-  <div class="g-hd">
-    <div class="opp"><div class="vs">VS</div><div class="name tap" id="g-opp" onclick="openEditField('opp')">—</div></div>
-    <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
+  <div class="side-toggle" id="side-toggle" style="display:none">
+    <button class="st-btn us active" id="st-us" onclick="setActiveSide('us')">ROYALS</button>
+    <button class="st-btn them" id="st-them" onclick="setActiveSide('them')">THEM</button>
   </div>
-  <div class="g-sub">
-    <button onclick="endInningManual()">End Inning ▸</button>
-    <button onclick="openMenu()">⋯ Menu</button>
+  <div class="g-state">
+    <div class="gs-opp"><span class="vs">VS</span> <span class="name tap" id="g-opp" onclick="openEditField('opp')">—</span></div>
+    <div class="gs-mid">
+      <span class="gs-item"><b id="g-inn">1</b><i>INN</i></span>
+      <span class="gs-item"><span class="gs-dots" id="g-outs"></span><i>OUTS</i></span>
+      <span class="gs-item"><b class="gold" id="g-thisinn">0</b><i>THIS INN</i></span>
+    </div>
+    <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
+    <button class="gs-menu" onclick="openLineup()" title="Lineup">\u2630</button>
+    <button class="gs-menu" onclick="openMenu()">⋯</button>
   </div>
 
+  <div class="linescore" id="linescore"></div>
+
   <div class="diamond-row">
-    <div class="lastplay" id="lastplay"></div>
+    <div class="lastplay" id="lastplay">
+      <div class="lp-section" id="lp-lastplay"></div>
+      <div class="lp-section" id="lp-history"></div>
+    </div>
     <div class="diamond-wrap">
       <div class="diamond">
+        <div class="field-overlay" id="field-overlay"></div>
         <div class="base b2" id="base-2" onclick="baseTap(2)"><div class="bn"></div></div>
         <div class="base b3" id="base-3" onclick="baseTap(3)"><div class="bn"></div></div>
         <div class="base b1" id="base-1" onclick="baseTap(1)"><div class="bn"></div></div>
@@ -365,14 +593,20 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
         <div class="out-zone" id="out-zone" onclick="outTap()">OUT</div>
       </div>
     </div>
-    <div class="statestack">
-      <div class="ss-block"><div class="ss-num" id="g-inn">1</div><div class="ss-lbl">INNING</div></div>
-      <div class="ss-block"><div class="ss-dots" id="g-outs"></div><div class="ss-lbl">OUTS</div></div>
-      <div class="ss-block"><div class="ss-num gold" id="g-rf">0</div><div class="ss-lbl">RUNS</div></div>
+  </div>
+  <div class="loc-bar" id="loc-bar" style="display:none">
+    <div class="loc-prompt" id="loc-prompt">Ball type?</div>
+    <div class="glf-pick">
+      <button class="glf2" data-t="G" onclick="pickBallType('G')">G</button>
+      <button class="glf2" data-t="L" onclick="pickBallType('L')">L</button>
+      <button class="glf2" data-t="F" onclick="pickBallType('F')">F</button>
+      <button class="glf2" data-t="P" onclick="pickBallType('P')">P</button>
+      <button class="glf-skip" onclick="skipLoc()">Skip</button>
     </div>
   </div>
 
   <div class="atbat">
+    <button class="wrap-btn" id="wrap-btn" style="display:none" onclick="wrapToTop()">\u27F2 Back to top of order</button>
     <div class="card" id="atbat-card" onclick="openBatterMenu()">
       <div class="ord" id="ab-ord">1</div>
       <div class="meta"><div class="lbl">At Bat</div><div class="nm" id="ab-name">—</div></div>
@@ -409,12 +643,28 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   <div class="g-foot">
     <button class="back" onclick="cancelPending()" id="foot-back">← Back</button>
     <button class="undo" onclick="undo()" id="foot-undo">⟲ Undo</button>
-    <button class="menu" onclick="openMenu()">⋯</button>
+    <button class="inn-end" onclick="endInningManual()">End Inning ▸</button>
   </div>
 </div>
 
 <!-- overlay host -->
 <div class="overlay" id="overlay"><div class="panel" id="panel"></div></div>
+<div class="fullscreen" id="playlog-fs">
+  <div class="fs-hd"><h2>Play log</h2><button class="fs-close" onclick="closePlayLog()">Done</button></div>
+  <div class="fs-body" id="playlog-body"></div>
+</div>
+<div class="fullscreen" id="field-fs">
+  <div class="fs-hd"><h2 id="field-title">Where was it hit?</h2><button class="fs-close" onclick="closeFieldLoc()">Skip</button></div>
+  <div class="fs-body" id="field-body"></div>
+</div>
+<div class="fullscreen" id="spray-fs">
+  <div class="fs-hd"><h2 id="spray-title">Spray chart</h2><button class="fs-close" onclick="closeSpray()">Done</button></div>
+  <div class="fs-body" id="spray-body"></div>
+</div>
+<div class="fullscreen" id="lineup-fs">
+  <div class="fs-hd"><h2 id="lineup-title">Lineup</h2><button class="fs-close" onclick="closeLineup()">Done</button></div>
+  <div class="fs-body" id="lineup-body"></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -441,7 +691,7 @@ const STORE_KEY = "royals_games_v1";        // multi-game store
 const ADV = {"1B":1,"2B":2,"3B":3,"HR":4}; // batter base index from home
 
 /* ---- SETUP STATE ---- */
-let setup = { type:"league", tournamentId:null, opp:"", date:"", gnum:"", time:"", field:"", lineup:[] };
+let setup = { type:"league", tournamentId:null, opp:"", date:"", gnum:"", time:"", field:"", lineup:[], bench:[], pickMode:"order", jerseys:{}, trackMode:"us", homeAway:"away", oppCount:0, oppJerseys:[] };
 
 /* ---- GAME STATE (the committed model) ---- */
 // game = { meta:{...}, lineup:[names], events:[...], roster:{name:added?} }
@@ -452,6 +702,59 @@ let pending = null; // mid-entry play awaiting runner resolution
 /* ============ SETUP UI ============ */
 function rosterFor(type){ return (type==="tournament"? SEED.tourneyRoster : SEED.leagueRoster).slice(); }
 
+function setHomeAway(v){
+  setup.homeAway=v;
+  document.getElementById("ha-away").classList.toggle("on", v==="away");
+  document.getElementById("ha-home").classList.toggle("on", v==="home");
+}
+function setTrackMode(m){
+  setup.trackMode=m;
+  document.getElementById("tm-us").classList.toggle("active", m==="us");
+  document.getElementById("tm-both").classList.toggle("active", m==="both");
+  document.getElementById("opp-lineup-sect").style.display = m==="both" ? "block" : "none";
+  if(m==="both") renderOppLineupSetup();
+}
+function renderOppLineupSetup(){
+  const host=document.getElementById("opp-lineup-list");
+  setup.oppLineup = setup.oppLineup || [];
+  setup.oppJerseys = setup.oppJerseys || [];
+  setup.oppCount = Math.max(setup.oppCount||0, setup.lineup.length, 10);
+  const n=setup.oppCount;
+  const jin=(i,arr)=>`<input class="jersey" inputmode="numeric" value="${escAttr(String((arr[i]!=null?arr[i]:"")))}" placeholder="#" oninput="onOppJerseyInput(${i},this.value)">`;
+  let h="";
+  for(let i=0;i<n;i++){
+    const v = setup.oppLineup[i]!=null ? setup.oppLineup[i] : "";
+    h+=`<div class="opp-lu-row"><div class="n">${i+1}</div><input data-i="${i}" value="${escAttr(v)}" placeholder="Opp ${i+1}" autocomplete="off" oninput="onOppLineupInput(${i},this.value)">${jin(i,setup.oppJerseys)}<button class="opp-lu-rm" onclick="removeOppBatter(${i})">×</button></div>`;
+  }
+  if(n<20) h+=`<button class="opp-lu-add" onclick="addOppBatter()">+ Add opponent batter</button>`;
+  host.innerHTML=h;
+  renderOppSubsSetup();
+}
+function renderOppSubsSetup(){
+  const host=document.getElementById("opp-sub-list");
+  setup.oppSubs = setup.oppSubs || [];
+  setup.oppSubJerseys = setup.oppSubJerseys || [];
+  const jin=(i)=>`<input class="jersey" inputmode="numeric" value="${escAttr(String((setup.oppSubJerseys[i]!=null?setup.oppSubJerseys[i]:"")))}" placeholder="#" oninput="onOppSubJerseyInput(${i},this.value)">`;
+  let h="";
+  setup.oppSubs.forEach((v,i)=>{
+    h+=`<div class="opp-lu-row"><div class="n" style="background:var(--gold-d)">S</div><input value="${escAttr(v||"")}" placeholder="Sub name / ID" autocomplete="off" oninput="onOppSubInput(${i},this.value)">${jin(i)}<button class="opp-lu-rm" onclick="removeOppSub(${i})">×</button></div>`;
+  });
+  h+=`<button class="opp-lu-add" onclick="addOppSub()">+ Add opponent sub</button>`;
+  host.innerHTML=h;
+}
+function onOppJerseyInput(i,v){ setup.oppJerseys=setup.oppJerseys||[]; setup.oppJerseys[i]=v.trim(); }
+function addOppSub(){ setup.oppSubs=setup.oppSubs||[]; setup.oppSubs.push(""); renderOppSubsSetup(); }
+function removeOppSub(i){ setup.oppSubs.splice(i,1); if(setup.oppSubJerseys)setup.oppSubJerseys.splice(i,1); renderOppSubsSetup(); }
+function onOppSubInput(i,v){ setup.oppSubs=setup.oppSubs||[]; setup.oppSubs[i]=v; }
+function onOppSubJerseyInput(i,v){ setup.oppSubJerseys=setup.oppSubJerseys||[]; setup.oppSubJerseys[i]=v.trim(); }
+function addOppBatter(){ setup.oppCount=(setup.oppCount||10)+1; renderOppLineupSetup(); }
+function removeOppBatter(i){
+  const floor=Math.max(setup.lineup.length,10);
+  if((setup.oppCount||10)<=floor){ toast("Opponent can't be smaller than your lineup"); return; }
+  setup.oppLineup.splice(i,1); setup.oppCount=Math.max((setup.oppCount||11)-1, floor);
+  renderOppLineupSetup();
+}
+function onOppLineupInput(i,v){ setup.oppLineup=setup.oppLineup||[]; setup.oppLineup[i]=v; }
 function setGameType(t){
   setup.type = t;
   document.querySelectorAll("#type-seg button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
@@ -497,24 +800,41 @@ function confirmAddTournament(){
   panelClose(); toast("Tournament added");
 }
 
+function setPickMode(m){
+  setup.pickMode=m;
+  document.getElementById("pm-order").classList.toggle("on", m==="order");
+  document.getElementById("pm-bench").classList.toggle("on", m==="bench");
+  document.getElementById("roster-src-lbl").textContent = m==="order" ? "batting order" : "bench / subs";
+}
 function renderRosterChips(){
   const host = document.getElementById("roster-chips");
   const roster = rosterFor(setup.type);
   let h = "";
   roster.forEach(n=>{
-    const idx = setup.lineup.indexOf(n);
-    const picked = idx>=0;
-    h += `<button class="chip ${picked?'picked':''}" onclick="toggleChip('${esc(n)}')">${picked?`<span class="num">${idx+1}</span>`:''}${escHtml(n)}</button>`;
+    const oi = setup.lineup.indexOf(n);
+    const bi = setup.bench.indexOf(n);
+    let cls="chip", badge="";
+    if(oi>=0){ cls+=" picked"; badge=`<span class="num">${oi+1}</span>`; }
+    else if(bi>=0){ cls+=" benched"; badge=`<span class="num b">S</span>`; }
+    h += `<button class="${cls}" onclick="toggleChip('${esc(n)}')">${badge}${escHtml(n)}</button>`;
   });
   h += `<button class="chip add" onclick="openAddPlayerSetup()">+ Add player</button>`;
   host.innerHTML = h;
 }
 function toggleChip(n){
-  const i = setup.lineup.indexOf(n);
-  if(i>=0) setup.lineup.splice(i,1);
-  else { if(setup.lineup.length>=20){ toast("Max 20 batters"); return; } setup.lineup.push(n); }
-  renderRosterChips(); renderLineup(); updateStartBtn();
+  const oi=setup.lineup.indexOf(n), bi=setup.bench.indexOf(n);
+  // tapping a player already in EITHER bucket removes them (so they can be re-tapped into the active bucket)
+  if(oi>=0){ setup.lineup.splice(oi,1); }
+  else if(bi>=0){ setup.bench.splice(bi,1); }
+  else if(setup.pickMode==="order"){ if(setup.lineup.length>=20){ toast("Max 20 batters"); return; } setup.lineup.push(n); }
+  else { setup.bench.push(n); }
+  renderRosterChips(); renderLineup(); renderBench(); updateStartBtn(); if(setup.trackMode==="both")renderOppLineupSetup();
 }
+function jerseyInput(n, ph){
+  const v=setup.jerseys[n]!=null?setup.jerseys[n]:"";
+  return `<input class="jersey" inputmode="numeric" value="${escAttr(String(v))}" placeholder="#" onclick="event.stopPropagation()" oninput="setJersey('${esc(n)}',this.value)">`;
+}
+function setJersey(n,v){ v=v.trim(); if(v==="") delete setup.jerseys[n]; else setup.jerseys[n]=v; }
 function renderLineup(){
   const host = document.getElementById("lineup-list");
   if(setup.lineup.length===0){ host.innerHTML = `<div class="lineup-empty">Tap players above to build the order (min 10).</div>`; return; }
@@ -522,6 +842,7 @@ function renderLineup(){
     <div class="lu-row">
       <div class="ord">${i+1}</div>
       <div class="nm">${escHtml(n)}</div>
+      ${jerseyInput(n)}
       <div class="mv">
         <button onclick="moveLU(${i},-1)">↑</button>
         <button onclick="moveLU(${i},1)">↓</button>
@@ -529,8 +850,22 @@ function renderLineup(){
       </div>
     </div>`).join("");
 }
+function renderBench(){
+  const sect=document.getElementById("bench-sect");
+  const host=document.getElementById("bench-list");
+  if(!setup.bench.length){ sect.style.display="none"; host.innerHTML=""; return; }
+  sect.style.display="block";
+  host.innerHTML = setup.bench.map((n,i)=>`
+    <div class="lu-row bench">
+      <div class="ord">S</div>
+      <div class="nm">${escHtml(n)}</div>
+      ${jerseyInput(n)}
+      <div class="mv"><button class="rm" onclick="removeBench(${i})">×</button></div>
+    </div>`).join("");
+}
+function removeBench(i){ setup.bench.splice(i,1); renderRosterChips(); renderBench(); }
 function moveLU(i,d){ const j=i+d; if(j<0||j>=setup.lineup.length)return; const a=setup.lineup; [a[i],a[j]]=[a[j],a[i]]; renderRosterChips(); renderLineup(); }
-function removeLU(i){ setup.lineup.splice(i,1); renderRosterChips(); renderLineup(); updateStartBtn(); }
+function removeLU(i){ setup.lineup.splice(i,1); renderRosterChips(); renderLineup(); renderBench(); updateStartBtn(); if(setup.trackMode==="both")renderOppLineupSetup(); }
 function updateStartBtn(){
   const n = setup.lineup.length;
   const ok = n>=10;
@@ -577,6 +912,18 @@ function dedupeCheck(val, roster, hostId){
 function lev(a,b){ const m=[...Array(a.length+1)].map((_,i)=>[i,...Array(b.length).fill(0)]); for(let j=0;j<=b.length;j++)m[0][j]=j; for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return m[a.length][b.length]; }
 
 /* ============ START GAME ============ */
+let activeSide="us";
+function buildOppLineup(){
+  if(setup.trackMode!=="both") return [];
+  const raw=(setup.oppLineup||[]).map(v=>(v||"").trim());
+  // trim trailing blanks
+  let last=-1; for(let i=0;i<raw.length;i++){ if(raw[i]!=="") last=i; }
+  let len=Math.max(last+1, 10);                       // at least 10
+  len=Math.min(Math.max(len, setup.oppCount||0, 10),20);
+  const out=[];
+  for(let i=0;i<len;i++){ out.push(raw[i]!==undefined&&raw[i]!=="" ? raw[i] : ("Opp "+(i+1))); }
+  return out;
+}
 function startGame(){
   if(totalGames()>=MAX_GAMES){ toast(`Max ${MAX_GAMES} games stored — export/clear some first`); openGamesView(); return; }
   const tourney = setup.type==="tournament" ? SEED.tournaments.find(t=>t.id===setup.tournamentId) : null;
@@ -591,16 +938,34 @@ function startGame(){
       gnum: document.getElementById("f-gnum").value.trim(),
       time: document.getElementById("f-time").value.trim(),
       field: document.getElementById("f-field").value.trim(),
+      homeAway: setup.homeAway,
       started: new Date().toISOString()
     },
     lineupSize: setup.lineup.length,
-    lineup: setup.lineup.slice(),         // ordered slots; each entry is current occupant
-    origLineup: setup.lineup.slice(),     // for reference
-    subbedOut: [],                        // [{name, slot}] eligible for re-entry
-    allPlayers: setup.lineup.slice(),     // everyone who's appeared (for stats)
+    lineup: setup.lineup.slice(),
+    origLineup: setup.lineup.slice(),
+    subbedOut: [],
+    allPlayers: setup.lineup.slice(),
     newPlayers: (setup._newPlayers||[]).slice(),
+    bench: setup.bench.slice(),
+    jerseys: Object.assign({}, setup.jerseys),
+    oppLineup: buildOppLineup(),
+    oppBench: [],
+    bombs: {},
+    trackMode: setup.trackMode,
+    lineupLocked: true,        // Royals lineup known at start -> locked, wraps normally
+    oppLineupLocked: (setup.trackMode==="both" && (setup.oppLineup||[]).some(v=>(v||"").trim()!=="")),  // preset lineup -> lock+wrap; all blank -> discover
     events: []
   };
+  // opponent jerseys keyed by name
+  G.oppOrigLineup=G.oppLineup.slice();
+  G.oppLineupSize=G.oppLineup.length;
+  (G.oppLineup||[]).forEach((nm,i)=>{ const j=(setup.oppJerseys&&setup.oppJerseys[i]||"").trim(); if(j) G.jerseys[nm]=j; });
+  // opponent subs -> oppBench, with jerseys
+  G.oppBench=(setup.oppSubs||[]).map(v=>(v||"").trim()).filter(Boolean);
+  G.oppBench.forEach((nm,i)=>{ const j=(setup.oppSubJerseys&&setup.oppSubJerseys[i]||"").trim(); if(j) G.jerseys[nm]=j; });
+  // who bats first: away team. If Royals are home, opponent bats first.
+  activeSide = (G.trackMode==="both" && setup.homeAway==="home") ? "them" : "us";
   saveGame();
   showGame();
   render();
@@ -616,60 +981,60 @@ function startGame(){
    result in {1B,2B,3B,HR,BB,K,Kl,SAC,FC,OUT}
 */
 
-// Replay events -> live state {bases:{1,2,3}, batterPtr(slot index), inning, outs, lineup, subbedOut}
-function replay(){
-  const st = {
-    bases:{1:null,2:null,3:null},
-    slot:0,                  // current lineup index
-    inning:1, outs:0,
-    lineup: G.origLineup.slice(),
-    subbedOut: []
-  };
-  for(const e of G.events){
-    if(e.t==="SUB"){ const i=e.slot; st.subbedOut.push(st.lineup[i]); st.lineup[i]=e.in; }
-    else if(e.t==="REENTER"){ const i=e.slot; const oi=st.subbedOut.indexOf(e.in); if(oi>=0)st.subbedOut.splice(oi,1); st.subbedOut.push(st.lineup[i]); st.lineup[i]=e.in; }
-    else if(e.t==="SKIP"){ st.slot=(st.slot+1)%G.lineupSize; }
-    else if(e.t==="ENDINN"){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
-    else if(e.t==="BR"){
-      // standalone baserunning: move runner from origin to dest (or off on HOME/OUT)
-      const fromIdx=baseIdx(e.from);
-      if(fromIdx && st.bases[fromIdx]===e.name) st.bases[fromIdx]=null;
-      if(e.to!=="OUT" && e.to!=="HOME"){ st.bases[baseIdx(e.to)]=e.name; }
-      st.outs += e.out||0;
-      if(st.outs>=3){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
-    }
-    else if(e.t==="PA"){
-      // Start from current bases; only listed runners change. Unlisted runners hold.
-      const nb={1:st.bases[1], 2:st.bases[2], 3:st.bases[3]};
-      for(const r of e.runners){
-        // remove runner from their origin base, then place at destination
-        const fromIdx = baseIdx(r.from);
-        if(fromIdx && nb[fromIdx]===r.name) nb[fromIdx]=null;
-      }
-      for(const r of e.runners){
-        if(r.to==="OUT"||r.to==="HOME") continue;
-        nb[baseIdx(r.to)] = r.name;
-      }
-      // batter destination
-      const bdest = e.batterTo;
-      if(bdest && bdest!=="OUT" && bdest!=="HOME") nb[baseIdx(bdest)] = e.batter;
-      st.bases = nb;
-      st.outs += e.outsAdded||0;
-      st.slot = (st.slot+1)%G.lineupSize;
-      if(st.outs>=3){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
-    }
-  }
-  return st;
+// Per-side state; events routed by e.side (default 'us')
+function freshSide(origLineup){
+  return { bases:{1:null,2:null,3:null}, slot:0, inning:1, outs:0,
+    lineup:(origLineup||[]).slice(), subbedOut:[], byInning:[] };
 }
+function applyEvent(st, e, size){
+  size=size||1;
+  const addRun=(n)=>{ const i=st.inning-1; st.byInning[i]=(st.byInning[i]||0)+n; };
+  if(e.t==="SUB"){ const i=e.slot; st.subbedOut.push(st.lineup[i]); st.lineup[i]=e.in; }
+  else if(e.t==="REENTER"){ const i=e.slot; const oi=st.subbedOut.indexOf(e.in); if(oi>=0)st.subbedOut.splice(oi,1); st.subbedOut.push(st.lineup[i]); st.lineup[i]=e.in; }
+  else if(e.t==="SKIP"){ st.slot=(st.slot+1)%size; }
+  else if(e.t==="ENDINN"){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
+  else if(e.t==="BR"){
+    const fromIdx=baseIdx(e.from);
+    if(fromIdx && st.bases[fromIdx]===e.name) st.bases[fromIdx]=null;
+    if(e.to!=="OUT" && e.to!=="HOME"){ st.bases[baseIdx(e.to)]=e.name; }
+    if(e.run) addRun(e.run);
+    st.outs += e.out||0;
+    if(st.outs>=3){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
+  }
+  else if(e.t==="PA"){
+    const nb={1:st.bases[1], 2:st.bases[2], 3:st.bases[3]};
+    for(const r of e.runners){ const fromIdx=baseIdx(r.from); if(fromIdx && nb[fromIdx]===r.name) nb[fromIdx]=null; }
+    for(const r of e.runners){ if(r.to==="OUT"||r.to==="HOME") continue; nb[baseIdx(r.to)]=r.name; }
+    const bdest=e.batterTo;
+    if(bdest && bdest!=="OUT" && bdest!=="HOME") nb[baseIdx(bdest)]=e.batter;
+    st.bases=nb;
+    addRun((e.runs||[]).length);
+    st.outs += e.outsAdded||0;
+    st.slot=(st.slot+1)%size;
+    if(st.outs>=3){ st.bases={1:null,2:null,3:null}; st.outs=0; st.inning++; }
+  }
+}
+function replayBoth(){
+  const us=freshSide(G.origLineup);
+  const them=freshSide(G.oppOrigLineup||[]);
+  for(const e of G.events){
+    if((e.side||"us")==="them") applyEvent(them, e, G.oppLineupSize||1);
+    else applyEvent(us, e, G.lineupSize);
+  }
+  return {us, them};
+}
+function replay(){ const {us}=replayBoth(); us.usByInning=us.byInning; return us; }
 function baseIdx(b){ return b==="1B"?1:b==="2B"?2:b==="3B"?3:0; }
 
-/* aggregate stats from events */
-function aggregate(){
+/* aggregate stats for a side ('us'|'them') */
+function aggregate(side){
+  side=side||"us";
   const stats = {};
   const ensure = n=>{ if(!stats[n]) stats[n]={pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,r:0,rbi:0,bb:0,k:0}; return stats[n]; };
-  G.allPlayers.forEach(ensure);
+  if(side==="us") G.allPlayers.forEach(ensure);
   let teamR=0, teamRBI=0;
   for(const e of G.events){
+    if((e.side||"us")!==side) continue;
     if(e.t==="BR"){ if(e.run){ ensure(e.name).r++; teamR++; } continue; }
     if(e.t!=="PA") continue;
     const s = ensure(e.batter);
@@ -692,34 +1057,128 @@ function aggregate(){
 
 /* ============ RENDER ============ */
 function render(){
-  const st = replay();
-  const agg = aggregate();
-  // header
-  document.getElementById("g-opp").textContent = G.meta.opp || "Set opponent";
+  const sides = replayBoth();
+  const both = G.trackMode==="both";
+  if(!both) activeSide="us";
+  const st = sides[activeSide]; st.usByInning=st.byInning;
+  const agg = aggregate(activeSide);
+  const gameEl=document.getElementById("game");
+  const tog=document.getElementById("side-toggle");
+  tog.style.display = both ? "flex" : "none";
+  document.getElementById("side-toggle").classList.toggle("home", G.meta.homeAway==="home");
+  document.getElementById("st-us").classList.toggle("active", activeSide==="us");
+  document.getElementById("st-them").classList.toggle("active", activeSide==="them");
+  document.getElementById("st-them").textContent = both ? (G.meta.opp?G.meta.opp.toUpperCase().slice(0,12):"THEM") : "THEM";
+  gameEl.classList.toggle("them-batting", both && activeSide==="them");
+  document.getElementById("g-opp").innerHTML = both
+    ? `<span class="vs">BATTING</span> <span class="name">${escHtml(activeSide==="us"?"Royals":(G.meta.opp||"Opponent"))}</span>`
+    : `<span class="vs">VS</span> <span class="name tap" onclick="openEditField('opp')">${escHtml(G.meta.opp||'Set opponent')}</span>`;
   document.getElementById("g-inn").textContent = st.inning;
-  document.getElementById("g-rf").textContent = agg.teamR;
-  // outs dots
+  document.getElementById("g-thisinn").textContent = st.byInning[st.inning-1]||0;
   let dots=""; for(let i=0;i<3;i++) dots+=`<div class="ss-dot ${i<st.outs?'on':''}"></div>`;
   document.getElementById("g-outs").innerHTML = dots;
-  // recon
   const rc = document.getElementById("g-recon");
   if(agg.teamRBI<=agg.teamR){ rc.className="recon ok"; rc.textContent="✓"; rc.title=`Runs ${agg.teamR} • RBI ${agg.teamRBI}`; }
   else { rc.className="recon bad"; rc.textContent="!"; rc.title=`RBI ${agg.teamRBI} > Runs ${agg.teamR}`; }
-  // bases
+  renderLinescore(sides);
   renderBase(1, st.bases[1], st); renderBase(2, st.bases[2], st); renderBase(3, st.bases[3], st);
   document.getElementById("base-home").classList.remove("target");
   document.getElementById("out-zone").classList.remove("target");
-  // last play
   renderLastPlay();
-  // at bat
+  renderBatterHistory(st);
   const cur = st.lineup[st.slot];
   document.getElementById("ab-ord").textContent = st.slot+1;
-  document.getElementById("ab-name").textContent = cur||"—";
-  // foot
+  const bomb = (cur && G.bombs && G.bombs[cur]) ? " \uD83D\uDCA3" : "";
+  const jno = (cur && G.jerseys && G.jerseys[cur]) ? (" - #"+G.jerseys[cur]) : "";
+  document.getElementById("ab-name").textContent = (cur||"—")+jno+bomb;
+  // wrap button: opponent, both-mode, not yet locked, and at least one batter has come up
+  const wb=document.getElementById("wrap-btn");
+  const showWrap = (G.trackMode==="both" && activeSide==="them" && !G.oppLineupLocked && st.slot>=1);
+  wb.style.display = showWrap ? "block" : "none";
   document.getElementById("foot-undo").disabled = G.events.length===0;
   document.getElementById("foot-back").disabled = !pending;
   saveGame();
-  G._st = st; G._agg = agg;
+  G._st = st; G._agg = agg; G._sides = sides;
+}
+
+function renderLinescore(sides){
+  const host=document.getElementById("linescore");
+  const both = G.trackMode==="both";
+  const usBI = sides.us.byInning;
+  const themBI = both ? sides.them.byInning : (G.meta.themByInning||[]);
+  const cols = Math.max(9, sides.us.inning, both?sides.them.inning:0, themBI.length);
+  let head="<tr><th class='lbl'></th>";
+  for(let i=1;i<=cols;i++) head+=`<th>${i}</th>`;
+  head+="<th class='tot'>R</th></tr>";
+  let us="<tr class='us'><td class='lbl'>US</td>"; let usTot=0;
+  for(let i=1;i<=cols;i++){
+    const v=usBI[i-1];
+    const cur=(activeSide==="us"&&i===sides.us.inning)?"cur":"";
+    us+=`<td class="${cur}">${v!=null?v:(i<sides.us.inning?0:'·')}</td>`; usTot+=v||0;
+  }
+  us+=`<td class='tot'>${usTot}</td></tr>`;
+  const themLbl=(G.meta.opp?G.meta.opp.slice(0,5):"THEM");
+  let th="<tr class='them'><td class='lbl'>"+escHtml(themLbl)+"</td>"; let thTot=0;
+  for(let i=1;i<=cols;i++){
+    const v=themBI[i-1];
+    if(both){ const cur=(activeSide==="them"&&i===sides.them.inning)?"cur":""; th+=`<td class="${cur}">${v!=null?v:(i<sides.them.inning?0:'·')}</td>`; }
+    else { th+=`<td class="them-cell" onclick="editThemInning(${i})">${v!=null?v:'·'}</td>`; }
+    thTot+=v||0;
+  }
+  th+=`<td class='tot'>${thTot}</td></tr>`;
+  // Away = Royals bat first -> Royals row on top; Home = Royals bat last -> Royals row on bottom
+  const royalsHome = (G.meta.homeAway==="home");
+  const rows = royalsHome ? (th+us) : (us+th);
+  host.innerHTML=`<table>${head}${rows}</table>`;
+}
+
+function editThemInning(inn){
+  if(pending||brPending){ return; }
+  const cur = (G.meta.themByInning&&G.meta.themByInning[inn-1])||"";
+  panelOpen(`<div class="panel-hd"><h2>Opponent runs — inning ${inn}</h2></div>
+    <div class="panel-body"><div class="field-edit"><label>Runs scored by ${escHtml(G.meta.opp||'opponent')} in inning ${inn}</label>
+    <input id="them-runs" inputmode="numeric" value="${cur}" placeholder="0" autocomplete="off"></div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button><button class="pf-confirm" onclick="saveThemInning(${inn})">Save</button></div>`);
+  setTimeout(()=>{const e=document.getElementById("them-runs");if(e){e.focus();e.select();}},60);
+}
+function saveThemInning(inn){
+  const v=document.getElementById("them-runs").value.trim();
+  if(!G.meta.themByInning) G.meta.themByInning=[];
+  // pad
+  while(G.meta.themByInning.length<inn) G.meta.themByInning.push(null);
+  G.meta.themByInning[inn-1] = v===""?null:Math.max(0,parseInt(v,10)||0);
+  panelClose(); render(); saveGame();
+}
+
+function renderBatterHistory(st){
+  const host=document.getElementById("lp-history");
+  const cur = st.lineup[st.slot];
+  if(!cur){ host.innerHTML=""; return; }
+  // collect this batter's PA events with the inning they occurred in
+  const hist=[];
+  let inn=1, outs=0;
+  for(const e of G.events){
+    if(e.t==="ENDINN"){ inn++; outs=0; continue; }
+    if(e.t==="BR"){ outs+=e.out||0; if(outs>=3){outs=0;inn++;} continue; }
+    if(e.t==="PA"){
+      if(e.batter===cur){
+        hist.push({inn, result:e.result, rbi:e.rbi||0, runs:(e.runs||[]).length, loc:e.loc||null});
+      }
+      outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;}
+    }
+  }
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"out"};
+  const ord=n=>n+(["th","st","nd","rd"][(n%100>>3^1&&n%10)||0]||"th");
+  let h=`<div class="bh-name">${escHtml(firstName(cur))}</div><div class="lp-hd">THIS GAME</div>`;
+  if(!hist.length){ h+=`<div class="bh-empty">first at-bat</div>`; }
+  else{
+    h+=hist.map(x=>{
+      const loc = x.loc?` <span class="loc">${escHtml(x.loc)}</span>`:"";
+      const r = x.runs?` <span class="r">R</span>`:"";
+      return `<div class="bh-row"><span class="inn">${ord(x.inn)} inning</span> — ${resMap[x.result]||x.result}${loc}${r}</div>`;
+    }).join("");
+  }
+  host.innerHTML=h;
 }
 function renderBase(n, name, st){
   const el = document.getElementById("base-"+n);
@@ -731,48 +1190,55 @@ function renderBase(n, name, st){
 function firstName(n){ return n.split(" ")[0]; }
 
 function renderLastPlay(){
-  const host=document.getElementById("lastplay");
-  // if the most recent event is a baserunning move, show that
-  const lastEv = G.events[G.events.length-1];
-  if(lastEv && lastEv.t==="BR"){
-    host.className="lastplay";
-    const toTxt = lastEv.to==="HOME"?"home":lastEv.to;
-    let cls = lastEv.to==="OUT"?"out":(lastEv.to==="HOME"?"scored":"");
-    let tag = lastEv.to==="OUT"?'<span class="tag">OUT</span>':(lastEv.to==="HOME"?'<span class="tag">✓ RUN</span>':'');
-    host.innerHTML=`<div class="lp-hd">BASERUNNING</div><div class="lp-run ${cls}">${escHtml(firstName(lastEv.name))} <span class="arr">→</span> <span class="dest">${toTxt==="OUT"?"out":toTxt}</span> ${tag}</div>`;
-    return;
+  const host=document.getElementById("lp-lastplay");
+  // gather last 3 committed plays (PA or BR) with their event index, newest first
+  const plays=[];
+  for(let i=G.events.length-1;i>=0 && plays.length<3;i--){
+    const e=G.events[i];
+    if((e.t==="PA"||e.t==="BR") && (e.side||"us")===activeSide) plays.push({e,idx:i});
   }
-  // find last PA event
-  let pa=null;
-  for(let i=G.events.length-1;i>=0;i--){ if(G.events[i].t==="PA"){ pa=G.events[i]; break; } }
-  if(!pa){ host.className="lastplay empty"; host.innerHTML=""; return; }
-  host.className="lastplay";
+  if(!plays.length){ host.innerHTML=""; return; }
   const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"OUT"};
-  const resTxt=resMap[pa.result]||pa.result;
-  // batter line: name · result · RBI total
-  let h=`<div class="lp-hd">LAST PLAY</div>`;
-  h+=`<div class="lp-bat">${escHtml(firstName(pa.batter))} · <span class="res">${resTxt}</span>`;
-  if(pa.rbi>0) h+=`<span class="rbi">${pa.rbi} RBI</span>`;
-  h+=`</div>`;
-  // runners: pa.runners is already ordered far-to-near (3B,2B,1B). render in that order.
-  const baseRank={"3B":3,"2B":2,"1B":1};
-  const ordered=(pa.runners||[]).slice().sort((a,b)=>(baseRank[b.from]||0)-(baseRank[a.from]||0));
-  for(const r of ordered){
-    const nm=escHtml(firstName(r.name));
-    if(r.to==="HOME"){
-      h+=`<div class="lp-run scored">${nm} <span class="arr">→</span> <span class="dest">home</span> <span class="tag">✓ RUN</span></div>`;
-    } else if(r.to==="OUT"){
-      h+=`<div class="lp-run out">${nm} <span class="arr">→</span> out <span class="tag">OUT</span></div>`;
-    } else {
-      h+=`<div class="lp-run">${nm} <span class="arr">→</span> <span class="dest">${r.to}</span></div>`;
+  // batted-ball results that make sense to locate
+  const battable=new Set(["1B","2B","3B","HR","SAC","FC","OUT"]);
+  let h=`<div class="lp-hd">LAST PLAYS</div>`;
+  plays.forEach(({e,idx},pos)=>{
+    const newest = pos===0;
+    if(e.t==="BR"){
+      const toTxt=e.to==="HOME"?"home":(e.to==="OUT"?"out":e.to);
+      const cls=e.to==="OUT"?"out":(e.to==="HOME"?"scored":"");
+      h+=`<div class="lp-play ${newest?'newest':''}"><div class="lp-run ${cls}">${escHtml(firstName(e.name))} <span class="arr">→</span> <span class="dest">${toTxt}</span></div></div>`;
+      return;
     }
-  }
+    const resTxt=resMap[e.result]||e.result;
+    const loc=e.loc?` <span class="res">${escHtml(e.loc)}</span>`:"";
+    let pl=`<div class="lp-play ${newest?'newest':''}"><div class="lp-bat">${escHtml(firstName(e.batter))} · <span class="res">${resTxt}</span>${loc}`;
+    if(e.rbi>0) pl+=` <span class="rbi-inline">${e.rbi}RBI</span>`;
+    pl+=`</div>`;
+    if(newest){
+      const baseRank={"3B":3,"2B":2,"1B":1};
+      const ordered=(e.runners||[]).slice().sort((a,b)=>(baseRank[b.from]||0)-(baseRank[a.from]||0));
+      ordered.forEach(r=>{
+        const nm=escHtml(firstName(r.name));
+        if(r.to==="HOME") pl+=`<div class="lp-run scored">${nm} <span class="arr">→</span> home <span class="tag">RUN</span></div>`;
+        else if(r.to==="OUT") pl+=`<div class="lp-run out">${nm} <span class="arr">→</span> out <span class="tag">OUT</span></div>`;
+        else pl+=`<div class="lp-run">${nm} <span class="arr">→</span> ${r.to}</div>`;
+      });
+      // location chip / add-button on the newest batted-ball play
+      if(battable.has(e.result)){
+        if(e.loc) pl+=`<span class="loc-chip" onclick="openFieldLoc(${idx})">\uD83D\uDCCD ${escHtml(e.loc)}</span>`;
+        else pl+=`<span class="loc-add" onclick="openFieldLoc(${idx})">\uD83D\uDCCD + where?</span>`;
+      }
+    }
+    pl+=`</div>`;
+    h+=pl;
+  });
   host.innerHTML=h;
 }
-
 /* ============ OUTCOME ENTRY ============ */
 function outcome(res){
   if(pending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   const st = G._st;
   const batter = st.lineup[st.slot];
   const runners = []; // occupied bases, far to near
@@ -1005,12 +1471,15 @@ function confirmBaserunning(){
   const b=brPending; if(!b||b.to===null)return;
   const to = b.to==="OUT" ? "OUT" : (b.safe ? b.to : "OUT");
   const from = b.from===1?"1B":b.from===2?"2B":"3B";
-  const ev={ t:"BR", name:b.name, from, to,
+  const ev={ t:"BR", side:activeSide, name:b.name, from, to,
     run: to==="HOME"?1:0, out: to==="OUT"?1:0 };
+  const sidesBefore=G._sides||replayBoth();
+  const stBefore=sidesBefore[activeSide];
   brPending=null;
   document.getElementById("game").classList.remove("resolving");
   G.events.push(ev);
-  if(ev.run){ /* run scored on bases; tracked in aggregate */ }
+  const after=replayBoth()[activeSide];
+  if(after.inning>stBefore.inning && ev.out && (stBefore.outs+ev.out)>=3 && G.trackMode==="both"){ autoFlipSide(); return; }
   render();
   toast(`${firstName(b.name)} ${to==="OUT"?"out":to==="HOME"?"scored":"to "+to}`);
 }
@@ -1027,11 +1496,15 @@ function setSafe(key, safe){
 
 function confirmResolution(){
   const p=pending;
-  const runners = p.items.filter(it=>it.kind==="runner").map(it=>({
-    name:it.name,
-    from:(it.from===1?"1B":it.from===2?"2B":"3B"),
-    to: it.to==="OUT" ? "OUT" : (it.safe ? it.to : "OUT")
-  }));
+  const runners = p.items.filter(it=>it.kind==="runner").map(it=>{
+    const fromLbl=(it.from===1?"1B":it.from===2?"2B":"3B");
+    // unplaced runner (to===null) holds their base; placed runner uses its dest/safe
+    let to;
+    if(it.to===null) to=fromLbl;            // not touched -> stay put (never vanish)
+    else if(it.to==="OUT") to="OUT";
+    else to = it.safe ? it.to : "OUT";
+    return {name:it.name, from:fromLbl, to};
+  });
   const bat=p.items.find(it=>it.kind==="batter");
   const batterTo = bat.to==="OUT" ? "OUT" : (bat.safe ? bat.to : "OUT");
   const runs=[];
@@ -1044,79 +1517,296 @@ function confirmResolution(){
 }
 function cancelPending(){ if(!pending)return; pending=null; document.getElementById("game").classList.remove("resolving"); render(); }
 
+// batted-ball results trigger the mandatory location step; BB/K do not
+const BATTED=new Set(["1B","2B","3B","HR","FC","SAC","OUT"]);
+let pendingFlip=null; // remembers post-commit action while location step is open
 function commitPA(ev){
-  ev.t="PA";
-  const stBefore = G._st;
+  ev.t="PA"; ev.side=activeSide;
+  const sidesBefore=G._sides||replayBoth();
+  const stBefore=sidesBefore[activeSide];
   G.events.push(ev);
-  // ensure batter tracked
-  if(!G.allPlayers.includes(ev.batter)) G.allPlayers.push(ev.batter);
-  const after = replay();
-  // detect auto inning end
-  if(after.inning>stBefore.inning && (ev.outsAdded||0)>0 && (stBefore.outs+ev.outsAdded)>=3){
-    toast("3 outs — inning over, bases cleared");
+  if(activeSide==="us" && !G.allPlayers.includes(ev.batter)) G.allPlayers.push(ev.batter);
+  growOppIfNeeded();
+  const after=replayBoth()[activeSide];
+  const flips = (after.inning>stBefore.inning && (ev.outsAdded||0)>0 && (stBefore.outs+ev.outsAdded)>=3);
+  const evIndex=G.events.length-1;
+  if(BATTED.has(ev.result)){
+    // enter mandatory location step BEFORE flip/next batter
+    pendingFlip = flips ? (G.trackMode==="both" ? "flip" : "toast3") : null;
+    render();
+    beginLocStep(evIndex);
+    return;
   }
+  // BB / K: no ball in play, proceed normally
+  if(flips){ if(G.trackMode==="both"){ autoFlipSide(); return; } else toast("3 outs — inning over, bases cleared"); }
   render();
+}
+function finishAfterLoc(){
+  const doFlip=pendingFlip; pendingFlip=null;
+  if(doFlip==="flip"){ autoFlipSide(); return; }
+  if(doFlip==="toast3"){ toast("3 outs — inning over, bases cleared"); }
+  render();
+}
+// keep opponent lineup one slot ahead while still discovering its length (not locked)
+function growOppIfNeeded(){
+  if(G.trackMode!=="both" || G.oppLineupLocked) return;
+  const them=replayBoth().them;
+  // if the next batter slot would be at/after current size, append an empty "Opp N" slot
+  while(them.slot >= (G.oppOrigLineup.length-1) && G.oppOrigLineup.length<20){
+    const idx=G.oppOrigLineup.length;
+    G.oppOrigLineup.push("Opp "+(idx+1));
+  }
+  G.oppLineup=G.oppOrigLineup.slice();
+  G.oppLineupSize=G.oppOrigLineup.length;
+}
+function wrapToTop(){
+  if(activeSide!=="them"){ toast("Wrap applies to the opponent order"); return; }
+  // lock at the count of batters actually used so far (drop the trailing empty discovery slot)
+  const them=replayBoth().them;
+  // the highest slot reached + 1 is the real lineup length; but keep min 1
+  let used=Math.max(them.slot, 1);
+  // trim trailing auto-added empty "Opp N" beyond what was used
+  G.oppOrigLineup=G.oppOrigLineup.slice(0, Math.max(used, 10>them.slot?them.slot:used));
+  if(G.oppOrigLineup.length<1) G.oppOrigLineup=["Opp 1"];
+  G.oppLineup=G.oppOrigLineup.slice();
+  G.oppLineupSize=G.oppOrigLineup.length;
+  G.oppLineupLocked=true;
+  render(); saveGame();
+  toast("Opponent order locked at "+G.oppLineupSize+" — wraps to top");
+}
+function autoFlipSide(){
+  activeSide = activeSide==="us" ? "them" : "us";
+  render();
+  toast(`3 outs — now batting: ${activeSide==="us"?"Royals":(G.meta.opp||"opponent")}`);
+}
+function setActiveSide(side){
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
+  activeSide=side; render();
 }
 
 /* ============ UNDO ============ */
 function undo(){
+  if(locStep){ toast("Finish the location step first"); return; }
   if(G.events.length===0)return;
   const last=G.events.pop();
   toast("Undid: "+evLabel(last));
   render();
 }
 
-/* ============ BATTER MENU (sub/reenter/skip) ============ */
+/* ============ BATTER MENU ============ */
 function openBatterMenu(){
-  if(pending){ toast("Finish current play first"); return; }
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   const st=G._st; const cur=st.lineup[st.slot];
+  const isBomb=G.bombs && G.bombs[cur];
+  const bombBtn=`<button onclick="toggleBomb()"><span class="ic">\uD83D\uDCA3</span><div class="col"><span>${isBomb?"Remove power-hitter flag":"Flag as power hitter"}</span><span class="sub">${isBomb?"Currently flagged":"Marks next to name everywhere"}</span></div></button>`;
+  if(activeSide==="them"){
+    panelOpen(`<div class="panel-hd"><h2>#${st.slot+1} ${escHtml(cur)}</h2></div>
+      <div class="panel-body"><div class="menu-list">
+        <button onclick="openRenameOpp()"><span class="ic">✎</span><div class="col"><span>Rename / ID this batter</span><span class="sub">Jersey #, description</span></div></button>
+        ${bombBtn}
+        <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
+        <button onclick="openAddBatter()"><span class="ic">+</span><div class="col"><span>Add batter (late arrival)</span><span class="sub">Insert into an upcoming slot or the bottom</span></div></button>
+        <button onclick="doSkip()"><span class="ic">⤼</span><div class="col"><span>Skip this spot</span><span class="sub">Advance without a plate appearance</span></div></button>
+      </div></div>
+      <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+    return;
+  }
   panelOpen(`<div class="panel-hd"><h2>#${st.slot+1} ${escHtml(cur)}</h2></div>
     <div class="panel-body"><div class="menu-list">
       <button onclick="openSubPick()"><span class="ic">⇄</span><div class="col"><span>Substitute</span><span class="sub">Bring in a bench player for this slot</span></div></button>
       <button onclick="openReenterPick()"><span class="ic">↩</span><div class="col"><span>Re-enter player</span><span class="sub">Return a subbed-out player</span></div></button>
+      ${bombBtn}
+      <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
+      <button onclick="openAddBatter()"><span class="ic">+</span><div class="col"><span>Add batter (late arrival)</span><span class="sub">Insert into an upcoming slot or the bottom</span></div></button>
       <button onclick="doSkip()"><span class="ic">⤼</span><div class="col"><span>Skip this spot</span><span class="sub">Advance without a plate appearance</span></div></button>
     </div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
 }
-function benchAvailable(st){
-  // players in full roster not currently in lineup and not subbed-out-already-counted
-  const roster = rosterFor(G.meta.type==="tournament"?"tournament":"league");
-  // include any added players (already in SEED arrays)
-  const inLineup = st.lineup;
-  return roster.filter(n=>!inLineup.includes(n) && !st.subbedOut.includes(n));
-}
-function openSubPick(){
+// ---- mid-game add batter (late arrival): pick player, then choose an eligible slot ----
+function openAddBatter(){
   const st=G._st;
-  let avail = benchAvailable(st);
-  let h = avail.map(n=>`<button onclick="doSub('${esc(n)}')">${escHtml(n)}<span class="tag in">in</span></button>`).join("");
-  h += `<button onclick="openAddPlayerGame()" style="border:2px dashed var(--navy);color:var(--navy);justify-content:center">+ Add new player</button>`;
-  if(!avail.length) h = `<div style="color:var(--muted);text-align:center;padding:12px">No bench players. Add one below.</div>`+h;
-  panelOpen(`<div class="panel-hd"><h2>Sub in for slot ${st.slot+1}</h2></div>
-    <div class="panel-body"><div class="sub-pick">${h}</div></div>
+  const inLineup=st.lineup;
+  const pre=(G.bench||[]).filter(n=>!inLineup.includes(n));
+  const roster=rosterFor(G.meta.type==="tournament"?"tournament":"league");
+  const rest=roster.filter(n=>!inLineup.includes(n) && !pre.includes(n) && !st.subbedOut.includes(n));
+  const mk=(n,tag)=>`<button onclick="pickAddBatter('${esc(n)}')">${escHtml(n)}${tag?`<span class="tag">${tag}</span>`:""}</button>`;
+  let h=pre.map(n=>mk(n,"bench")).join("")+rest.map(n=>mk(n,"")).join("");
+  h+=`<button onclick="openAddBatterNew()" style="border:2px dashed var(--navy);color:var(--navy);justify-content:center">+ Type a new name</button>`;
+  panelOpen(`<div class="panel-hd"><h2>Add batter</h2></div>
+    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Pick who is arriving. Next you'll choose where they bat (only slots that haven't come up yet).</div><div class="sub-pick">${h}</div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="openBatterMenu()">Back</button></div>`);
+}
+function openAddBatterNew(){
+  panelOpen(`<div class="panel-hd"><h2>Add new batter</h2></div>
+    <div class="panel-body"><div class="dedupe-warn" id="dd-warn-ab"></div>
+      <div class="field-edit"><label>Name</label><input id="ab-new-name" placeholder="Full name" autocomplete="off"></div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="openAddBatter()">Back</button><button class="pf-confirm" onclick="confirmAddBatterNew()">Next</button></div>`);
+  const inp=document.getElementById("ab-new-name"); setTimeout(()=>inp.focus(),60);
+  inp.addEventListener("input",()=>dedupeCheck(inp.value, rosterFor(G.meta.type), "dd-warn-ab"));
+}
+function confirmAddBatterNew(){
+  const v=document.getElementById("ab-new-name").value.trim();
+  if(!v){ toast("Name required"); return; }
+  const roster=rosterFor(G.meta.type);
+  if(!roster.includes(v)){ if(G.meta.type==="tournament")SEED.tourneyRoster.push(v); else SEED.leagueRoster.push(v); G.newPlayers=G.newPlayers||[]; G.newPlayers.push(v); }
+  pickAddBatter(v);
+}
+function pickAddBatter(name){
+  const st=G._st;
+  const size = activeSide==="us" ? G.lineupSize : G.oppLineupSize;
+  const cur = st.slot;
+  // eligible slots: current pointer .. end (not yet batted this trip), plus a new bottom slot
+  let opts="";
+  for(let i=cur;i<size;i++){
+    opts+=`<button onclick="doAddBatter('${esc(name)}',${i})">Slot ${i+1} <span class="tag">before ${escHtml(firstName(st.lineup[i]||("#"+(i+1))))}</span></button>`;
+  }
+  opts+=`<button onclick="doAddBatter('${esc(name)}',${size})">Bottom (new slot ${size+1})</button>`;
+  panelOpen(`<div class="panel-hd"><h2>Where does ${escHtml(firstName(name))} bat?</h2></div>
+    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Only upcoming slots are shown — batters who already hit can't be changed.</div><div class="sub-pick">${opts}</div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="openAddBatter()">Back</button></div>`);
+}
+function doAddBatter(name, slot){
+  // insert-and-shift into the base lineup for the active side
+  if(activeSide==="us"){
+    G.origLineup.splice(slot,0,name);
+    G.lineupSize=G.origLineup.length;
+    if(!G.allPlayers.includes(name)) G.allPlayers.push(name);
+    // remove from bench if it was there
+    if(G.bench){ const bi=G.bench.indexOf(name); if(bi>=0)G.bench.splice(bi,1); }
+  } else {
+    G.oppOrigLineup.splice(slot,0,name);
+    G.oppLineup=G.oppOrigLineup.slice();
+    G.oppLineupSize=G.oppOrigLineup.length;
+  }
+  panelClose(); render(); saveGame();
+  toast(`${firstName(name)} added at slot ${slot+1}`);
+}
+function toggleBomb(){
+  const st=G._st; const cur=st.lineup[st.slot];
+  if(!G.bombs)G.bombs={};
+  if(G.bombs[cur])delete G.bombs[cur]; else G.bombs[cur]=true;
+  const on=!!G.bombs[cur]; panelClose(); render(); saveGame();
+  toast(on?`${firstName(cur)} flagged`:`${firstName(cur)} unflagged`);
+}
+function openRenameOpp(){
+  const st=G._st; const slot=st.slot; const cur=st.lineup[slot];
+  panelOpen(`<div class="panel-hd"><h2>ID opponent batter</h2></div>
+    <div class="panel-body"><div class="field-edit"><label>ID this batter (jersey #, description)</label>
+    <input id="opp-rn" value="${escAttr(cur)}" autocomplete="off" placeholder="e.g. #7, tall lefty"></div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button><button class="pf-confirm" onclick="saveRenameOpp(${slot})">Save</button></div>`);
+  setTimeout(()=>{const e=document.getElementById("opp-rn");if(e){e.focus();e.select();}},60);
+}
+function saveRenameOpp(slot){
+  const v=document.getElementById("opp-rn").value.trim();
+  if(!v){ toast("Name required"); return; }
+  const old=G.oppOrigLineup[slot];
+  G.oppOrigLineup[slot]=v;
+  if(G.bombs && G.bombs[old]){ delete G.bombs[old]; G.bombs[v]=true; }
+  for(const e of G.events){
+    if((e.side||"us")!=="them") continue;
+    if(e.batter===old) e.batter=v;
+    if(e.name===old) e.name=v;
+    if(e.runners) e.runners.forEach(r=>{ if(r.name===old)r.name=v; });
+    if(e.runs) e.runs=e.runs.map(n=>n===old?v:n);
+    if(e.in===old) e.in=v; if(e.out===old) e.out=v;
+  }
+  panelClose(); render(); saveGame(); toast("Renamed to "+v);
+}
+// Track each player's sub history for the active side to enforce re-entry rules.
+// Starter: out(1st)->reenter->out(2nd)->done (one re-entry allowed).
+// Sub (designated bench): in->out->done (no re-entry).
+function playerStatus(){
+  const side=activeSide;
+  const startLineup = side==="us" ? G.origLineup.slice(0, G.lineupSize) : (G.oppOrigLineup||[]).slice();
+  const benchList = side==="us" ? (G.bench||[]) : (G.oppBench||[]);
+  const stat={}; // name -> {role,timesOut,timesIn,onField,done}
+  const ensure=(name,role)=>{ if(!stat[name]) stat[name]={role:role||"sub",timesOut:0,timesIn:0,onField:false}; return stat[name]; };
+  startLineup.forEach(n=>{ const p=ensure(n,"starter"); p.onField=true; });
+  benchList.forEach(n=>ensure(n,"sub"));
+  for(const e of G.events){
+    if((e.side||"us")!==side) continue;
+    if(e.t==="SUB"){
+      const out=ensure(e.out), inp=ensure(e.in, benchList.includes(e.in)?"sub":(startLineup.includes(e.in)?"starter":"sub"));
+      out.onField=false; out.timesOut++;
+      inp.onField=true; inp.timesIn++;
+    } else if(e.t==="REENTER"){
+      const out=ensure(e.out), inp=ensure(e.in);
+      out.onField=false; out.timesOut++;
+      inp.onField=true; inp.timesIn++;
+    }
+  }
+  for(const n in stat){
+    const p=stat[n];
+    if(p.role==="starter") p.done = (!p.onField && p.timesOut>=2);   // used their one re-entry
+    else p.done = (!p.onField && p.timesOut>=1);                     // sub: one stint only
+    // can re-enter: currently off field, not done
+    p.canReenter = (!p.onField && !p.done);
+  }
+  return stat;
+}
+function benchAvailable(st){
+  // STRICT: only designated bench for the active side, not on field, not used up
+  const inLineup = st.lineup;
+  const stat = playerStatus();
+  const benchList = activeSide==="us" ? (G.bench||[]) : (G.oppBench||[]);
+  return benchList.filter(n=>{
+    if(inLineup.includes(n)) return false;       // already on field
+    const p=stat[n];
+    return !p || (!p.onField && !p.done);
+  });
+}
+function benchUsed(){
+  const stat=playerStatus();
+  const benchList = activeSide==="us" ? (G.bench||[]) : (G.oppBench||[]);
+  return benchList.filter(n=>{ const p=stat[n]; return p && p.done; });
+}
+let subSlot=null; // when set, sub/reenter target this slot instead of the current batter
+function curSubSlot(){ return subSlot==null ? G._st.slot : subSlot; }
+function openSubPickAt(slot){ subSlot=slot; openSubPick(); }
+function openReenterPickAt(slot){ subSlot=slot; openReenterPick(); }
+function openSubPick(){
+  const st=G._st; const slot=curSubSlot();
+  const avail = benchAvailable(st);
+  const used = benchUsed();
+  let h = avail.map(n=>{ const j=G.jerseys&&G.jerseys[n]?` <span class="tag">#${escHtml(G.jerseys[n])}</span>`:""; return `<button onclick="doSub('${esc(n)}')">${escHtml(n)}${j}<span class="tag in">in</span></button>`; }).join("");
+  h += used.map(n=>`<button class="pick-done" disabled>${escHtml(n)}<span class="tag">used</span></button>`).join("");
+  h += `<button onclick="openAddPlayerGame()" style="border:2px dashed var(--navy);color:var(--navy);justify-content:center">+ Add new (not on bench)</button>`;
+  if(!avail.length && !used.length) h = `<div style="color:var(--muted);text-align:center;padding:12px">No bench players designated. Add one below.</div>`+h;
+  panelOpen(`<div class="panel-hd"><h2>Sub in for slot ${slot+1}</h2></div>
+    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Only your designated bench is eligible.</div><div class="sub-pick">${h}</div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="subSlot=null;openBatterMenu()">Back</button></div>`);
 }
 function doSub(name){
-  const st=G._st;
-  G.events.push({t:"SUB", slot:st.slot, out:st.lineup[st.slot], in:name});
-  if(!G.allPlayers.includes(name)) G.allPlayers.push(name);
-  panelClose(); render(); toast(name+" subbed in");
+  const st=G._st; const slot=curSubSlot();
+  G.events.push({t:"SUB", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
+  if(activeSide==="us" && !G.allPlayers.includes(name)) G.allPlayers.push(name);
+  subSlot=null; panelClose(); render(); toast(name+" subbed in");
 }
 function openReenterPick(){
-  const st=G._st;
-  if(!st.subbedOut.length){ toast("No subbed-out players"); return; }
-  let h = st.subbedOut.map(n=>`<button onclick="doReenter('${esc(n)}')">${escHtml(n)}<span class="tag">re-enter</span></button>`).join("");
-  panelOpen(`<div class="panel-hd"><h2>Re-enter into slot ${st.slot+1}</h2></div>
-    <div class="panel-body"><div class="sub-pick">${h}</div></div>
-    <div class="panel-foot"><button class="pf-cancel" onclick="openBatterMenu()">Back</button></div>`);
+  const st=G._st; const slot=curSubSlot();
+  const stat=playerStatus();
+  // candidates: anyone off the field who has been out at least once
+  const offField=Object.keys(stat).filter(n=>!stat[n].onField && stat[n].timesOut>=1);
+  if(!offField.length){ toast("No players to re-enter"); return; }
+  const eligible=offField.filter(n=>stat[n].canReenter);
+  const done=offField.filter(n=>!stat[n].canReenter);
+  let h = eligible.map(n=>{ const p=stat[n]; const note=p.role==="starter"?"starter":"sub"; return `<button onclick="doReenter('${esc(n)}')">${escHtml(n)}<span class="tag">re-enter (${note})</span></button>`; }).join("");
+  h += done.map(n=>`<button class="pick-done" disabled>${escHtml(n)}<span class="tag">done — no re-entry</span></button>`).join("");
+  if(!eligible.length) h = `<div style="color:var(--muted);text-align:center;padding:12px">No one is eligible to re-enter.</div>`+h;
+  panelOpen(`<div class="panel-hd"><h2>Re-enter into slot ${slot+1}</h2></div>
+    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Starters get one re-entry; used subs can't return.</div><div class="sub-pick">${h}</div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="subSlot=null;openBatterMenu()">Back</button></div>`);
 }
 function doReenter(name){
-  const st=G._st;
-  G.events.push({t:"REENTER", slot:st.slot, out:st.lineup[st.slot], in:name});
-  panelClose(); render(); toast(name+" re-entered");
+  const st=G._st; const slot=curSubSlot();
+  G.events.push({t:"REENTER", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
+  subSlot=null; panelClose(); render(); toast(name+" re-entered");
 }
 function doSkip(){
   const st=G._st;
-  G.events.push({t:"SKIP", slot:st.slot, batter:st.lineup[st.slot]});
+  G.events.push({t:"SKIP", side:activeSide, slot:st.slot, batter:st.lineup[st.slot]});
   panelClose(); render(); toast("Spot skipped");
 }
 function openAddPlayerGame(){
@@ -1139,11 +1829,15 @@ function confirmAddPlayerGame(){
 
 /* ============ MAIN MENU ============ */
 function openMenu(){
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   if(pending){ toast("Finish current play first"); return; }
   panelOpen(`<div class="panel-hd"><h2>Menu</h2></div>
     <div class="panel-body"><div class="menu-list">
       <button onclick="openEditField('all')"><span class="ic">✎</span><div class="col"><span>Edit game info</span><span class="sub">Opponent · date · field · time · game #</span></div></button>
       <button onclick="openEditPlay()"><span class="ic">↺</span><div class="col"><span>Edit a recent play</span><span class="sub">Fix an outcome the ump changed</span></div></button>
+      <button onclick="openLineup()"><span class="ic">\u2630</span><div class="col"><span>Lineup / scoresheet</span><span class="sub">Order, results, tap a batter for actions</span></div></button>
+      <button onclick="panelClose();openPlayLog()"><span class="ic">▤</span><div class="col"><span>Play log</span><span class="sub">Full play-by-play by inning</span></div></button>
+      <button onclick="panelClose();openSprayChart()"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart (all)</span><span class="sub">Where this side has hit the ball</span></div></button>
       <button onclick="endInningManual()"><span class="ic">▸</span><div class="col"><span>End inning now</span><span class="sub">Mercy / walk-off (under 3 outs)</span></div></button>
       <button onclick="openExport()"><span class="ic">⬆</span><div class="col"><span>End game &amp; save</span><span class="sub">Archive, auto-download, next game</span></div></button>
       <button onclick="openGamesView()"><span class="ic">▦</span><div class="col"><span>Saved games</span><span class="sub">View / export / end tournament</span></div></button>
@@ -1153,9 +1847,11 @@ function openMenu(){
 }
 
 function endInningManual(){
-  if(pending){ toast("Finish current play first"); return; }
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   panelClose();
-  G.events.push({t:"ENDINN", auto:false});
+  G.events.push({t:"ENDINN", side:activeSide, auto:false});
+  if(G.trackMode==="both"){ autoFlipSide(); return; }
   render(); toast("Inning ended — bases cleared");
 }
 
@@ -1173,6 +1869,11 @@ function openEditField(which){
       ${f('gnum','Game #',m.gnum)}
       ${f('time','Time',m.time)}
       ${f('field','Field',m.field,'field-list')}
+      <label style="margin-top:10px">Royals are</label>
+      <div class="ha-seg">
+        <button class="ha-btn ${m.homeAway!=='home'?'on':''}" onclick="editHomeAway('away')">Away (bat first)</button>
+        <button class="ha-btn ${m.homeAway==='home'?'on':''}" onclick="editHomeAway('home')">Home (bat last)</button>
+      </div>
     </div>`;
   }
   panelOpen(`<div class="panel-hd"><h2>Edit game info</h2></div>
@@ -1180,6 +1881,7 @@ function openEditField(which){
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button><button class="pf-confirm" onclick="saveEditField('${which}')">Save</button></div>`);
   setTimeout(()=>{const e=document.getElementById("ef-opp");if(e)e.focus();},60);
 }
+function editHomeAway(v){ G.meta.homeAway=v; render(); openEditField('all'); }
 function saveEditField(which){
   const g=id=>{const e=document.getElementById("ef-"+id);return e?e.value.trim():undefined;};
   if(g("opp")!==undefined)G.meta.opp=g("opp");
@@ -1216,6 +1918,351 @@ function doEditPlay(idx){
   panelClose(); render(); toast("Re-enter the play now");
 }
 
+/* ---- play log (full play-by-play by inning, for disputes) ---- */
+function plogLine(e){
+  const resMap={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"strikeout","Kl":"strikeout looking","SAC":"sacrifice","FC":"fielder's choice","OUT":"out"};
+  if(e.t==="SUB") return `<span class="plog-sub">\u2194 ${escHtml(firstName(e.in))} subs in for ${escHtml(firstName(e.out))}</span>`;
+  if(e.t==="REENTER") return `<span class="plog-sub">\u21A9 ${escHtml(firstName(e.in))} re-enters</span>`;
+  if(e.t==="SKIP") return `<span class="plog-sub">\u2934 spot skipped</span>`;
+  if(e.t==="BR"){
+    const toTxt=e.to==="HOME"?"scored":(e.to==="OUT"?"out on bases":"to "+e.to);
+    const loc=e.loc?` <span class="plog-loc">${escHtml(e.loc)}</span>`:"";
+    return `<span class="plog-name">${escHtml(firstName(e.name))}</span> ${toTxt}${loc}${e.out?` <span class="plog-out">out</span>`:""}${e.run?` <span class="plog-run">RUN</span>`:""}`;
+  }
+  if(e.t==="PA"){
+    const loc=e.loc?` <span class="plog-loc">${escHtml(e.loc)}</span>`:"";
+    const rbi=e.rbi?` <span class="plog-rbi">${e.rbi} RBI</span>`:"";
+    const runrs=(e.runs&&e.runs.length)?` <span class="plog-run">scored: ${e.runs.map(firstName).map(escHtml).join(", ")}</span>`:"";
+    return `<span class="plog-name">${escHtml(firstName(e.batter))}</span> ${resMap[e.result]||e.result}${loc}${rbi}${runrs}`;
+  }
+  return "";
+}
+function openPlayLog(){
+  const both=G.trackMode==="both";
+  const ord=n=>n+(["th","st","nd","rd"][(n%100>>3^1&&n%10)||0]||"th");
+  function sideLog(side){
+    const innings={}; let inn=1, outs=0;
+    const push=(l)=>{ (innings[inn]=innings[inn]||[]).push(l); };
+    for(const e of G.events){
+      if((e.side||"us")!==side) continue;
+      if(e.t==="ENDINN"){ inn++; outs=0; continue; }
+      push(plogLine(e));
+      if(e.t==="PA"){ outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;} }
+      else if(e.t==="BR"){ outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
+    }
+    return innings;
+  }
+  const usLog=sideLog("us");
+  const themLog=both?sideLog("them"):{};
+  const sides=replayBoth();
+  const usBI=sides.us.byInning;
+  const themBI=both?sides.them.byInning:(G.meta.themByInning||[]);
+  const maxInn=Math.max(sides.us.inning, both?sides.them.inning:0,
+    ...Object.keys(usLog).map(Number), ...Object.keys(themLog).map(Number), themBI.length, 1);
+  const oppName=G.meta.opp||"Opponent";
+  let body="";
+  for(let i=1;i<=maxInn;i++){
+    const usLines=usLog[i]||[];
+    const usRuns=usBI[i-1]||0;
+    body+=`<div class="plog-inn-block"><div class="plog-inn-num">${ord(i)} inning</div>`;
+    body+=`<div class="plog-half"><div class="plog-half-hd us">Royals<span class="sc">${usRuns} run${usRuns===1?'':'s'}</span></div>`;
+    body+= usLines.length ? usLines.map(l=>`<div class="plog-line">${l}</div>`).join("") : `<div class="plog-line plog-empty">no plays</div>`;
+    body+=`</div>`;
+    const themRuns=themBI[i-1];
+    body+=`<div class="plog-half them-half"><div class="plog-half-hd them">${escHtml(oppName)}<span class="sc">${themRuns!=null?themRuns+' run'+(themRuns===1?'':'s'):'\u2014'}</span></div>`;
+    if(both){
+      const tl=themLog[i]||[];
+      body+= tl.length ? tl.map(l=>`<div class="plog-line">${l}</div>`).join("") : `<div class="plog-line plog-empty">no plays</div>`;
+    } else {
+      body+=`<div class="plog-line plog-empty">${themRuns!=null?'scored '+themRuns:'not recorded'} \u2014 (offense-only mode)</div>`;
+    }
+    body+=`</div></div>`;
+  }
+  if(!G.events.length && !(G.meta.themByInning||[]).length) body=`<div class="plog-empty" style="padding:30px;text-align:center">No plays yet.</div>`;
+  document.getElementById("playlog-body").innerHTML=body;
+  document.getElementById("playlog-fs").classList.add("show");
+}
+function closePlayLog(){ document.getElementById("playlog-fs").classList.remove("show"); }
+
+/* ===== INLINE LOCATION STEP (on the main diamond) ===== */
+let locStep=null; // {evIndex, ballType:null|'G'|'L'|'F'|'P'}
+function fieldOverlaySVG(active){
+  let zones="";
+  for(const k in GAPS){ const g=GAPS[k];
+    zones+=`<circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="15" onclick="locGapTap('${k}')"></circle>`;
+  }
+  for(const n in FIELDERS){ const p=FIELDERS[n];
+    zones+=`<g class="fz" onclick="locFielderTap(${n})"><circle cx="${p.x}" cy="${p.y}" r="17"></circle><text x="${p.x}" y="${p.y+5}">${n}</text></g>`;
+  }
+  return `<svg viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg">
+    <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.22"/>
+    ${zones}
+  </svg>`;
+}
+function beginLocStep(evIndex){
+  locStep={evIndex, ballType:null};
+  document.getElementById("game").classList.add("loc-mode");
+  renderFieldOverlay();
+  document.getElementById("loc-bar").style.display="block";
+}
+function renderFieldOverlay(){
+  const ov=document.getElementById("field-overlay");
+  ov.innerHTML=fieldOverlaySVG();
+  // disable fielder taps until a ball type is picked
+  ov.classList.toggle("disabled", !locStep || !locStep.ballType);
+  // ball-type button states
+  document.querySelectorAll("#loc-bar .glf2").forEach(b=>b.classList.toggle("on", locStep&&locStep.ballType===b.dataset.t));
+  const e=locStep?G.events[locStep.evIndex]:null;
+  const prompt=document.getElementById("loc-prompt");
+  if(locStep && !locStep.ballType) prompt.innerHTML=`<b>Pick ball type</b> for ${e?escHtml(firstName(e.batter)):"hit"} — G / L / F / P`;
+  else if(locStep) prompt.innerHTML=`Type <b>${locStep.ballType}</b> — tap where it went`;
+}
+function pickBallType(t){ if(!locStep)return; locStep.ballType=t; renderFieldOverlay(); }
+function locFielderTap(n){
+  if(!locStep||!locStep.ballType){ toast("Pick G/L/F/P first"); return; }
+  applyLocStep(locStep.ballType+n);
+}
+function locGapTap(k){
+  if(!locStep||!locStep.ballType){ toast("Pick G/L/F/P first"); return; }
+  applyLocStep(locStep.ballType+k.replace("-",""));
+}
+function applyLocStep(loc){
+  const e=G.events[locStep.evIndex];
+  e.loc=loc; e.locType=locStep.ballType;
+  endLocStep();
+  toast("Location: "+loc);
+}
+function skipLoc(){ endLocStep(); }
+function endLocStep(){
+  locStep=null;
+  document.getElementById("game").classList.remove("loc-mode");
+  document.getElementById("loc-bar").style.display="none";
+  document.getElementById("field-overlay").innerHTML="";
+  saveGame();
+  finishAfterLoc();
+}
+
+
+/* ===== HIT LOCATION (10-fielder field) ===== */
+// fielder number -> {x,y,label}; 1P 2C 3-1B 4-2B 5-3B 6-SS 7-LF 8-LCF 9-RCF 10-RF
+const FIELDERS = {
+  1:{x:150,y:200,l:"P"}, 2:{x:150,y:262,l:"C"},
+  3:{x:212,y:170,l:"1B"}, 4:{x:188,y:140,l:"2B"}, 5:{x:88,y:170,l:"3B"}, 6:{x:112,y:140,l:"SS"},
+  7:{x:70,y:78,l:"LF"}, 8:{x:120,y:55,l:"LC"}, 9:{x:180,y:55,l:"RC"}, 10:{x:230,y:78,l:"RF"}
+};
+// gap zones (no-dash "through" hits) -> records like G64; midpoint between two fielders
+const GAPS = {
+  "56":{x:100,y:155,l:"5-6"}, "64":{x:150,y:130,l:"6-4"}, "43":{x:200,y:155,l:"4-3"},
+  "78":{x:95,y:66,l:"7-8"}, "89":{x:150,y:48,l:"8-9"}, "9-10":{x:205,y:66,l:"9-10"}
+};
+let fieldCtx=null; // {evIndex, ballType:'G'|'L'|'F'}
+
+function fieldSVG(opts){
+  opts=opts||{};
+  const dots=opts.dots||[]; // [{x,y,type,label}]
+  const interactive=!!opts.interactive;
+  let zones="";
+  if(interactive){
+    // gap tap zones (drawn first, behind fielders)
+    for(const k in GAPS){ const g=GAPS[k];
+      zones+=`<circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="15" onclick="pickGap('${k}')"></circle>`;
+    }
+    for(const n in FIELDERS){ const p=FIELDERS[n];
+      zones+=`<g class="fz" onclick="pickFielder(${n})"><circle cx="${p.x}" cy="${p.y}" r="17"></circle><text x="${p.x}" y="${p.y+4}">${n}</text></g>`;
+    }
+  } else {
+    for(const n in FIELDERS){ const p=FIELDERS[n];
+      zones+=`<g class="fz static"><circle cx="${p.x}" cy="${p.y}" r="14"></circle><text x="${p.x}" y="${p.y+4}">${n}</text></g>`;
+    }
+  }
+  let dotEls="";
+  dots.forEach(dt=>{ const c=dt.type==="F"?"#5B3FD9":dt.type==="L"?"#00B358":dt.type==="P"?"#E0218A":"#FF7A00";
+    dotEls+=`<circle cx="${dt.x}" cy="${dt.y}" r="7" fill="${c}" stroke="#fff" stroke-width="2"><title>${dt.label||""}</title></circle>`; });
+  return `<svg viewBox="0 0 300 290" class="field-svg" xmlns="http://www.w3.org/2000/svg">
+    <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.25"/>
+    <path d="M150 270 L210 175 L150 120 L90 175 Z" fill="#9e7a3a" opacity="0.4"/>
+    <line x1="150" y1="270" x2="210" y2="175" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="150" y1="270" x2="90" y2="175" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="150" cy="270" r="5" fill="#fff"/>
+    ${zones}${dotEls}
+  </svg>`;
+}
+
+// open location capture for the most recent PA (or a given event index)
+function openFieldLoc(evIndex){
+  if(pending||brPending){ toast("Finish the play first"); return; }
+  if(locStep){ toast("Finish the location step first"); return; }
+  // default: last PA on the active side
+  if(evIndex==null){
+    for(let i=G.events.length-1;i>=0;i--){ if(G.events[i].t==="PA" && (G.events[i].side||"us")===activeSide){ evIndex=i; break; } }
+  }
+  if(evIndex==null){ toast("No play to locate"); return; }
+  fieldCtx={evIndex, ballType:(G.events[evIndex].locType||"G")};
+  renderFieldLoc();
+  document.getElementById("field-fs").classList.add("show");
+}
+function renderFieldLoc(){
+  const e=G.events[fieldCtx.evIndex];
+  document.getElementById("field-title").innerHTML=`Where did <b>${escHtml(firstName(e.batter))}</b> hit it?`;
+  const tg=t=>`<button class="glf ${fieldCtx.ballType===t?'on':''}" onclick="setBallType('${t}')">${t}</button>`;
+  const cur=e.loc?`<div class="field-cur">Current: <b>${escHtml(e.loc)}</b> <button class="field-clear" onclick="clearLoc()">clear</button></div>`:"";
+  document.getElementById("field-body").innerHTML=`
+    <div class="glf-row"><span class="glf-lbl">Ball type:</span>${tg("G")}${tg("L")}${tg("F")}
+      <span class="glf-key">G=grounder L=liner F=fly</span></div>
+    ${cur}
+    <div class="field-wrap">${fieldSVG({interactive:true})}</div>
+    <div class="field-hint">Tap a fielder for a play to them (e.g. <b>${fieldCtx.ballType}6</b>). Tap a gap between two for a ball through (e.g. <b>${fieldCtx.ballType}64</b>).</div>`;
+}
+function setBallType(t){ fieldCtx.ballType=t; renderFieldLoc(); }
+function pickFielder(n){
+  const loc=fieldCtx.ballType+n;
+  applyLoc(loc);
+}
+function pickGap(k){
+  const loc=fieldCtx.ballType+k.replace("-","");
+  applyLoc(loc);
+}
+function applyLoc(loc){
+  const e=G.events[fieldCtx.evIndex];
+  e.loc=loc; e.locType=fieldCtx.ballType;
+  closeFieldLoc(); render(); saveGame();
+  toast("Location: "+loc);
+}
+function clearLoc(){ const e=G.events[fieldCtx.evIndex]; delete e.loc; delete e.locType; renderFieldLoc(); render(); saveGame(); }
+function closeFieldLoc(){ document.getElementById("field-fs").classList.remove("show"); fieldCtx=null; }
+
+// parse a stored loc like "G64" or "F10" -> dot position
+function locToDot(loc){
+  if(!loc) return null;
+  const type=loc[0]; const rest=loc.slice(1);
+  // gap? two-digit where both digits are fielders 1-9 and not a single fielder 10
+  if(rest==="10") return {x:FIELDERS[10].x,y:FIELDERS[10].y,type,label:loc};
+  if(rest.length===2){ // gap like 64
+    const key=rest; const g=GAPS[key]||GAPS[rest[0]+"-"+rest[1]];
+    if(g) return {x:g.x,y:g.y,type,label:loc};
+    // fallback: midpoint of the two fielders
+    const a=FIELDERS[+rest[0]], b=FIELDERS[+rest[1]];
+    if(a&&b) return {x:(a.x+b.x)/2,y:(a.y+b.y)/2,type,label:loc};
+  }
+  const fn=+rest; if(FIELDERS[fn]) return {x:FIELDERS[fn].x,y:FIELDERS[fn].y,type,label:loc};
+  return null;
+}
+
+/* ===== SPRAY CHART ===== */
+function openSprayChart(name){
+  // collect locs for this batter on the active side
+  const side=activeSide;
+  const dots=[];
+  for(const e of G.events){
+    if(e.t!=="PA"||(e.side||"us")!==side) continue;
+    if(name && e.batter!==name) continue;
+    if(e.loc){ const dt=locToDot(e.loc); if(dt){ dt.result=e.result; dots.push(dt); } }
+  }
+  document.getElementById("spray-title").innerHTML = name?`Spray — ${escHtml(firstName(name))}`:"Spray chart";
+  let body=`<div class="field-wrap">${fieldSVG({dots})}</div>`;
+  if(!dots.length) body+=`<div class="field-hint">No locations recorded yet${name?" for "+escHtml(firstName(name)):""}.</div>`;
+  else body+=`<div class="spray-legend"><span class="sl g">● grounder</span> <span class="sl l">● liner</span> <span class="sl f">● fly</span> <span class="sl p">● popup</span></div>
+    <div class="field-hint">${dots.length} ball${dots.length===1?'':'s'} in play recorded.</div>`;
+  document.getElementById("spray-body").innerHTML=body;
+  document.getElementById("spray-fs").classList.add("show");
+}
+function closeSpray(){ document.getElementById("spray-fs").classList.remove("show"); }
+
+/* ===== LINEUP SCORESHEET VIEW ===== */
+function codesFor(name, side){
+  side=side||activeSide;
+  const map={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"\u2715"};
+  const cls=r=>(["1B","2B","3B","HR"].includes(r)?"c-hit":(r==="BB"?"c-walk":"c-out"));
+  const out=[];
+  for(const e of G.events){
+    if((e.side||"us")!==side) continue;
+    if(e.t==="PA" && e.batter===name){
+      const code=map[e.result]||e.result;
+      const loc=e.loc?("\u00b7"+e.loc):"";
+      out.push(`<span class="${cls(e.result)}">${code}${loc}</span>`);
+    }
+  }
+  return out.join("&nbsp; ");
+}
+function openLineup(){
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
+  panelClose();
+  const side=activeSide;
+  const st=G._st;
+  const size = side==="us" ? G.lineupSize : G.oppLineupSize;
+  const lineup = st.lineup;
+  const stat = playerStatus();
+  const teamName = side==="us" ? "Royals" : (G.meta.opp||"Opponent");
+  document.getElementById("lineup-title").textContent = teamName+" lineup";
+  let h="";
+  for(let i=0;i<size;i++){
+    const nm=lineup[i]||("#"+(i+1));
+    const j=(G.jerseys&&G.jerseys[nm])?` <span class="jno">- #${escHtml(G.jerseys[nm])}</span>`:"";
+    const codes=codesFor(nm,side);
+    const isCur=(i===st.slot);
+    const isNext=(i>st.slot && i<=st.slot+3);
+    const cls=["ls-row"]; if(isCur)cls.push("cur"); else if(isNext)cls.push("next");
+    const bomb=(G.bombs&&G.bombs[nm])?" \uD83D\uDCA3":"";
+    h+=`<div class="${cls.join(' ')}" onclick="openPlayerDetail(${i})">
+      <div class="ls-ord">${i+1}</div>
+      <div class="ls-nm"><div class="nm">${escHtml(nm)}${j}${bomb}${isCur?'<span class="ls-tag">AT BAT</span>':''}</div>
+        <div class="ls-codes">${codes||'<span style="opacity:.5">\u2014</span>'}</div></div>
+      <div class="ls-chev">\u203A</div>
+    </div>`;
+  }
+  const benchList = side==="us" ? (G.bench||[]) : (G.oppBench||[]);
+  if(benchList.length){
+    h+=`<div class="lp-hd" style="padding:12px 10px 6px;color:var(--muted)">BENCH / SUBS</div>`;
+    benchList.forEach(nm=>{
+      const p=stat[nm]; const done=p&&p.done; const onF=p&&p.onField;
+      const j=(G.jerseys&&G.jerseys[nm])?` <span class="jno">- #${escHtml(G.jerseys[nm])}</span>`:"";
+      const tag = onF?'<span class="ls-tag">in game</span>':(done?'<span class="ls-tag bench">used</span>':'<span class="ls-tag bench">available</span>');
+      h+=`<div class="ls-row ${done?'done':''}"><div class="ls-ord" style="background:var(--gold-d)">S</div>
+        <div class="ls-nm"><div class="nm">${escHtml(nm)}${j} ${tag}</div><div class="ls-codes">${codesFor(nm,side)||'<span style="opacity:.5">\u2014</span>'}</div></div></div>`;
+    });
+  }
+  document.getElementById("lineup-body").innerHTML=h;
+  document.getElementById("lineup-fs").classList.add("show");
+}
+function closeLineup(){ document.getElementById("lineup-fs").classList.remove("show"); }
+function openPlayerDetail(slot){
+  const side=activeSide;
+  const st=G._st;
+  const nm = st.lineup[slot] || ("#"+(slot+1));
+  const stat=playerStatus();
+  const j=(G.jerseys&&G.jerseys[nm])?` - #${escHtml(G.jerseys[nm])}`:"";
+  const map={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"strikeout","Kl":"strikeout looking","SAC":"sacrifice","FC":"fielder's choice","OUT":"out"};
+  const ord=n=>n+(["th","st","nd","rd"][(n%100>>3^1&&n%10)||0]||"th");
+  let inn=1,outs=0,rows=[];
+  for(const e of G.events){
+    if((e.side||"us")!==side) continue;
+    if(e.t==="ENDINN"){inn++;outs=0;continue;}
+    if(e.t==="BR"){outs+=e.out||0;if(outs>=3){outs=0;inn++;}continue;}
+    if(e.t==="PA"){
+      if(e.batter===nm){ const loc=e.loc?` <span class="loc" style="color:var(--blue);font-weight:800">${escHtml(e.loc)}</span>`:""; const rbi=e.rbi?` <span style="color:var(--gold-d);font-weight:700">${e.rbi}RBI</span>`:""; rows.push(`<div style="padding:6px 4px;border-bottom:1px solid var(--line);font-size:14px"><b>${ord(inn)}</b> \u2014 ${map[e.result]||e.result}${loc}${rbi}</div>`); }
+      outs+=e.outsAdded||0;if(outs>=3){outs=0;inn++;}
+    }
+  }
+  const histHtml = rows.length?rows.join(""):'<div style="color:var(--muted);font-style:italic;padding:8px 4px">no at-bats yet</div>';
+  let actions=`<button onclick="closeLineup();jumpSubFor(${slot})">Sub out</button>`;
+  actions+=`<button class="warn" onclick="toggleBombFor('${esc(nm)}')">${(G.bombs&&G.bombs[nm])?'Unflag \uD83D\uDCA3':'Flag \uD83D\uDCA3'}</button>`;
+  actions+=`<button onclick="panelClose();closeLineup();openSprayChart('${esc(nm)}')">Spray</button>`;
+  actions+=`<button onclick="closeLineup();jumpReenterFor(${slot})">Re-enter\u2026</button>`;
+  panelOpen(`<div class="panel-hd"><h2>${escHtml(nm)}${j}</h2></div>
+    <div class="panel-body">
+      <div class="pd-actions">${actions}</div>
+      <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:4px">THIS GAME</div>
+      ${histHtml}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose();openLineup()">Back to lineup</button></div>`);
+}
+function jumpSubFor(slot){ openSubPickAt(slot); }
+function jumpReenterFor(slot){ openReenterPickAt(slot); }
+function toggleBombFor(nm){ if(!G.bombs)G.bombs={}; if(G.bombs[nm])delete G.bombs[nm]; else G.bombs[nm]=true; render(); saveGame(); panelClose(); openLineup(); toast((G.bombs[nm]?firstName(nm)+" flagged":firstName(nm)+" unflagged")); }
+
+
+
 /* ============ EXPORT BUILDERS (work on any game object) ============ */
 function aggregateGame(g){
   const stats={};
@@ -1234,9 +2281,16 @@ function aggregateGame(g){
   }
   return {stats, teamR, teamRBI};
 }
+function themTotal(m){
+  if(m.themByInning && m.themByInning.some(v=>v!=null)){
+    return m.themByInning.reduce((s,v)=>s+(v||0),0);
+  }
+  return null;
+}
 function buildGameObject(g){
   const agg=aggregateGame(g); const m=g.meta;
-  const ra=m._ra!==undefined&&m._ra!==""?parseInt(m._ra,10):null;
+  const themT = themTotal(m);
+  const ra = themT!=null ? themT : (m._ra!==undefined&&m._ra!==""?parseInt(m._ra,10):null);
   const result=ra===null?null:(agg.teamR>ra?"W":agg.teamR<ra?"L":"T");
   const stats={};
   Object.keys(agg.stats).sort().forEach(n=>{ const s=agg.stats[n]; if(s.pa>0) stats[n]=s; });
@@ -1246,12 +2300,25 @@ function buildGameObject(g){
     ...(m.tournamentNew?{newTournament:m.tournamentNew}:{}),
     opponent:m.opp||"", date:m.date||"", gameNum:m.gnum||"", time:m.time||"", field:m.field||"",
     rf:agg.teamR, ra, result,
+    ...(themT!=null?{lineScore:{us:replayUsByInning(g), them:m.themByInning}}:{}),
     ...((g.newPlayers&&g.newPlayers.length)?{newPlayers:g.newPlayers}:{}),
     stats
   };
 }
+// derive US per-inning for an arbitrary game (export)
+function replayUsByInning(g){
+  let inn=1,outs=0; const arr=[];
+  const add=n=>{arr[inn-1]=(arr[inn-1]||0)+n;};
+  for(const e of g.events){
+    if(e.t==="ENDINN"){inn++;outs=0;}
+    else if(e.t==="BR"){ if(e.run)add(e.run); outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
+    else if(e.t==="PA"){ add((e.runs||[]).length); outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;} }
+  }
+  return arr;
+}
 function gameResultLabel(g){
-  const agg=aggregateGame(g); const ra=g.meta._ra!==undefined&&g.meta._ra!==""?parseInt(g.meta._ra,10):null;
+  const agg=aggregateGame(g); const themT=themTotal(g.meta);
+  const ra = themT!=null?themT:(g.meta._ra!==undefined&&g.meta._ra!==""?parseInt(g.meta._ra,10):null);
   if(ra===null) return `${agg.teamR} RF`;
   const r=agg.teamR>ra?"W":agg.teamR<ra?"L":"T";
   return `${r} ${agg.teamR}-${ra}`;
@@ -1274,7 +2341,8 @@ let _exportGame=null;
 function renderExportFor(game){
   _exportGame=game;
   const agg=aggregateGame(game); const m=game.meta;
-  const ra = m._ra!==undefined?m._ra:"";
+  const themT=themTotal(m);
+  const ra = themT!=null ? String(themT) : (m._ra!==undefined?m._ra:"");
   const raNum = ra===""?null:parseInt(ra,10);
   const result = raNum===null?null:(agg.teamR>raNum?"W":agg.teamR<raNum?"L":"T");
   const warn = agg.teamRBI>agg.teamR;
@@ -1291,11 +2359,10 @@ function renderExportFor(game){
   const raw=JSON.stringify({meta:m, lineupSize:game.lineupSize, origLineup:game.origLineup, events:game.events},null,2);
 
   document.getElementById("exp-body").innerHTML = `
-    <div class="ra-input">
-      <label>Opponent final (RA):</label>
-      <input id="exp-ra" inputmode="numeric" value="${ra}" placeholder="—" oninput="onRaInput()">
-      ${result?`<span class="res ${result==='W'?'w':'l'}">${result} ${agg.teamR}-${raNum}</span>`:''}
-    </div>
+    ${themTotal(m)!=null
+      ? `<div class="ra-input"><label>Opp final (RA):</label><span class="res ${result==='W'?'w':result==='L'?'l':''}" style="margin-left:2px">${raNum} <small style="font-weight:600;opacity:.7">linescore</small></span>${result?`<span class="res ${result==='W'?'w':'l'}">${result} ${agg.teamR}-${raNum}</span>`:''}</div>`
+      : `<div class="ra-input"><label>Opponent final (RA):</label><input id="exp-ra" inputmode="numeric" value="${ra}" placeholder="—" oninput="onRaInput()">${result?`<span class="res ${result==='W'?'w':'l'}">${result} ${agg.teamR}-${raNum}</span>`:''}</div>`
+    }
     <div class="exp-summary">
       <b>${escHtml(m.opp||'(opponent?)')}</b> · ${m.type==='tournament'?escHtml(m.tournamentName||'tournament'):'league'}${m.date?' · '+m.date:''}${m.gnum?' · G'+escHtml(m.gnum):''}<br>
       Runs scored: <b>${agg.teamR}</b> · RBI: <b>${agg.teamRBI}</b> ${warn?'<span class="warn">⚠ RBI exceeds runs — check before commit</span>':'✓'}<br>
@@ -1398,7 +2465,7 @@ function openGamesView(){
     </div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
 }
-function resumeCurrent(){ if(STORE.current){ G=STORE.current; panelClose(); showGame(); render(); } }
+function resumeCurrent(){ if(STORE.current){ G=STORE.current; activeSide="us"; pending=null; brPending=null; panelClose(); showGame(); render(); } }
 function openArchived(idx){
   const g=STORE.archive[idx];
   if(!g)return;
@@ -1554,7 +2621,7 @@ function initSetup(){
   document.getElementById("seed-tag").textContent = "seed: "+SEED.builtFrom;
   // default date today
   const d=new Date(); document.getElementById("f-date").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  renderRosterChips(); renderLineup(); updateStartBtn();
+  setPickMode("order"); renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
   refreshSetupChrome();
 }
 function refreshSetupChrome(){
@@ -1570,7 +2637,7 @@ function refreshSetupChrome(){
     host.innerHTML=`<div class="resume-banner"><span>In progress · ${escHtml(STORE.current.meta.opp||'no opponent')} · ${n} plays</span><span><button onclick="resumeGame()">Resume</button> <button class="x" onclick="dismissResume()">×</button></span></div>`;
   } else host.innerHTML="";
 }
-function resumeGame(){ G=STORE.current; document.getElementById("resume-host").innerHTML=""; showGame(); render(); }
+function resumeGame(){ G=STORE.current; activeSide="us"; pending=null; brPending=null; document.getElementById("resume-host").innerHTML=""; showGame(); render(); }
 function dismissResume(){ document.getElementById("resume-host").innerHTML=""; }
 
 initSetup();
