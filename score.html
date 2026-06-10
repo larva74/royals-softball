@@ -206,8 +206,25 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .gs-item b{font-size:16px}
 }
 /* short landscape (phone landscape) — compact so everything fits the short height */
-@media (orientation:landscape) and (max-height:500px){
-  .g-state{padding:3px 10px;gap:8px}
+/* wrap button (global) */
+.wrap-btn{width:100%;padding:14px 10px;margin-bottom:8px;border-radius:12px;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:15px;line-height:1.25;letter-spacing:.2px;border:3px solid #fff;box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3);animation:wrapPulse 1.6s ease-in-out infinite}
+.wrap-btn .wb-sub{display:block;font-size:11px;font-weight:700;opacity:.8;margin-top:2px}
+@keyframes wrapPulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 4px #fff,0 3px 16px rgba(240,180,41,.6)}}
+
+/* ===== PHONE LANDSCAPE (short height): two-column grid ===== */
+@media (orientation:landscape) and (max-height:520px){
+  #game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);
+    grid-template-areas:"toggle diamond" "state diamond" "line diamond" "atbat diamond" "out diamond" "locbar diamond" "resolve diamond" "foot diamond";
+    grid-template-rows:auto auto auto auto 1fr auto auto auto}
+  .side-toggle{grid-area:toggle}
+  .g-state{grid-area:state;padding:3px 10px;gap:8px}
+  .linescore{grid-area:line}
+  .diamond-row{grid-area:diamond;min-height:0}
+  .atbat{grid-area:atbat;padding:2px 8px}
+  .outcomes{grid-area:out;padding:4px 8px;display:flex;flex-direction:column;justify-content:center}
+  .loc-bar{grid-area:locbar}
+  .resolve-bar{grid-area:resolve}
+  .g-foot{grid-area:foot;padding:4px 8px;gap:6px}
   .gs-opp{font-size:13px}
   .gs-item b{font-size:14px}
   .gs-item i{font-size:7px}
@@ -215,31 +232,43 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .gs-dots .ss-dot{width:11px;height:11px}
   .recon{width:24px;height:24px;font-size:13px}
   .linescore th,.linescore td{padding:1px 0;font-size:11px;min-width:20px}
-  .diamond{width:min(40vh,32vw);height:min(40vh,32vw)}
-  .lastplay{flex:0 0 26%;padding:4px 6px}
+  .diamond{width:min(62vh,42vw);height:min(62vh,42vw)}
+  .lastplay{flex:0 0 30%;padding:4px 6px}
   .lp-hd{margin-bottom:3px}
   .lp-bat{font-size:12px}
   .lp-run{font-size:11px;margin-top:2px}
   .bh-name{font-size:12px;margin-bottom:3px}
   .bh-row{font-size:10px;margin-bottom:1px;line-height:1.25}
-  .atbat{padding:0 10px 4px}
-  .wrap-btn{width:100%;padding:14px 10px;margin-bottom:8px;border-radius:12px;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:15px;line-height:1.25;letter-spacing:.2px;border:3px solid #fff;box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3);animation:wrapPulse 1.6s ease-in-out infinite}
-.wrap-btn .wb-sub{display:block;font-size:11px;font-weight:700;opacity:.8;margin-top:2px}
-@keyframes wrapPulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 3px 12px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 4px #fff,0 3px 16px rgba(240,180,41,.6)}}
-  .atbat .card{padding:6px 12px;gap:8px}
-  .atbat .ord{width:30px;height:30px;font-size:15px}
-  .atbat .meta .nm{font-size:16px}
+  .atbat .card{padding:5px 12px;gap:8px}
+  .atbat .ord{width:28px;height:28px;font-size:14px}
+  .atbat .meta .nm{font-size:15px}
   .atbat .meta .lbl{font-size:8px}
-  .outcomes{padding:5px 8px 4px}
+  .wrap-btn{padding:8px;font-size:12px;margin-bottom:4px;animation:none}
+  .wrap-btn .wb-sub{display:none}
   .out-row{gap:5px;margin-bottom:5px}
-  .ob{padding:9px 4px;font-size:15px;border-radius:9px}
+  .ob{padding:8px 4px;font-size:14px;border-radius:9px}
   .ob small{font-size:8px;margin-top:1px}
-  .g-foot{padding:4px 8px;gap:6px}
-  .g-foot button{padding:8px;font-size:13px}
-  .resolve-bar{padding:5px 8px}
-  .resolve-hint{font-size:11px;margin-bottom:5px;min-height:0}
-  .resolve-actions button{padding:9px;font-size:13px}
+  .g-foot button{padding:7px;font-size:12px}
+  .resolve-bar{padding:4px 8px}
+  .resolve-hint{font-size:11px;margin-bottom:4px;min-height:0}
+  .resolve-actions button{padding:8px;font-size:12px}
+  .loc-bar{padding:5px 8px}
+  .loc-prompt{font-size:12px;margin-bottom:4px}
+  .glf2{height:38px;font-size:16px}
+  .glf-skip{height:38px;font-size:12px}
+  #side-pane{display:none}
 }
+
+/* ===== iPad LANDSCAPE (tall): two-pane with live lineup rail ===== */
+#side-pane{display:none}
+@media (orientation:landscape) and (min-height:521px){
+  #game{padding-right:346px;position:relative}
+  #side-pane{display:flex;flex-direction:column;position:absolute;top:0;right:0;bottom:0;width:340px;background:var(--card);border-left:3px solid var(--gold);z-index:4}
+  #side-pane .sp-hd{padding:10px 12px;background:var(--navy);color:#fff;font-weight:900;font-size:14px;letter-spacing:.5px;flex-shrink:0}
+  #side-pane .sp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #game.them-batting #side-pane .sp-hd{background:var(--them)}
+}
+
 .base{position:absolute;width:30%;height:30%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .base.occ{background:var(--gold);border-color:#fff;box-shadow:0 0 18px rgba(240,180,41,.5)}
 .base .bn{transform:rotate(-45deg);text-align:center;max-width:90%}
@@ -465,6 +494,43 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .dedupe-warn.show{display:block}
 .dedupe-warn b{color:var(--ink)}
 .dedupe-warn button{background:var(--navy);color:#fff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;margin-left:6px}
+
+/* ===== SCORESHEET (print) ===== */
+#sheet-view{z-index:65}
+.sheet{background:#fff;color:#000;padding:6px;font-family:Arial,Helvetica,sans-serif;margin:0 auto 18px;max-width:1400px}
+.sheet-hd{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;font-size:12px;border-bottom:3px solid #000;padding-bottom:6px;margin-bottom:6px}
+.sheet-hd .sh-brand{font-weight:900;font-size:15px;letter-spacing:1px;margin-right:8px}
+.sheet-hd b{border-bottom:1px solid #000;padding:0 6px}
+.sheet-grid{border-collapse:collapse;width:100%;table-layout:fixed}
+.sheet-grid th,.sheet-grid td{border:1px solid #000;padding:1px;font-size:10px;text-align:center;vertical-align:middle}
+.sheet-grid th{background:#e8e8e8;font-weight:800}
+.sheet-grid td.bo,.sheet-grid th.bo{width:26px;font-weight:800}
+.sheet-grid td.pl,.sheet-grid th.pl{width:120px;text-align:left;padding-left:4px;font-weight:700;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sheet-grid td.no,.sheet-grid th.no{width:28px}
+.sheet-grid td.pos,.sheet-grid th.pos{width:28px}
+.sheet-grid td.sum,.sheet-grid th.sum{width:28px;font-weight:700}
+.sheet-grid tr.subrow td{background:#f5f5f5;height:22px}
+.sheet-grid tr.subrow td.bo{font-size:8px;color:#555}
+.sheet-grid td.ab-cell{height:46px;padding:0}
+.sheet-grid tr.subrow td.ab-cell{height:22px}
+.sbc{width:100%;height:100%;display:block;max-height:46px}
+.sheet-grid tr.subrow .sbc{max-height:22px}
+.sheet-grid td.untracked{padding:18px;font-style:italic;color:#444;font-size:12px}
+.sheet-line{border-collapse:collapse;margin-top:6px}
+.sheet-line td{border:1px solid #000;min-width:30px;padding:2px 6px;font-size:12px;font-weight:800;text-align:center}
+.sheet-line td.ll{background:#000;color:#fff;letter-spacing:1px}
+.sheet-line td.lt{background:#e8e8e8}
+.sheet-legend{font-size:9px;color:#333;margin-top:6px}
+.sheet-sign{font-size:11px;margin-top:10px}
+.page-break{page-break-after:always;height:14px}
+@media print{
+  body.sheet-mode *{visibility:hidden}
+  body.sheet-mode #sheet-view, body.sheet-mode #sheet-view *{visibility:visible}
+  body.sheet-mode #sheet-view .no-print, body.sheet-mode #sheet-view .no-print *{display:none !important}
+  #sheet-view{position:absolute !important;inset:0 !important;display:block !important;background:#fff;padding:0;overflow:visible}
+  #sheet-view .fs-body{overflow:visible;padding:0;background:#fff}
+  .sheet{max-width:none;margin:0;padding:0}
+}
 </style>
 </head>
 <body>
@@ -647,6 +713,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     <button class="undo" onclick="undo()" id="foot-undo">⟲ Undo</button>
     <button class="inn-end" onclick="endInningManual()">End Inning ▸</button>
   </div>
+  <div id="side-pane">
+    <div class="sp-hd" id="sp-hd">LINEUP</div>
+    <div class="sp-body" id="sp-body"></div>
+  </div>
 </div>
 
 <!-- overlay host -->
@@ -666,6 +736,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <div class="fullscreen" id="lineup-fs">
   <div class="fs-hd"><h2 id="lineup-title">Lineup</h2><button class="fs-close" onclick="closeLineup()">Done</button></div>
   <div class="fs-body" id="lineup-body"></div>
+</div>
+<style id="sheet-orient"></style>
+<div class="fullscreen" id="sheet-view">
+  <div class="fs-hd no-print"><h2>Scoresheet</h2><div style="display:flex;gap:8px">
+    <button class="fs-close" style="background:var(--green)" onclick="printScoresheet()">\uD83D\uDDA8 Print / Save PDF</button>
+    <button class="fs-close" onclick="closeScoresheet()">Done</button></div></div>
+  <div class="fs-body" id="sheet-body" style="background:#fff"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1101,6 +1178,7 @@ function render(){
   document.getElementById("foot-back").disabled = !pending;
   saveGame();
   G._st = st; G._agg = agg; G._sides = sides;
+  renderSidePane(st);
 }
 
 function renderLinescore(sides){
@@ -1841,6 +1919,7 @@ function openMenu(){
       <button onclick="openLineup()"><span class="ic">\u2630</span><div class="col"><span>Lineup / scoresheet</span><span class="sub">Order, results, tap a batter for actions</span></div></button>
       <button onclick="panelClose();openPlayLog()"><span class="ic">▤</span><div class="col"><span>Play log</span><span class="sub">Full play-by-play by inning</span></div></button>
       <button onclick="panelClose();openSprayChart()"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart (all)</span><span class="sub">Where this side has hit the ball</span></div></button>
+      <button onclick="pickScoresheet()"><span class="ic">\uD83D\uDDB6</span><div class="col"><span>Scoresheet (print)</span><span class="sub">Official SPN or NSA hand-in sheet</span></div></button>
       <button onclick="endInningManual()"><span class="ic">▸</span><div class="col"><span>End inning now</span><span class="sub">Mercy / walk-off (under 3 outs)</span></div></button>
       <button onclick="openExport()"><span class="ic">⬆</span><div class="col"><span>End game &amp; save</span><span class="sub">Archive, auto-download, next game</span></div></button>
       <button onclick="openGamesView()"><span class="ic">▦</span><div class="col"><span>Saved games</span><span class="sub">View / export / end tournament</span></div></button>
@@ -1922,6 +2001,209 @@ function doEditPlay(idx){
 }
 
 /* ---- play log (full play-by-play by inning, for disputes) ---- */
+/* ===== SCOREBOOK DATA RECONSTRUCTION =====
+Per side: slots[] -> rows (starter + subs), each row: name, jersey, cells per inning.
+Cell: {result, rbi, reached(0-4;4=home), out, scored, batters' progression reconstructed from events} */
+function buildScorebookData(side){
+  const baseN=b=>b==="1B"?1:b==="2B"?2:b==="3B"?3:b==="HOME"?4:0;
+  const slots={};            // slotIdx -> { batters:[name...], rows:{name:{cells:{inning:[cell,...]}}} }
+  const ensureRow=(slot,name)=>{
+    if(!slots[slot]) slots[slot]={batters:[],rows:{}};
+    if(!slots[slot].rows[name]){ slots[slot].batters.push(name); slots[slot].rows[name]={cells:{}}; }
+    return slots[slot].rows[name];
+  };
+  const open={};             // runnerName -> cell currently on base
+  let inning=1, outs=0;
+  const closeInning=()=>{
+    for(const nm in open){ const c=open[nm]; if(!c.out && !c.scored) c.stranded=c.reached; delete open[nm]; }
+    outs=0; inning++;
+  };
+  for(const e of G.events){
+    if((e.side||"us")!==side) continue;
+    if(e.t==="ENDINN"){ closeInning(); continue; }
+    if(e.t==="BR"){
+      const c=open[e.name];
+      if(c){
+        if(e.to==="HOME"){ c.scored=true; c.reached=4; delete open[e.name]; }
+        else if(e.to==="OUT"){ c.out=true; delete open[e.name]; }
+        else { c.reached=Math.max(c.reached, baseN(e.to)); }
+      }
+      outs+=e.out||0; if(outs>=3) closeInning();
+      continue;
+    }
+    if(e.t!=="PA") continue;
+    const row=ensureRow(e.slot??0, e.batter);
+    (row.cells[inning]=row.cells[inning]||[]);
+    const cell={result:e.result, rbi:e.rbi||0, reached:0, out:false, scored:false, stranded:0};
+    row.cells[inning].push(cell);
+    // runners move first (they advance on the play)
+    for(const r of (e.runners||[])){
+      const c=open[r.name];
+      if(!c) continue;
+      if(r.to==="HOME"){ c.scored=true; c.reached=4; delete open[r.name]; }
+      else if(r.to==="OUT"){ c.out=true; delete open[r.name]; }
+      else { c.reached=Math.max(c.reached, baseN(r.to)); }
+    }
+    // batter destination
+    const bt=e.batterTo;
+    if(e.result==="HR"){ cell.scored=true; cell.reached=4; }
+    else if(bt==="HOME"){ cell.scored=true; cell.reached=4; }
+    else if(bt==="OUT" || !bt){ cell.out=true; }
+    else { cell.reached=baseN(bt); open[e.batter]=cell; }
+    // safety: runs[] names marked scored (covers any missed path)
+    for(const nm of (e.runs||[])){
+      if(nm===e.batter){ cell.scored=true; cell.reached=4; delete open[nm]; }
+      else if(open[nm]){ open[nm].scored=true; open[nm].reached=4; delete open[nm]; }
+    }
+    outs+=e.outsAdded||0; if(outs>=3) closeInning();
+  }
+  closeInning(); // strand whoever is left at game end
+  const lastInning=inning-1;
+  // order slots; starter = origLineup occupant
+  const origs = side==="us" ? G.origLineup : (G.oppOrigLineup||[]);
+  const size  = side==="us" ? G.lineupSize : (G.oppLineupSize||0);
+  const out=[];
+  for(let i=0;i<size;i++){
+    const sl=slots[i]||{batters:[],rows:{}};
+    // ensure starter listed first even with no PAs
+    const starter=origs[i];
+    if(starter && !sl.batters.includes(starter)){ sl.batters.unshift(starter); sl.rows[starter]={cells:{}}; }
+    else if(starter){ const ix=sl.batters.indexOf(starter); if(ix>0){ sl.batters.splice(ix,1); sl.batters.unshift(starter); } }
+    out.push({slot:i, batters:sl.batters.map(n=>({name:n, jersey:(G.jerseys&&G.jerseys[n])||"", cells:sl.rows[n].cells}))});
+  }
+  return {slots:out, innings:Math.max(lastInning, 7)};
+}
+/* ===== SCOREBOOK RENDER (SPN landscape / NSA portrait) ===== */
+function sbCellSVG(cells){
+  if(!cells||!cells.length) return '<svg viewBox="0 0 60 54" class="sbc"><path d="M30 48 L48 30 L30 12 L12 30 Z" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="2 2"/></svg>';
+  // render first AB; if multiple in one inning, stack labels
+  let svg='';
+  cells.forEach((c,ix)=>{
+    const y=ix*54;
+    const P={home:[30,48],b1:[48,30],b2:[30,12],b3:[12,30]};
+    const legs=[["home","b1"],["b1","b2"],["b2","b3"],["b3","home"]];
+    let body='';
+    if(c.scored){
+      body+=`<path d="M30 48 L48 30 L30 12 L12 30 Z" fill="#1a1a1a" stroke="#000" stroke-width="1.6"/>`;
+    } else {
+      body+=`<path d="M30 48 L48 30 L30 12 L12 30 Z" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="2 2"/>`;
+      const n=Math.max(c.reached, c.stranded||0);
+      for(let i=0;i<n && i<4;i++){
+        const a=P[legs[i][0]], b=P[legs[i][1]];
+        body+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#000" stroke-width="2.6"/>`;
+      }
+      if(n>0 && n<4){ const bp=P[legs[n-1][1]]; body+=`<circle cx="${bp[0]}" cy="${bp[1]}" r="3.4" fill="#000"/>`; }
+    }
+    if(c.out){
+      body+=`<line x1="20" y1="20" x2="40" y2="40" stroke="#000" stroke-width="2.4"/><line x1="40" y1="20" x2="20" y2="40" stroke="#000" stroke-width="2.4"/>`;
+    }
+    const res=c.result==="Kl"?"\u1191":c.result;
+    body+=`<text x="3" y="11" font-size="11" font-weight="800" fill="#000">${res}</text>`;
+    if(c.rbi) body+=`<text x="57" y="11" font-size="10" font-weight="800" fill="#000" text-anchor="end">${c.rbi}RBI</text>`;
+    svg+=`<g transform="translate(0,${y})">${body}</g>`;
+  });
+  const h=cells.length*54;
+  return `<svg viewBox="0 0 60 ${h}" class="sbc" style="height:${cells.length>1?'2in':''}">${svg}</svg>`;
+}
+function sbPlayerTotals(side){
+  const agg=aggregate(side); return agg.stats||agg; // aggregate returns {stats?...}
+}
+function sbHeaderMeta(){
+  const m=G.meta;
+  return {date:m.date||"", time:m.time||"", park:m.field||"", gnum:m.gnum||"",
+    royals:"Royals", opp:m.opp||"Opponent",
+    royalsHome:(m.homeAway==="home")};
+}
+function sbLine(side){
+  const sides=replayBoth();
+  const both=G.trackMode==="both";
+  if(side==="us") return sides.us.byInning;
+  return both? sides.them.byInning : (G.meta.themByInning||[]);
+}
+function sbTeamPanel(style, side){
+  const hm=sbHeaderMeta();
+  const teamName = side==="us" ? hm.royals : hm.opp;
+  const oppName  = side==="us" ? hm.opp : hm.royals;
+  const tracked = (side==="us") || (G.trackMode==="both");
+  const innN = style==="spn" ? 10 : 9;
+  const slotN = style==="spn" ? 14 : 15;
+  const agg = tracked ? aggregate(side) : null;
+  const st  = tracked ? buildScorebookData(side) : null;
+  const line= sbLine(side);
+  const runsTot=line.reduce((a,b)=>a+(b||0),0);
+  let rows='';
+  if(tracked){
+    for(let i=0;i<slotN;i++){
+      const slot=st.slots[i];
+      const batters = slot ? slot.batters : [];
+      const main=batters[0]||null;
+      const subs=batters.slice(1);
+      const mkRow=(b,isSub,label)=>{
+        let tds=`<td class="bo">${label}</td><td class="pl">${b?escHtml(b.name):""}</td><td class="no">${b?escHtml(String(b.jersey||"")):""}</td><td class="pos"></td>`;
+        for(let inn=1;inn<=innN;inn++){ tds+=`<td class="ab-cell">${sbCellSVG(b?b.cells[inn]:null)}</td>`; }
+        const stt=(b&&agg.stats[b.name])||null;
+        if(style==="spn"){ tds+=`<td class="sum">${stt?stt.ab:""}</td><td class="sum">${stt?stt.r:""}</td><td class="sum">${stt?stt.h:""}</td><td class="sum">${stt?stt.rbi:""}</td>`; }
+        else { tds+=`<td class="sum">${stt?stt.h:""}</td><td class="sum">${stt?stt.ab:""}</td><td class="sum">${stt?stt.rbi:""}</td><td class="sum">${stt?stt.k:""}</td>`; }
+        return `<tr class="${isSub?'subrow':''}">${tds}</tr>`;
+      };
+      rows+=mkRow(main,false,String(i+1));
+      rows+=mkRow(subs[0]||null,true,"SUB");
+      for(let x=1;x<subs.length;x++) rows+=mkRow(subs[x],true,"SUB");
+    }
+  } else {
+    rows=`<tr><td colspan="${4+innN+4}" class="untracked">Per-batter scoring not tracked for ${escHtml(teamName)} (offense-only game). Runs by inning below.</td></tr>`;
+  }
+  // line score strip
+  let lineCells=''; for(let inn=1;inn<=innN;inn++) lineCells+=`<td>${line[inn-1]!=null?line[inn-1]:""}</td>`;
+  const sumHd = style==="spn" ? '<th class="sum">AB</th><th class="sum">R</th><th class="sum">H</th><th class="sum">RBI</th>'
+                              : '<th class="sum">H</th><th class="sum">AB</th><th class="sum">RBI</th><th class="sum">K</th>';
+  let innHd=''; for(let i=1;i<=innN;i++) innHd+=`<th>${i}</th>`;
+  const hdr = style==="spn"
+    ? `<div class="sheet-hd"><span class="sh-brand">PLAY SLO-PITCH \u2014 SPN</span>
+       <span>Team: <b>${escHtml(teamName)}</b></span><span>vs <b>${escHtml(oppName)}</b></span>
+       <span>Date: <b>${escHtml(hm.date)}</b></span><span>Time: <b>${escHtml(hm.time)}</b></span>
+       <span>Park: <b>${escHtml(hm.park)}</b></span><span>Game #: <b>${escHtml(hm.gnum)}</b></span>
+       <span class="sh-ump">Umpire: ____________</span></div>`
+    : `<div class="sheet-hd"><span class="sh-brand">NSA CANADA SLO-PITCH</span>
+       <span>Teams: <b>${escHtml(teamName)}</b> vs <b>${escHtml(oppName)}</b></span>
+       <span>Played at: <b>${escHtml(hm.park)}</b></span><span>Time: <b>${escHtml(hm.time)}</b></span>
+       <span>Date: <b>${escHtml(hm.date)}</b></span><span>Final Score: <b>____</b></span></div>`;
+  const legend = style==="nsa"
+    ? `<div class="sheet-legend">1B Single \u00b7 2B Double \u00b7 3B Triple \u00b7 HR Home Run \u00b7 BB Base on Balls \u00b7 K Strikeout \u00b7 FC Fielder's Choice \u00b7 SAC Sacrifice \u00b7 \u2715 Out \u00b7 Filled diamond = Run scored \u00b7 \u25cf = held at base</div>`
+    : `<div class="sheet-legend">Filled diamond = run scored \u00b7 \u25cf = held at base \u00b7 \u2715 = out \u00b7 RBI noted top-right of cell</div>`;
+  return `<div class="sheet ${style}">
+    ${hdr}
+    <table class="sheet-grid">
+      <thead><tr><th class="bo">${style==="spn"?"BO":"#"}</th><th class="pl">Player</th><th class="no">No</th><th class="pos">Pos</th>${innHd}${sumHd}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <table class="sheet-line"><tr><td class="ll">RUNS</td>${lineCells}<td class="lt">${runsTot}</td></tr></table>
+    ${legend}
+    <div class="sheet-sign">Scorer: ____________________ &nbsp;&nbsp; Umpire's Signature: ____________________</div>
+  </div>`;
+}
+function openScoresheet(style){
+  if(pending||brPending||locStep){ toast("Finish the current play first"); return; }
+  panelClose();
+  const v=document.getElementById("sheet-view");
+  document.getElementById("sheet-orient").textContent = `@page{size:letter ${style==="spn"?"landscape":"portrait"};margin:8mm}`;
+  document.getElementById("sheet-body").innerHTML =
+    sbTeamPanel(style, G.meta.homeAway==="home" ? "them" : "us") +
+    '<div class="page-break"></div>' +
+    sbTeamPanel(style, G.meta.homeAway==="home" ? "us" : "them");
+  v.classList.add("show");
+  document.body.classList.add("sheet-mode");
+}
+function closeScoresheet(){ document.getElementById("sheet-view").classList.remove("show"); document.body.classList.remove("sheet-mode"); }
+function printScoresheet(){ window.print(); }
+function pickScoresheet(){
+  panelOpen(`<div class="panel-hd"><h2>Scoresheet format</h2></div>
+    <div class="panel-body"><div class="menu-list">
+      <button onclick="openScoresheet('spn')"><span class="ic">\u25ad</span><div class="col"><span>SPN \u2014 landscape</span><span class="sub">Play Slo-Pitch long-form sheet</span></div></button>
+      <button onclick="openScoresheet('nsa')"><span class="ic">\u25af</span><div class="col"><span>NSA \u2014 portrait</span><span class="sub">NSA Canada book-style sheet</span></div></button>
+    </div></div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button></div>`);
+}
 function plogLine(e){
   const resMap={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"strikeout","Kl":"strikeout looking","SAC":"sacrifice","FC":"fielder's choice","OUT":"out"};
   if(e.t==="SUB") return `<span class="plog-sub">\u2194 ${escHtml(firstName(e.in))} subs in for ${escHtml(firstName(e.out))}</span>`;
@@ -2187,17 +2469,10 @@ function codesFor(name, side){
   }
   return out.join("&nbsp; ");
 }
-function openLineup(){
-  if(pending||brPending){ toast("Finish current play first"); return; }
-  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
-  panelClose();
-  const side=activeSide;
-  const st=G._st;
+function lineupRowsHTML(side, st){
   const size = side==="us" ? G.lineupSize : G.oppLineupSize;
   const lineup = st.lineup;
   const stat = playerStatus();
-  const teamName = side==="us" ? "Royals" : (G.meta.opp||"Opponent");
-  document.getElementById("lineup-title").textContent = teamName+" lineup";
   let h="";
   for(let i=0;i<size;i++){
     const nm=lineup[i]||("#"+(i+1));
@@ -2225,11 +2500,29 @@ function openLineup(){
         <div class="ls-nm"><div class="nm">${escHtml(nm)}${j} ${tag}</div><div class="ls-codes">${codesFor(nm,side)||'<span style="opacity:.5">\u2014</span>'}</div></div></div>`;
     });
   }
-  document.getElementById("lineup-body").innerHTML=h;
+  return h;
+}
+function openLineup(){
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
+  panelClose();
+  const side=activeSide;
+  const teamName = side==="us" ? "Royals" : (G.meta.opp||"Opponent");
+  document.getElementById("lineup-title").textContent = teamName+" lineup";
+  document.getElementById("lineup-body").innerHTML=lineupRowsHTML(side, G._st);
   document.getElementById("lineup-fs").classList.add("show");
+}
+function renderSidePane(st){
+  const sp=document.getElementById("side-pane");
+  if(!sp) return;
+  const teamName = activeSide==="us" ? "ROYALS" : (G.meta.opp||"OPPONENT").toUpperCase();
+  document.getElementById("sp-hd").textContent = teamName+" \u2014 LINEUP";
+  document.getElementById("sp-body").innerHTML = lineupRowsHTML(activeSide, st);
 }
 function closeLineup(){ document.getElementById("lineup-fs").classList.remove("show"); }
 function openPlayerDetail(slot){
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   const side=activeSide;
   const st=G._st;
   const nm = st.lineup[slot] || ("#"+(slot+1));
