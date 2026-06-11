@@ -213,7 +213,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 /* ===== PHONE LANDSCAPE (short height): two-column grid ===== */
 @media (orientation:landscape) and (max-height:520px){
-  #game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);
+  #game.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);
     grid-template-areas:"toggle diamond" "state diamond" "line diamond" "atbat diamond" "out diamond" "locbar diamond" "resolve diamond" "foot diamond";
     grid-template-rows:auto auto auto auto 1fr auto auto auto}
   .side-toggle{grid-area:toggle}
@@ -269,7 +269,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   #game.them-batting #side-pane .sp-hd{background:var(--them)}
 }
 
-.base{position:absolute;width:30%;height:30%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.base{position:absolute;width:26%;height:26%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .base.occ{background:var(--gold);border-color:#fff;box-shadow:0 0 18px rgba(240,180,41,.5)}
 .base .bn{transform:rotate(-45deg);text-align:center;max-width:90%}
 .base .bn .who{font-size:13px;font-weight:800;color:#fff;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -312,10 +312,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .out-zone{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34%;height:22%;background:rgba(192,57,43,.15);border:2px dashed var(--red);border-radius:12px;align-items:center;justify-content:center;color:#FF8A7A;font-weight:900;font-size:14px;letter-spacing:1px;cursor:pointer;z-index:5}
 #game.resolving .out-zone{display:flex}
 .out-zone.target{background:rgba(192,57,43,.3);box-shadow:0 0 14px rgba(192,57,43,.4)}
-.base.b2{top:0;left:35%}
-.base.b3{top:35%;left:0}
-.base.b1{top:35%;right:0}
-.base.home{bottom:0;left:35%;border-radius:7px 7px 7px 0;background:rgba(255,255,255,.02);border-style:dashed}
+.base.b2{top:4%;left:37%}
+.base.b3{top:37%;left:4%}
+.base.b1{top:37%;right:4%}
+.base.home{bottom:4%;left:37%;border-radius:7px 7px 7px 0;background:rgba(255,255,255,.02);border-style:dashed}
 .base.home .bn .who{font-size:11px}
 
 .atbat{flex-shrink:0;padding:0 12px 8px}
@@ -640,7 +640,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <span class="gs-item"><b class="gold" id="g-thisinn">0</b><i>THIS INN</i></span>
     </div>
     <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
-    <button class="gs-menu" onclick="openLineup()" title="Lineup">\u2630</button>
+    <button class="gs-menu" onclick="openLineup()" title="Lineup">☰</button>
     <button class="gs-menu" onclick="openMenu()">⋯</button>
   </div>
 
@@ -674,7 +674,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   </div>
 
   <div class="atbat">
-    <button class="wrap-btn" id="wrap-btn" style="display:none" onclick="wrapToTop()">\u27F2 LAST BATTER? Tap to loop back to #1<span class="wb-sub">Locks the opponent order here</span></button>
+    <button class="wrap-btn" id="wrap-btn" style="display:none" onclick="wrapToTop()">⟲ LAST BATTER? Tap to loop back to #1<span class="wb-sub">Locks the opponent order here</span></button>
     <div class="card" id="atbat-card" onclick="openBatterMenu()">
       <div class="ord" id="ab-ord">1</div>
       <div class="meta"><div class="lbl">At Bat</div><div class="nm" id="ab-name">—</div></div>
@@ -740,7 +740,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <style id="sheet-orient"></style>
 <div class="fullscreen" id="sheet-view">
   <div class="fs-hd no-print"><h2>Scoresheet</h2><div style="display:flex;gap:8px">
-    <button class="fs-close" style="background:var(--green)" onclick="printScoresheet()">\uD83D\uDDA8 Print / Save PDF</button>
+    <button class="fs-close" style="background:var(--green)" onclick="printScoresheet()">🖨 Print / Save PDF</button>
     <button class="fs-close" onclick="closeScoresheet()">Done</button></div></div>
   <div class="fs-body" id="sheet-body" style="background:#fff"></div>
 </div>
