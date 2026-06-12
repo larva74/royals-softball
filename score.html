@@ -531,6 +531,42 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   #sheet-view .fs-body{overflow:visible;padding:0;background:#fff}
   .sheet{max-width:none;margin:0;padding:0}
 }
+
+/* ===== SUNLIGHT MODE (body.light) ===== */
+body.light #game{background:#F0F2F8}
+body.light .st-btn{background:#E2E6F2;color:#8089A8}
+body.light .st-btn.active{background:#fff;color:var(--navy)}
+body.light .g-state{background:#fff;border-bottom:1px solid var(--line)}
+body.light .gs-opp{color:var(--ink)}
+body.light .gs-opp .vs{color:var(--muted)}
+body.light .gs-item b{color:var(--ink)}
+body.light .gs-item b.gold{color:var(--gold-d)}
+body.light .gs-item i{color:var(--muted)}
+body.light #game.them-batting .g-state{background:var(--them)}
+body.light #game.them-batting .gs-opp,body.light #game.them-batting .gs-item b{color:#fff}
+body.light .linescore{background:#fff;border-top-color:var(--line)}
+body.light .linescore th{color:#8089A8}
+body.light .linescore td{color:#2A3563;border-right-color:#EDEFF7}
+body.light .linescore .lbl{color:#44508C}
+body.light .linescore .tot{color:var(--gold-d)}
+body.light .lp-hd{color:var(--muted)}
+body.light .lp-bat{color:var(--ink)}
+body.light .lp-bat .res{color:var(--gold-d)}
+body.light .lp-run{color:#44508C}
+body.light .lp-run .arr{color:#8089A8}
+body.light .lp-run.scored{color:var(--ink)}
+body.light .lp-run.scored .tag{color:var(--gold-d)}
+body.light .lp-run .dest{color:var(--ink)}
+body.light .bh-name{color:var(--ink)}
+body.light .bh-row{color:#44508C}
+body.light .base .bn .who{color:var(--navy)}
+body.light .outcomes{background:#E8EBF5;border-top-color:var(--line)}
+body.light #game.them-batting .outcomes{background:var(--them)}
+body.light .resolve-bar{background:#fff;border-top-color:var(--gold)}
+body.light .resolve-hint{color:var(--ink)}
+body.light .g-foot{background:#E8EBF5;border-top-color:var(--line)}
+body.light .gs-menu{background:rgba(10,31,107,.10);color:var(--navy)}
+body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#fff}
 </style>
 </head>
 <body>
@@ -543,7 +579,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <h1>ROYALS LIVE SCORING</h1>
       <div class="sub" id="seed-tag">offense logger</div>
     </div>
-    <button id="setup-games-btn" onclick="openGamesView()" style="display:none;background:rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">▦ Games <span id="setup-games-count"></span></button>
+    <button id="theme-btn-s" onclick="toggleTheme()" style="background:rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:15px">☀</button>
+      <button id="setup-games-btn" onclick="openGamesView()" style="display:none;background:rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">▦ Games <span id="setup-games-count"></span></button>
   </div>
   <div id="resume-host"></div>
   <div class="scroll">
@@ -640,6 +677,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <span class="gs-item"><b class="gold" id="g-thisinn">0</b><i>THIS INN</i></span>
     </div>
     <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
+    <button class="gs-menu" id="theme-btn-g" onclick="toggleTheme()" title="Day / night">☀</button>
     <button class="gs-menu" onclick="openLineup()" title="Lineup">☰</button>
     <button class="gs-menu" onclick="openMenu()">⋯</button>
   </div>
@@ -2907,7 +2945,21 @@ function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } 
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && G) requestWake(); });
 
 /* ============ INIT ============ */
+/* ===== THEME (dark default / sunlight) ===== */
+function applyTheme(mode){
+  document.body.classList.toggle("light", mode==="light");
+  const glyph = mode==="light" ? "\uD83C\uDF19" : "\u2600";
+  const g=document.getElementById("theme-btn-g"); if(g) g.textContent=glyph;
+  const st=document.getElementById("theme-btn-s"); if(st) st.textContent=glyph;
+}
+function toggleTheme(){
+  const mode = document.body.classList.contains("light") ? "dark" : "light";
+  try{ localStorage.setItem("royals_theme", mode); }catch(e){}
+  applyTheme(mode);
+}
+(function(){ let m="dark"; try{ m=localStorage.getItem("royals_theme")||"dark"; }catch(e){} applyTheme(m); })();
 function initSetup(){
+  try{ applyTheme(localStorage.getItem("royals_theme")||"dark"); }catch(e){}
   loadStore();
   // tournament dropdown
   refreshTourneyDropdown(SEED.tournaments[SEED.tournaments.length-1].id);
