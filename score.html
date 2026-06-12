@@ -256,17 +256,38 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .loc-prompt{font-size:12px;margin-bottom:4px}
   .glf2{height:38px;font-size:16px}
   .glf-skip{height:38px;font-size:12px}
-  #side-pane{display:none}
 }
 
-/* ===== iPad LANDSCAPE (tall): two-pane with live lineup rail ===== */
-#side-pane{display:none}
+/* ===== LINEUP RAIL / SLIDE-OUT ===== */
+/* shared inner styling */
+#side-pane .sp-hd{padding:10px 12px;background:var(--navy);color:#fff;font-weight:900;font-size:14px;letter-spacing:.5px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+#side-pane .sp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#game.them-batting #side-pane .sp-hd{background:var(--them)}
+.sp-close-x{display:none;background:rgba(255,255,255,.2);color:#fff;width:30px;height:30px;border-radius:8px;font-size:18px;font-weight:800;flex-shrink:0}
+/* scrim for slide-out */
+.sp-scrim{display:none;position:absolute;inset:0;background:rgba(7,21,73,.45);z-index:5;opacity:0;transition:opacity .2s}
+/* edge handle (slide-out trigger) */
+.sp-handle{display:none;position:absolute;top:50%;right:0;transform:translateY(-50%);z-index:6;width:26px;height:74px;background:var(--gold);color:var(--navy-d);border-radius:10px 0 0 10px;align-items:center;justify-content:center;font-weight:900;font-size:18px;box-shadow:-2px 0 10px rgba(0,0,0,.3)}
+
+/* DEFAULT (phone portrait AND phone landscape): off-canvas slide-out */
+#side-pane{display:flex;flex-direction:column;position:absolute;top:0;right:0;bottom:0;width:80%;max-width:360px;background:var(--card);border-left:3px solid var(--gold);z-index:7;transform:translateX(102%);transition:transform .25s ease;box-shadow:-6px 0 20px rgba(0,0,0,.3)}
+#game.sp-open #side-pane{transform:translateX(0)}
+#game.sp-open .sp-scrim{display:block;opacity:1}
+.sp-handle{display:flex}
+#game.sp-open .sp-handle{display:none}
+.sp-close-x{display:flex;align-items:center;justify-content:center}
+
+/* iPad mini (tall landscape, narrower): smaller always-on fixed rail */
 @media (orientation:landscape) and (min-height:521px){
-  #game{padding-right:346px;position:relative}
-  #side-pane{display:flex;flex-direction:column;position:absolute;top:0;right:0;bottom:0;width:340px;background:var(--card);border-left:3px solid var(--gold);z-index:4}
-  #side-pane .sp-hd{padding:10px 12px;background:var(--navy);color:#fff;font-weight:900;font-size:14px;letter-spacing:.5px;flex-shrink:0}
-  #side-pane .sp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  #game.them-batting #side-pane .sp-hd{background:var(--them)}
+  #game{padding-right:286px;position:relative}
+  #side-pane{display:flex;position:absolute;top:0;right:0;bottom:0;width:280px;max-width:none;transform:none;transition:none;box-shadow:none;border-left:3px solid var(--gold);z-index:4}
+  .sp-handle,.sp-scrim,.sp-close-x{display:none !important}
+  #game.sp-open #side-pane{transform:none}
+}
+/* iPad Pro (wider): full-width always-on fixed rail */
+@media (orientation:landscape) and (min-height:820px){
+  #game{padding-right:346px}
+  #side-pane{width:340px}
 }
 
 .base{position:absolute;width:26%;height:26%;transform:rotate(45deg);border:3px solid #4356A0;background:rgba(255,255,255,.04);border-radius:7px;display:flex;align-items:center;justify-content:center}
@@ -751,8 +772,10 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
     <button class="undo" onclick="undo()" id="foot-undo">⟲ Undo</button>
     <button class="inn-end" onclick="endInningManual()">End Inning ▸</button>
   </div>
+  <div class="sp-scrim" id="sp-scrim" onclick="closeSidePane()"></div>
+  <button class="sp-handle" id="sp-handle" onclick="openSidePane()" aria-label="Show lineup">‹</button>
   <div id="side-pane">
-    <div class="sp-hd" id="sp-hd">LINEUP</div>
+    <div class="sp-hd" id="sp-hd"><span>LINEUP</span><button class="sp-close-x" onclick="closeSidePane()" aria-label="Hide">›</button></div>
     <div class="sp-body" id="sp-body"></div>
   </div>
 </div>
@@ -2550,17 +2573,35 @@ function openLineup(){
   document.getElementById("lineup-body").innerHTML=lineupRowsHTML(side, G._st);
   document.getElementById("lineup-fs").classList.add("show");
 }
+function openSidePane(){ const g=document.getElementById("game"); if(g) g.classList.add("sp-open"); }
+function closeSidePane(){ const g=document.getElementById("game"); if(g) g.classList.remove("sp-open"); }
+/* swipe-right on the open panel closes it */
+(function(){
+  let x0=null,y0=null;
+  document.addEventListener("touchstart",e=>{
+    const g=document.getElementById("game"); if(!g||!g.classList.contains("sp-open")) return;
+    const sp=document.getElementById("side-pane"); if(!sp||!sp.contains(e.target)) return;
+    x0=e.touches[0].clientX; y0=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener("touchend",e=>{
+    if(x0==null) return;
+    const t=e.changedTouches[0]; const dx=t.clientX-x0; const dy=t.clientY-y0;
+    if(dx>55 && Math.abs(dx)>Math.abs(dy)) closeSidePane();
+    x0=null;y0=null;
+  },{passive:true});
+})();
 function renderSidePane(st){
   const sp=document.getElementById("side-pane");
   if(!sp) return;
   const teamName = activeSide==="us" ? "ROYALS" : (G.meta.opp||"OPPONENT").toUpperCase();
-  document.getElementById("sp-hd").textContent = teamName+" \u2014 LINEUP";
+  const hd=document.getElementById("sp-hd"); const span=hd.querySelector("span"); const label=teamName+" \u2014 LINEUP"; if(span) span.textContent=label; else hd.textContent=label;
   document.getElementById("sp-body").innerHTML = lineupRowsHTML(activeSide, st);
 }
 function closeLineup(){ document.getElementById("lineup-fs").classList.remove("show"); }
 function openPlayerDetail(slot){
   if(pending||brPending){ toast("Finish current play first"); return; }
   if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
+  closeSidePane();
   const side=activeSide;
   const st=G._st;
   const nm = st.lineup[slot] || ("#"+(slot+1));
