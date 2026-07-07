@@ -366,6 +366,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .g-foot button{flex:1;padding:13px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:6px}
 .g-foot .back{background:#3A2A2A;color:#FFB3A8}
 .g-foot .undo{background:#2A2A3A;color:#B8C0E8}
+.g-foot .redo{background:#2A2A3A;color:#B8C0E8}
 .g-foot .inn-end{background:#243681;color:#fff}
 .g-foot button:disabled{opacity:.35}
 
@@ -480,6 +481,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .plog-half-hd.them{background:var(--them);color:#fff}
 .plog-half-hd .sc{float:right;font-weight:800;opacity:.85}
 .plog-line{font-size:14px;color:var(--ink);padding:5px 10px;line-height:1.4}
+.plog-edit{font-size:10px;font-weight:800;color:var(--gold-d);background:#FBF1D9;padding:1px 5px;border-radius:5px;margin-left:4px}
+.edit-res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.edit-res-grid button{padding:10px;border-radius:9px;background:var(--bg);font-weight:800;font-size:13px;border:2px solid transparent}
+.edit-res-grid button.sel{background:var(--gold);color:var(--navy-d);border-color:#fff}
+.rbi-adj{width:30px;height:30px;border-radius:8px;background:var(--navy);color:#fff;font-weight:900;margin-left:4px}
+.ripple-warn{background:#FBEAE8;border:2px solid var(--red);border-radius:10px;padding:10px;margin:10px 0;font-size:13px;color:#7A1A12;font-weight:600}
 .plog-line:nth-child(even){background:var(--bg);border-radius:6px}
 .plog-name{font-weight:800;color:var(--navy)}
 .plog-half.them-half .plog-name{color:var(--them)}
@@ -646,8 +653,8 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sect">
         <div class="sect-lbl">Tracking mode</div>
         <div class="track-mode">
-          <button class="tm-btn active" id="tm-us" onclick="setTrackMode('us')"><span class="tm-t">Royals only</span><span class="tm-s">Score our offense — fast</span></button>
-          <button class="tm-btn" id="tm-both" onclick="setTrackMode('both')"><span class="tm-t">Both teams</span><span class="tm-s">Score both sides — full scorebook</span></button>
+          <button class="tm-btn" id="tm-us" onclick="setTrackMode('us')"><span class="tm-t">Royals only</span><span class="tm-s">Score our offense — fast</span></button>
+          <button class="tm-btn active" id="tm-both" onclick="setTrackMode('both')"><span class="tm-t">Both teams</span><span class="tm-s">Score both sides — full scorebook</span></button>
         </div>
       </div>
 
@@ -670,7 +677,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
         <div class="lineup-list" id="bench-list"></div>
       </div>
 
-      <div class="sect" id="opp-lineup-sect" style="display:none">
+      <div class="sect" id="opp-lineup-sect" style="display:block">
         <div class="sect-lbl">Opponent lineup <span style="font-weight:600;text-transform:none;letter-spacing:0">(name &amp; #; blanks become "Opp N"; edit anytime in game)</span></div>
         <div class="opp-lineup-list" id="opp-lineup-list"></div>
         <div class="sect-lbl" style="margin-top:12px">Opponent subs <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional)</span></div>
@@ -770,6 +777,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
   <div class="g-foot">
     <button class="back" onclick="cancelPending()" id="foot-back">← Back</button>
     <button class="undo" onclick="undo()" id="foot-undo">⟲ Undo</button>
+    <button class="redo" onclick="redo()" id="foot-redo">Redo ⟳</button>
     <button class="inn-end" onclick="endInningManual()">End Inning ▸</button>
   </div>
   <div class="sp-scrim" id="sp-scrim" onclick="closeSidePane()"></div>
@@ -831,7 +839,7 @@ const STORE_KEY = "royals_games_v1";        // multi-game store
 const ADV = {"1B":1,"2B":2,"3B":3,"HR":4}; // batter base index from home
 
 /* ---- SETUP STATE ---- */
-let setup = { type:"league", tournamentId:null, opp:"", date:"", gnum:"", time:"", field:"", lineup:[], bench:[], pickMode:"order", jerseys:{}, trackMode:"us", homeAway:"away", oppCount:0, oppJerseys:[] };
+let setup = { type:"league", tournamentId:null, opp:"", date:"", gnum:"", time:"", field:"", lineup:[], bench:[], pickMode:"order", jerseys:{}, trackMode:"both", homeAway:"away", oppCount:0, oppJerseys:[] };
 
 /* ---- GAME STATE (the committed model) ---- */
 // game = { meta:{...}, lineup:[names], events:[...], roster:{name:added?} }
@@ -1095,7 +1103,8 @@ function startGame(){
     trackMode: setup.trackMode,
     lineupLocked: true,        // Royals lineup known at start -> locked, wraps normally
     oppLineupLocked: (setup.trackMode==="both" && (setup.oppLineup||[]).some(v=>(v||"").trim()!=="")),  // preset lineup -> lock+wrap; all blank -> discover
-    events: []
+    events: [],
+    redo: []
   };
   // opponent jerseys keyed by name
   G.oppOrigLineup=G.oppLineup.slice();
@@ -1236,6 +1245,7 @@ function render(){
   const showWrap = (G.trackMode==="both" && activeSide==="them" && !G.oppLineupLocked && st.slot>=1);
   wb.style.display = showWrap ? "block" : "none";
   document.getElementById("foot-undo").disabled = G.events.length===0;
+  document.getElementById("foot-redo").disabled = !G.redo||G.redo.length===0;
   document.getElementById("foot-back").disabled = !pending;
   saveGame();
   G._st = st; G._agg = agg; G._sides = sides;
@@ -1325,10 +1335,11 @@ function renderBase(n, name, st){
   const el = document.getElementById("base-"+n);
   el.classList.remove("target");
   const bn = el.querySelector(".bn");
-  if(name){ el.classList.add("occ"); bn.innerHTML = `<div class="who">${escHtml(firstName(name))}</div>`; }
+  if(name){ el.classList.add("occ"); bn.innerHTML = `<div class="who">${escHtml(shortName(name))}</div>`; }
   else { el.classList.remove("occ"); bn.innerHTML=""; }
 }
 function firstName(n){ return n.split(" ")[0]; }
+function shortName(n){ const p=n.trim().split(/\s+/); return p.length>1 ? p[0][0]+"."+p[p.length-1] : n; }
 
 function renderLastPlay(){
   const host=document.getElementById("lp-lastplay");
@@ -1618,6 +1629,7 @@ function confirmBaserunning(){
   const stBefore=sidesBefore[activeSide];
   brPending=null;
   document.getElementById("game").classList.remove("resolving");
+  clearRedo();
   G.events.push(ev);
   const after=replayBoth()[activeSide];
   if(after.inning>stBefore.inning && ev.out && (stBefore.outs+ev.out)>=3 && G.trackMode==="both"){ autoFlipSide(); return; }
@@ -1665,6 +1677,7 @@ function commitPA(ev){
   ev.t="PA"; ev.side=activeSide;
   const sidesBefore=G._sides||replayBoth();
   const stBefore=sidesBefore[activeSide];
+  clearRedo();
   G.events.push(ev);
   if(activeSide==="us" && !G.allPlayers.includes(ev.batter)) G.allPlayers.push(ev.batter);
   growOppIfNeeded();
@@ -1726,12 +1739,25 @@ function setActiveSide(side){
   activeSide=side; render();
 }
 
-/* ============ UNDO ============ */
+/* ============ UNDO / REDO ============ */
+function clearRedo(){ if(G) G.redo=[]; }
 function undo(){
   if(locStep){ toast("Finish the location step first"); return; }
+  if(pending||brPending){ toast("Finish current play first"); return; }
   if(G.events.length===0)return;
   const last=G.events.pop();
+  (G.redo=G.redo||[]).push(last);
   toast("Undid: "+evLabel(last));
+  render();
+}
+function redo(){
+  if(locStep){ toast("Finish the location step first"); return; }
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(!G.redo||!G.redo.length){ toast("Nothing to redo"); return; }
+  const ev=G.redo.pop();
+  clearRedo();
+  G.events.push(ev);
+  toast("Redid: "+evLabel(ev));
   render();
 }
 
@@ -1922,6 +1948,7 @@ function openSubPick(){
 }
 function doSub(name){
   const st=G._st; const slot=curSubSlot();
+  clearRedo();
   G.events.push({t:"SUB", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
   if(activeSide==="us" && !G.allPlayers.includes(name)) G.allPlayers.push(name);
   subSlot=null; panelClose(); render(); toast(name+" subbed in");
@@ -1943,11 +1970,13 @@ function openReenterPick(){
 }
 function doReenter(name){
   const st=G._st; const slot=curSubSlot();
+  clearRedo();
   G.events.push({t:"REENTER", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
   subSlot=null; panelClose(); render(); toast(name+" re-entered");
 }
 function doSkip(){
   const st=G._st;
+  clearRedo();
   G.events.push({t:"SKIP", side:activeSide, slot:st.slot, batter:st.lineup[st.slot]});
   panelClose(); render(); toast("Spot skipped");
 }
@@ -1993,6 +2022,7 @@ function endInningManual(){
   if(pending||brPending){ toast("Finish current play first"); return; }
   if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   panelClose();
+  clearRedo();
   G.events.push({t:"ENDINN", side:activeSide, auto:false});
   if(G.trackMode==="both"){ autoFlipSide(); return; }
   render(); toast("Inning ended — bases cleared");
@@ -2289,13 +2319,14 @@ function openPlayLog(){
   function sideLog(side){
     const innings={}; let inn=1, outs=0;
     const push=(l)=>{ (innings[inn]=innings[inn]||[]).push(l); };
-    for(const e of G.events){
-      if((e.side||"us")!==side) continue;
-      if(e.t==="ENDINN"){ inn++; outs=0; continue; }
-      push(plogLine(e));
+    G.events.forEach((e,gi)=>{
+      if((e.side||"us")!==side) return;
+      if(e.t==="ENDINN"){ inn++; outs=0; return; }
+      const editable = (e.t==="PA"||e.t==="BR");
+      push(`<span ${editable?`onclick="openEditPlay(${gi})" style="cursor:pointer"`:''} data-gi="${gi}">${plogLine(e)}${editable?' <span class="plog-edit">edit</span>':''}</span>`);
       if(e.t==="PA"){ outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;} }
       else if(e.t==="BR"){ outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
-    }
+    });
     return innings;
   }
   const usLog=sideLog("us");
@@ -2329,6 +2360,102 @@ function openPlayLog(){
   document.getElementById("playlog-fs").classList.add("show");
 }
 function closePlayLog(){ document.getElementById("playlog-fs").classList.remove("show"); }
+
+/* ============ EDIT PAST PLAY (from play log) ============ */
+function inningStructureSig(){
+  // signature of inning boundaries + out counts per side, to detect ripple
+  const sig={us:[],them:[]};
+  const outs={us:0,them:0}, inn={us:1,them:1};
+  for(const e of G.events){
+    const sd=(e.side||"us");
+    if(e.t==="ENDINN"){ sig[sd].push("E"+inn[sd]); inn[sd]++; outs[sd]=0; continue; }
+    if(e.t==="PA"){ outs[sd]+=e.outsAdded||0; if(outs[sd]>=3){sig[sd].push("3@"+inn[sd]);outs[sd]=0;inn[sd]++;} }
+    else if(e.t==="BR"){ outs[sd]+=e.out||0; if(outs[sd]>=3){sig[sd].push("3@"+inn[sd]);outs[sd]=0;inn[sd]++;} }
+  }
+  return JSON.stringify(sig);
+}
+function openEditPlay(gi){
+  const e=G.events[gi];
+  if(!e || (e.t!=="PA" && e.t!=="BR")){ toast("This play can't be edited"); return; }
+  let body='';
+  if(e.t==="PA"){
+    const results=["1B","2B","3B","HR","BB","K","Kl","FC","SAC","OUT"];
+    const map={"1B":"Single","2B":"Double","3B":"Triple","HR":"Home run","BB":"Walk","K":"Strikeout","Kl":"K looking","FC":"Fielder's choice","SAC":"Sacrifice","OUT":"Out"};
+    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.batter)} \u2014 change result:</div>
+      <div class="edit-res-grid">${results.map(r=>`<button class="${r===e.result?'sel':''}" onclick="setEditResult(${gi},'${r}')">${map[r]}</button>`).join("")}</div>
+      <div style="margin-top:12px;font-size:13px">RBI on this play: <b id="edit-rbi-val">${e.rbi||0}</b>
+        <button class="rbi-adj" onclick="adjEditRbi(${gi},-1)">\u2212</button>
+        <button class="rbi-adj" onclick="adjEditRbi(${gi},1)">+</button></div>`;
+    if(e.runs&&e.runs.length) body+=`<div style="margin-top:8px;font-size:12px;color:var(--muted)">Scored: ${e.runs.map(escHtml).join(", ")} (adjust via runner plays)</div>`;
+  } else { // BR
+    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.name)} \u2014 change outcome:</div>
+      <div class="edit-res-grid">
+        <button class="${e.to==='1B'?'sel':''}" onclick="setEditBR(${gi},'1B',false,false)">to 1B</button>
+        <button class="${e.to==='2B'?'sel':''}" onclick="setEditBR(${gi},'2B',false,false)">to 2B</button>
+        <button class="${e.to==='3B'?'sel':''}" onclick="setEditBR(${gi},'3B',false,false)">to 3B</button>
+        <button class="${e.to==='HOME'?'sel':''}" onclick="setEditBR(${gi},'HOME',false,true)">scored</button>
+        <button class="${e.to==='OUT'?'sel':''}" onclick="setEditBR(${gi},'OUT',true,false)">OUT</button>
+      </div>`;
+  }
+  panelOpen(`<div class="panel-hd"><h2>Edit play</h2></div>
+    <div class="panel-body">${body}
+      <div id="edit-ripple"></div>
+      <button onclick="deletePlay(${gi})" style="margin-top:16px;width:100%;padding:11px;border-radius:10px;background:#3A2A2A;color:#FFB3A8;font-weight:800">Delete this play</button>
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose();openPlayLog()">Done</button></div>`);
+}
+function afterEdit(gi){
+  clearRedo();
+  saveGame(); render();
+  // ripple check
+  panelClose();
+  openPlayLog();
+  toast("Play updated");
+}
+function editWithRippleCheck(mutate){
+  const before=inningStructureSig();
+  mutate();
+  const after=inningStructureSig();
+  clearRedo(); saveGame(); render();
+  panelClose(); openPlayLog();
+  if(before!==after){
+    // surface a warning banner at top of play log
+    const b=document.getElementById("playlog-body");
+    if(b) b.insertAdjacentHTML("afterbegin", `<div class="ripple-warn">\u26A0 This edit changed when an inning ended or the out count. Plays after it may now fall in a different inning \u2014 review the log below and fix any that look wrong.</div>`);
+    toast("Updated \u2014 inning structure changed, review");
+  } else {
+    toast("Play updated");
+  }
+}
+function setEditResult(gi,r){
+  editWithRippleCheck(()=>{
+    const e=G.events[gi];
+    const wasOut=(e.result==="OUT"||e.result==="K"||e.result==="Kl"||e.result==="FC");
+    const nowOut=(r==="OUT"||r==="K"||r==="Kl"||r==="FC");
+    e.result=r;
+    // recompute outsAdded for this PA
+    e.outsAdded = nowOut ? 1 : 0;
+    // if changed to a non-advancing out, drop RBI/runs that no longer make sense (conservative: keep RBI editable)
+    if(nowOut && !e.batterTo){ /* fine */ }
+  });
+}
+function adjEditRbi(gi,d){
+  const e=G.events[gi];
+  e.rbi=Math.max(0,(e.rbi||0)+d);
+  document.getElementById("edit-rbi-val").textContent=e.rbi;
+  clearRedo(); saveGame(); render();
+}
+function setEditBR(gi,to,isOut,isRun){
+  editWithRippleCheck(()=>{
+    const e=G.events[gi];
+    e.to=to; e.out=isOut?1:0; e.run=isRun?1:0;
+  });
+}
+function deletePlay(gi){
+  const e=G.events[gi];
+  editWithRippleCheck(()=>{ G.events.splice(gi,1); });
+}
+
 
 /* ===== INLINE LOCATION STEP (on the main diamond) ===== */
 let locStep=null; // {evIndex, ballType:null|'G'|'L'|'F'|'P'}
