@@ -2801,6 +2801,7 @@ function aggregateGame(g){
   (g.allPlayers||[]).forEach(ensure);
   let teamR=0,teamRBI=0;
   for(const e of g.events){
+    if((e.side||"us")!=="us") continue;   // Royals only — never merge opponent batters
     if(e.t==="BR"){ if(e.run){ ensure(e.name).r++; teamR++; } continue; }
     if(e.t!=="PA")continue;
     const s=ensure(e.batter); s.pa++; const res=e.result;
@@ -2812,7 +2813,17 @@ function aggregateGame(g){
   }
   return {stats, teamR, teamRBI};
 }
-function themTotal(m){
+function themTotal(m,g){
+  // both-team mode: opponent runs come from replaying the 'them' side
+  if(g && g.trackMode==="both"){
+    let r=0;
+    for(const e of g.events){
+      if((e.side||"us")!=="them") continue;
+      if(e.t==="BR"){ if(e.run) r++; continue; }
+      if(e.t==="PA"){ r += (e.runs||[]).length; }
+    }
+    return r;
+  }
   if(m.themByInning && m.themByInning.some(v=>v!=null)){
     return m.themByInning.reduce((s,v)=>s+(v||0),0);
   }
@@ -2820,7 +2831,7 @@ function themTotal(m){
 }
 function buildGameObject(g){
   const agg=aggregateGame(g); const m=g.meta;
-  const themT = themTotal(m);
+  const themT = themTotal(m, g);
   const ra = themT!=null ? themT : (m._ra!==undefined&&m._ra!==""?parseInt(m._ra,10):null);
   const result=ra===null?null:(agg.teamR>ra?"W":agg.teamR<ra?"L":"T");
   const stats={};
