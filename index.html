@@ -64,6 +64,28 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .card-blue .cta{color:#1A45C0}
 
 /* Record bar (home tournament card) */
+.donut-collapse{background:#fff;border:1px solid #D4DAF0;border-left:4px solid #F0B429;border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.donut-head{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;text-align:left}
+.donut-head-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.donut-emoji{font-size:22px}
+.donut-head-t{font-size:16px;font-weight:800;color:#0D1B3E}
+.donut-head-n{font-size:13px;font-weight:700;color:#C28A1F;background:#FBF1D9;padding:2px 10px;border-radius:20px}
+.donut-toggle{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.donut-details{font-size:12px;font-weight:600;color:#8B7A3F}
+.donut-plus{font-size:22px;font-weight:800;color:#C28A1F;width:26px;height:26px;line-height:24px;text-align:center;border-radius:7px;background:#FBF1D9;flex-shrink:0}
+.donut-body{padding:0 16px 14px}
+.donut-card{padding:16px 18px}
+.donut-sub{font-size:12px;color:#5A6B8A;margin-bottom:6px}
+.donut-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #EEF1F7;gap:12px}
+.donut-name{font-weight:700;color:#0D1B3E;font-size:15px;min-width:100px}
+.donut-icons{font-size:19px;letter-spacing:3px;text-align:right;line-height:1.2}
+.dn{opacity:1}
+.dn-claimed{opacity:.26}
+.dn-sm{font-size:14px;letter-spacing:1px}
+.donut-tag{font-size:11px;color:#5A6B8A;margin-left:8px;letter-spacing:0;white-space:nowrap}
+.donut-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 2px;border-top:1px solid #EEF1F7;margin-top:4px}
+.donut-total span:first-child{font-size:12px;color:#5A6B8A}
+.donut-total-n{font-size:13px;font-weight:700;color:#C28A1F}
 .record-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:14px}
 .record-big{font-size:38px;font-weight:800;color:#0A1F6B;line-height:1}
 .record-stat{text-align:center}
@@ -204,7 +226,7 @@ const TOURNAMENTS = [
   {
     "id": "t4",
     "name": "SPN Grand Slam 4",
-    "location": "Brampton",
+    "location": "Sesquicentennial Park, Brampton",
     "date": "August 8, 2026",
     "startDate": "2026-08-08"
   },
@@ -1921,6 +1943,10 @@ const TOURNEY_GAMES = [
   }
 ];
 
+// Donuts claimed (eaten) per player — update as donuts are handed over. Owed is auto-computed from HRs.
+const DONUTS_CLAIMED = {
+};
+
 const LEAGUE_GAMES = [
   {
     "venue": "away",
@@ -2388,6 +2414,18 @@ function fmtShortDate(iso){
 }
 
 // ============== RENDER: HOME ==============
+function toggleDonuts(){
+  const body=document.getElementById("donut-body");
+  const plus=document.getElementById("donut-plus");
+  const head=document.querySelector(".donut-head");
+  if(!body) return;
+  const open = body.style.display!=="none";
+  body.style.display = open ? "none" : "block";
+  if(plus) plus.textContent = open ? "+" : "\u2212";
+  const det=document.getElementById("donut-details");
+  if(det) det.textContent = open ? "Details" : "Hide";
+  if(head) head.setAttribute("aria-expanded", open ? "false" : "true");
+}
 function renderHome(){
   // Compute record from tournament games
   const tgames = allTourGames();
@@ -2398,6 +2436,44 @@ function renderHome(){
   }
   
   let h = '<div class="gap"></div>';
+
+  // ===== DONUT COUNT (collapsed, spans league + tournament) =====
+  {
+    const hr = {};
+    for(const g of [...LEAGUE_GAMES, ...allTourGames()]){
+      if(g.stats) for(const nm in g.stats){ const n = g.stats[nm].hr||0; if(n) hr[nm] = (hr[nm]||0) + n; }
+    }
+    const rows = Object.entries(hr).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
+    if(rows.length > 0){
+      let owedTotal=0, claimedTotal=0;
+      let inner='';
+      for(const [name, owed] of rows){
+        const claimed = Math.min(DONUTS_CLAIMED[name]||0, owed);
+        owedTotal += owed; claimedTotal += claimed;
+        const outstanding = owed - claimed;
+        let icons;
+        if(owed <= 7){
+          icons = '<span class="dn dn-claimed">\uD83C\uDF69</span>'.repeat(claimed) + '<span class="dn">\uD83C\uDF69</span>'.repeat(outstanding);
+        } else {
+          const shown=7, shownClaimed=Math.round(shown*claimed/owed);
+          icons = '<span class="dn dn-sm dn-claimed">\uD83C\uDF69</span>'.repeat(shownClaimed) + '<span class="dn dn-sm">\uD83C\uDF69</span>'.repeat(shown-shownClaimed) + `<span class="donut-tag">${owed}${outstanding===0?' \u00b7 all claimed':''}</span>`;
+        }
+        inner += `<div class="donut-row"><span class="donut-name">${name}</span><span class="donut-icons">${icons}</span></div>`;
+      }
+      const out = owedTotal - claimedTotal;
+      h += `<div class="donut-collapse" id="donut-box">
+        <button class="donut-head" onclick="toggleDonuts()" aria-expanded="false">
+          <span class="donut-head-l"><span class="donut-emoji">\uD83C\uDF69</span><span class="donut-head-t">Donut Count</span><span class="donut-head-n">${out} donut${out===1?'':'s'} owed</span></span>
+          <span class="donut-toggle"><span class="donut-details" id="donut-details">Details</span><span class="donut-plus" id="donut-plus">+</span></span>
+        </button>
+        <div class="donut-body" id="donut-body" style="display:none">
+          <div class="donut-sub">One donut owed per home run &nbsp;&middot;&nbsp; <span class="dn dn-claimed">\uD83C\uDF69</span> = claimed</div>
+          ${inner}
+        </div>
+      </div>`;
+    }
+  }
+
   
   // League card
   h += '<div class="lbl lbl-purple">2026 League</div>';
