@@ -621,6 +621,11 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
         </div>
       </div>
 
+      <div class="sect" id="sched-sect">
+        <div class="sect-lbl">Load scheduled game <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional — pre-fills info)</span></div>
+        <select id="f-sched" onchange="onSchedPick()"><option value="">— pick a league game —</option></select>
+      </div>
+
       <div class="sect" id="tourney-sect" style="display:none">
         <div class="sect-lbl">Tournament</div>
         <div style="display:flex;gap:8px;align-items:stretch">
@@ -834,7 +839,33 @@ const SEED = {
     {id:"t5", name:"Cash on Grass", location:"Caledonia Aug 15 / Barrie Aug 22"}
   ],
   pastOpponents: ["Blitz","Dos Diamond","Super Base","Reign","Renown","I'm Sitting","IBB","Heras","Orangeville Royals","Vicious & Delicious","Hurricanes","Lady Mambas","Team Trash","TNA Show Me Your Hitties","Elektra","Screaming Banshees","Rama Moccasin & Smoke"],
-  pastFields: ["Mintleaf","Highgate","Barrie Sports Complex","SQ1","SQ3","SQ4","SQ5","SQ6","SQ7","SQ8"]
+  pastFields: ["Mintleaf","Highgate","Barrie Sports Complex","SQ1","SQ3","SQ4","SQ5","SQ6","SQ7","SQ8"],
+  leagueSchedule: [
+    {date:"2026-05-11", opp:"Blitz", field:"Mintleaf", time:"19:15", venue:"away", played:true},
+    {date:"2026-05-25", opp:"Dos Diamond", field:"Highgate", time:"19:15", venue:"home", played:true},
+    {date:"2026-05-25", opp:"Super Base", field:"Highgate", time:"20:30", venue:"away", played:true},
+    {date:"2026-06-01", opp:"Reign", field:"Highgate", time:"21:45", venue:"home", played:true},
+    {date:"2026-06-08", opp:"I'm Sitting", field:"Mintleaf", time:"19:15", venue:"home", played:true},
+    {date:"2026-06-08", opp:"Renown", field:"Mintleaf", time:"20:30", venue:"home", played:true},
+    {date:"2026-06-15", opp:"IBB", field:"Highgate", time:"21:45", venue:"home", played:true},
+    {date:"2026-06-22", opp:"Reign", field:"Highgate", time:"20:30", venue:"home", played:true},
+    {date:"2026-06-22", opp:"Super Base", field:"Highgate", time:"21:45", venue:"away", played:true},
+    {date:"2026-06-29", opp:"Renown", field:"Mintleaf", time:"19:15", venue:"home", played:true},
+    {date:"2026-06-29", opp:"Dos Diamond", field:"Mintleaf", time:"20:30", venue:"home", played:true},
+    {date:"2026-07-06", opp:"I'm Sitting", field:"Mintleaf", time:"19:15", venue:"away", played:true},
+    {date:"2026-07-13", opp:"IBB", field:"Mintleaf", time:"20:30", venue:"home", played:false},
+    {date:"2026-07-13", opp:"Blitz", field:"Mintleaf", time:"21:45", venue:"away", played:false},
+    {date:"2026-07-20", opp:"I'm Sitting", field:"Mintleaf", time:"21:45", venue:"away", played:false},
+    {date:"2026-07-27", opp:"Blitz", field:"Highgate", time:"20:30", venue:"away", played:false},
+    {date:"2026-07-27", opp:"Dos Diamond", field:"Highgate", time:"21:45", venue:"away", played:false},
+    {date:"2026-08-10", opp:"IBB", field:"Highgate", time:"21:45", venue:"away", played:false},
+    {date:"2026-08-17", opp:"Reign", field:"Mintleaf", time:"19:15", venue:"away", played:false},
+    {date:"2026-08-24", opp:"Renown", field:"Mintleaf", time:"19:15", venue:"home", played:false},
+    {date:"2026-08-24", opp:"Super Base", field:"Mintleaf", time:"20:30", venue:"away", played:false},
+    {date:"2026-08-31", opp:"Reign", field:"Highgate", time:"19:15", venue:"home", played:false},
+    {date:"2026-08-31", opp:"Renown", field:"Highgate", time:"20:30", venue:"away", played:false},
+    {date:"2026-09-14", opp:"Super Base", field:"Highgate", time:"21:45", venue:"home", played:false}
+  ]
 };
 
 const LS_KEY = "royals_live_game_v1";       // legacy single-game (migrated)
@@ -906,8 +937,52 @@ function removeOppBatter(i){
   renderOppLineupSetup();
 }
 function onOppLineupInput(i,v){ setup.oppLineup=setup.oppLineup||[]; setup.oppLineup[i]=v; }
+function fmtSchedDate(iso){
+  if(!iso) return "";
+  const [y,m,d]=iso.split("-").map(Number);
+  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const dt=new Date(Date.UTC(y,m-1,d));
+  return days[dt.getUTCDay()]+" "+months[m-1]+" "+d;
+}
+function populateSchedule(){
+  const sel=document.getElementById("f-sched");
+  if(!sel||!SEED.leagueSchedule) return;
+  // upcoming + recent: show not-yet-played first, then a few recent played
+  const today=new Date().toISOString().slice(0,10);
+  const sched=SEED.leagueSchedule.slice();
+  const upcoming=sched.filter(g=>!g.played && (g.date||"")>=today);
+  const recent=sched.filter(g=>g.played || (g.date||"")<today).slice(-3);
+  const list=[...upcoming, ...recent.filter(r=>!upcoming.includes(r))];
+  // if today filter yields nothing upcoming (all data past), fall back to all not-played
+  const finalList = upcoming.length? [...upcoming, ...recent] : sched.filter(g=>!g.played);
+  let opts='<option value="">— pick a league game —</option>';
+  finalList.forEach((g,i)=>{
+    const idx=SEED.leagueSchedule.indexOf(g);
+    const vs=g.venue==="home"?"vs":"@";
+    const t=g.time?(" "+g.time):"";
+    opts+=`<option value="${idx}">${fmtSchedDate(g.date)}${t} ${vs} ${g.opp}${g.played?" (played)":""}</option>`;
+  });
+  sel.innerHTML=opts;
+}
+function onSchedPick(){
+  const sel=document.getElementById("f-sched");
+  const idx=parseInt(sel.value,10);
+  if(isNaN(idx)) return;
+  const g=SEED.leagueSchedule[idx];
+  if(!g) return;
+  document.getElementById("f-opp").value=g.opp||"";
+  document.getElementById("f-date").value=g.date||"";
+  document.getElementById("f-time").value=g.time||"";
+  document.getElementById("f-field").value=g.field||"";
+  setup.opp=g.opp||""; setup.date=g.date||""; setup.time=g.time||""; setup.field=g.field||"";
+  setHomeAway(g.venue==="home"?"home":"away");
+  toast("Loaded: "+g.opp+" \u2014 edit anything if needed");
+}
 function setGameType(t){
   setup.type = t;
+  const ss=document.getElementById("sched-sect");
+  if(ss) ss.style.display = t==="league" ? "block" : "none";
   document.querySelectorAll("#type-seg button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
   document.getElementById("tourney-sect").style.display = (t==="tournament")?"block":"none";
   document.getElementById("roster-src-lbl").textContent = (t==="tournament")?"(tournament roster)":"(league roster)";
@@ -3192,6 +3267,7 @@ function initSetup(){
   // default date today
   const d=new Date(); document.getElementById("f-date").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   setPickMode("order"); renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
+  populateSchedule();
   refreshSetupChrome();
 }
 function refreshSetupChrome(){
