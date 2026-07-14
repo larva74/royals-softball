@@ -134,6 +134,26 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .linescore .lbl{text-align:left;padding-left:10px;color:#9BB0FF;font-weight:800;min-width:46px;font-family:system-ui}
 .linescore .tot{color:var(--gold);font-weight:900;font-size:14px;border-left:2px solid rgba(240,180,41,.3);border-right:none}
 .linescore td.cur{background:rgba(240,180,41,.12)}
+.linescore td.tap-inn{cursor:pointer;position:relative}
+.linescore td.tap-inn:active{background:rgba(240,180,41,.22)}
+.idet-runs{font-size:13px;font-weight:800;color:var(--gold-d);margin-bottom:10px;text-align:center;background:var(--bg);padding:6px;border-radius:8px}
+.idet-row{display:flex;align-items:center;gap:8px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:15px}
+.idet-who{font-weight:800;color:var(--ink);min-width:70px}
+.idet-desc{flex:1;color:var(--muted)}
+.idet-rbi{color:var(--gold-d);font-weight:700;font-size:12px}
+.idet-tag{font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px}
+.idet-tag.out{background:#FBEAE8;color:#B3261E}
+.idet-tag.run{background:#FBF1D9;color:#B8860B}
+.idet-scored .idet-who{color:var(--gold-d)}
+.idet-empty{text-align:center;color:var(--muted);font-style:italic;padding:20px;font-size:14px;line-height:1.5}
+.final-wl{font-size:15px;font-weight:900;letter-spacing:2px;padding:6px 0;border-radius:8px;margin-bottom:6px}
+.final-win{color:#0B7A3B}
+.final-loss{color:#B3261E}
+.final-tie{color:var(--muted)}
+.final-score{font-size:52px;font-weight:900;color:var(--ink);line-height:1.1;font-family:ui-monospace,monospace}
+.final-dash{color:var(--muted);font-weight:400}
+.final-opp{font-size:15px;font-weight:700;color:var(--muted);margin-top:6px}
+.final-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.5}
 .linescore td.them-cell{cursor:pointer}
 .linescore td.them-cell:active{background:rgba(255,255,255,.1)}
 .linescore tr.them td{color:#FF9E8F}
@@ -1343,14 +1363,15 @@ function renderLinescore(sides){
   for(let i=1;i<=cols;i++){
     const v=usBI[i-1];
     const cur=(activeSide==="us"&&i===sides.us.inning)?"cur":"";
-    us+=`<td class="${cur}">${v!=null?v:(i<sides.us.inning?0:'·')}</td>`; usTot+=v||0;
+    const started_us=(i<=sides.us.inning);
+    us+=`<td class="${cur}${started_us?' tap-inn':''}"${started_us?` onclick="openInningDetail('us',${i})"`:''}>${v!=null?v:(i<sides.us.inning?0:'·')}</td>`; usTot+=v||0;
   }
   us+=`<td class='tot'>${usTot}</td></tr>`;
   const themLbl=(G.meta.opp?G.meta.opp.slice(0,5):"THEM");
   let th="<tr class='them'><td class='lbl'>"+escHtml(themLbl)+"</td>"; let thTot=0;
   for(let i=1;i<=cols;i++){
     const v=themBI[i-1];
-    if(both){ const cur=(activeSide==="them"&&i===sides.them.inning)?"cur":""; th+=`<td class="${cur}">${v!=null?v:(i<sides.them.inning?0:'·')}</td>`; }
+    if(both){ const cur=(activeSide==="them"&&i===sides.them.inning)?"cur":""; const started_them=(i<=sides.them.inning); th+=`<td class="${cur}${started_them?' tap-inn':''}"${started_them?` onclick="openInningDetail('them',${i})"`:''}>${v!=null?v:(i<sides.them.inning?0:'·')}</td>`; }
     else { th+=`<td class="them-cell" onclick="editThemInning(${i})">${v!=null?v:'·'}</td>`; }
     thTot+=v||0;
   }
@@ -2948,7 +2969,7 @@ function replayUsByInning(g){
   return arr;
 }
 function gameResultLabel(g){
-  const agg=aggregateGame(g); const themT=themTotal(g.meta);
+  const agg=aggregateGame(g); const themT=themTotal(g.meta, g);
   const ra = themT!=null?themT:(g.meta._ra!==undefined&&g.meta._ra!==""?parseInt(g.meta._ra,10):null);
   if(ra===null) return `${agg.teamR} RF`;
   const r=agg.teamR>ra?"W":agg.teamR<ra?"L":"T";
@@ -3039,6 +3060,10 @@ function finishGame(){
   const obj=buildGameObject(G);
   downloadJSON(gameFilename(G), JSON.stringify(obj,null,2));
   const opp=G.meta.opp||"game";
+  const finalLabel=gameResultLabel(G);
+  const usR=aggregateGame(G).teamR;
+  const themT=themTotal(G.meta, G);
+  const oppName=G.meta.opp||"Opponent";
   STORE.current=null; G=null; pending=null;
   persistStore();
   panelClose();
@@ -3046,6 +3071,16 @@ function finishGame(){
   setup.lineup=[]; setup._newPlayers=[];
   renderRosterChips(); renderLineup(); updateStartBtn();
   showSetup(); releaseWake(); refreshSetupChrome();
+  // Final-score screen (persists until dismissed; game also stays in Saved Games)
+  const wl = finalLabel.startsWith("W")?"win":finalLabel.startsWith("L")?"loss":"tie";
+  panelOpen(`<div class="panel-hd"><h2>Final</h2></div>
+    <div class="panel-body" style="text-align:center">
+      <div class="final-wl final-${wl}">${wl==="win"?"WIN":wl==="loss"?"LOSS":"TIE"}</div>
+      <div class="final-score">${usR} <span class="final-dash">\u2013</span> ${themT!=null?themT:"?"}</div>
+      <div class="final-opp">Royals vs ${escHtml(oppName)}</div>
+      <div class="final-note">Saved & downloaded. You can pull this up anytime under \u2630 \u2192 Saved games until you delete it.</div>
+    </div>
+    <div class="panel-foot"><button class="pf-confirm" onclick="panelClose()">Done</button></div>`);
   toast(`Saved ${opp} · downloaded · ${totalGames()} game(s) stored`);
 }
 
@@ -3142,6 +3177,56 @@ let _bundleCache=null;
 function dlBundle(){ if(_bundleCache){ const ok=downloadJSON(_bundleCache.fname,_bundleCache.text); toast(ok?"Downloaded to Files":"Download blocked — use Copy"); } }
 
 /* ============ HELPERS ============ */
+function eventsForInning(side, targetInn){
+  // walk all events tracking inning per side; collect events in the target half-inning
+  const outs={us:0,them:0}, inn={us:1,them:1};
+  const rows=[];
+  for(const e of G.events){
+    const sd=(e.side||"us");
+    if(e.t==="ENDINN"){ inn[sd]++; outs[sd]=0; continue; }
+    if(sd===side && inn[sd]===targetInn){
+      if(e.t==="PA"){
+        const map={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"K","Kl":"K looking","SAC":"sac","FC":"fielder's choice","OUT":"out"};
+        let desc=map[e.result]||e.result;
+        const isOut=(e.result==="OUT"||e.result==="K"||e.result==="Kl"||e.result==="FC");
+        rows.push({who:e.batter, desc, rbi:e.rbi||0, scored:(e.runs||[]).length>0, runScorers:e.runs||[], out:isOut, loc:e.loc||""});
+      } else if(e.t==="BR"){
+        rows.push({who:e.name, desc:(e.to==="OUT"?"out at "+(e.base||"base"):e.to==="HOME"?"scored":"to "+e.to), br:true, scored:e.to==="HOME"||e.run, out:e.to==="OUT"});
+      }
+    }
+    if(e.t==="PA"){ outs[sd]+=e.outsAdded||0; if(outs[sd]>=3){outs[sd]=0;inn[sd]++;} }
+    else if(e.t==="BR"){ outs[sd]+=e.out||0; if(outs[sd]>=3){outs[sd]=0;inn[sd]++;} }
+  }
+  return rows;
+}
+function openInningDetail(side, inn){
+  const rows=eventsForInning(side, inn);
+  const both=G.trackMode==="both";
+  const sideLabel = side==="us" ? "Royals" : (G.meta.opp||"Opponent");
+  let runs=0;
+  let body="";
+  if(!rows.length){
+    if(side==="them" && !both){
+      body=`<div class="idet-empty">Opponent batting not tracked in Royals-only mode \u2014 only the run total was recorded for this inning.</div>`;
+    } else {
+      body=`<div class="idet-empty">No plays recorded in this inning.</div>`;
+    }
+  } else {
+    body=rows.map(r=>{
+      if(r.scored) runs++;
+      const cls = r.out?"idet-out":(r.scored?"idet-scored":"idet-on");
+      const tag = r.out?'<span class="idet-tag out">OUT</span>':(r.scored?'<span class="idet-tag run">RUN</span>':'');
+      const rbi = r.rbi?` <span class="idet-rbi">${r.rbi} RBI</span>`:'';
+      return `<div class="idet-row ${cls}"><span class="idet-who">${escHtml(shortName(r.who))}</span><span class="idet-desc">${escHtml(r.desc)}${rbi}</span>${tag}</div>`;
+    }).join("");
+  }
+  panelOpen(`<div class="panel-hd"><h2>${escHtml(sideLabel)} \u2014 Inning ${inn}</h2></div>
+    <div class="panel-body">
+      <div class="idet-runs">${runs} run${runs===1?'':'s'} this inning</div>
+      ${body}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+}
 function evLabel(e){
   if(e.t==="SUB")return `Sub: ${e.in} for ${e.out}`;
   if(e.t==="REENTER")return `Re-enter: ${e.in}`;
