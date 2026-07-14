@@ -205,10 +205,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .lp-run .dest{color:#fff;font-weight:700}
 /* per-batter history rows */
 .bh-name{font-size:20px;font-weight:900;color:#fff;margin-bottom:8px;word-break:break-word;letter-spacing:.2px}
-.bh-row{font-size:15px;font-weight:700;color:#DDE3FA;line-height:1.5;margin-bottom:5px;word-break:break-word}
-.bh-row .inn{color:#A8BAFF;font-weight:800}
+.bh-row{font-size:22px;font-weight:800;color:#FFFFFF;line-height:1.45;margin-bottom:7px;word-break:break-word}
+.bh-row .inn{color:#FFC24D;font-weight:800}
 .bh-row .r{color:var(--gold);font-weight:900}
-.bh-row .loc{color:#A8BAFF;font-weight:800}
+.bh-row .loc{color:#4FE3C1;font-weight:800}
 .bh-empty{font-size:14px;color:#7C8BD0;font-style:italic}
 .lp-run{font-size:15px;font-weight:700;color:#DDE3FA;line-height:1.45;margin-bottom:6px;word-break:break-word}
 .lp-run .arr{color:#5C6BB0}
@@ -220,7 +220,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 /* portrait: tighten gutter + diamond so it fits narrower screen */
 @media (orientation:portrait){
   .lastplay{flex:0 0 34%;padding:8px 6px 8px 9px}
-  .bh-row{font-size:11px}
+  .bh-row{font-size:18px}
   .diamond{width:min(38vh,56vw);height:min(38vh,56vw)}
   .gs-mid{gap:10px}
   .gs-item b{font-size:16px}
@@ -258,7 +258,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   .lp-bat{font-size:12px}
   .lp-run{font-size:11px;margin-top:2px}
   .bh-name{font-size:12px;margin-bottom:3px}
-  .bh-row{font-size:10px;margin-bottom:1px;line-height:1.25}
+  .bh-row{font-size:16px;margin-bottom:3px;line-height:1.35}
   .atbat .card{padding:5px 12px;gap:8px}
   .atbat .ord{width:28px;height:28px;font-size:14px}
   .atbat .meta .nm{font-size:15px}
@@ -606,7 +606,10 @@ body.light .lp-run.scored{color:var(--ink)}
 body.light .lp-run.scored .tag{color:var(--gold-d)}
 body.light .lp-run .dest{color:var(--ink)}
 body.light .bh-name{color:var(--ink)}
-body.light .bh-row{color:#26305E;font-weight:700}
+body.light .bh-row{color:#111A3D;font-weight:800}
+body.light .bh-row .inn{color:#B8791A}
+body.light .bh-row .loc{color:#0A8F72}
+body.light .bh-row .r{color:var(--gold-d)}
 body.light .base .bn .who{color:var(--navy)}
 body.light .outcomes{background:#E8EBF5;border-top-color:var(--line)}
 body.light #game.them-batting .outcomes{background:var(--them)}
@@ -2907,7 +2910,7 @@ function toggleBombFor(nm){ if(!G.bombs)G.bombs={}; if(G.bombs[nm])delete G.bomb
 /* ============ EXPORT BUILDERS (work on any game object) ============ */
 function aggregateGame(g){
   const stats={};
-  const ensure=n=>{ if(!stats[n])stats[n]={pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,r:0,rbi:0,bb:0,k:0}; return stats[n]; };
+  const ensure=n=>{ if(!stats[n])stats[n]={pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,r:0,rbi:0,bb:0,k:0,spray:[]}; return stats[n]; };
   (g.allPlayers||[]).forEach(ensure);
   let teamR=0,teamRBI=0;
   for(const e of g.events){
@@ -2915,6 +2918,8 @@ function aggregateGame(g){
     if(e.t==="BR"){ if(e.run){ ensure(e.name).r++; teamR++; } continue; }
     if(e.t!=="PA")continue;
     const s=ensure(e.batter); s.pa++; const res=e.result;
+    // spray: record location for any batted ball that has one
+    if(e.loc){ s.spray.push({result:res, loc:e.loc, type:e.locType||e.loc[0]}); }
     if(res==="1B"){s.ab++;s.h++;s.b1++;}else if(res==="2B"){s.ab++;s.h++;s.b2++;}else if(res==="3B"){s.ab++;s.h++;s.b3++;}
     else if(res==="HR"){s.ab++;s.h++;s.hr++;}else if(res==="BB"){s.bb++;}else if(res==="K"||res==="Kl"){s.ab++;s.k++;}
     else if(res==="FC"){s.ab++;}else if(res==="OUT"){s.ab++;}
@@ -2945,25 +2950,41 @@ function buildGameObject(g){
   const ra = themT!=null ? themT : (m._ra!==undefined&&m._ra!==""?parseInt(m._ra,10):null);
   const result=ra===null?null:(agg.teamR>ra?"W":agg.teamR<ra?"L":"T");
   const stats={};
-  Object.keys(agg.stats).sort().forEach(n=>{ const s=agg.stats[n]; if(s.pa>0) stats[n]=s; });
+  Object.keys(agg.stats).sort().forEach(n=>{ const s=agg.stats[n]; if(s.pa>0){ const c={...s}; if(!c.spray||!c.spray.length) delete c.spray; stats[n]=c; } });
   return {
     type:m.type,
     ...(m.type==="tournament"?{tournamentId:m.tournamentId, tournamentName:m.tournamentName}:{}),
     ...(m.tournamentNew?{newTournament:m.tournamentNew}:{}),
     opponent:m.opp||"", date:m.date||"", gameNum:m.gnum||"", time:m.time||"", field:m.field||"",
     rf:agg.teamR, ra, result,
-    ...(themT!=null?{lineScore:{us:replayUsByInning(g), them:m.themByInning}}:{}),
+    ...(themT!=null?{lineScore:{us:replayUsByInning(g), them:(g.trackMode==="both"?replayThemByInning(g):(m.themByInning||[]))}}:{}),
     ...((g.newPlayers&&g.newPlayers.length)?{newPlayers:g.newPlayers}:{}),
     stats
   };
 }
 // derive US per-inning for an arbitrary game (export)
-function replayUsByInning(g){
+function replayThemByInning(g){
+  // Opponent (them) side only — both-team mode. Returns per-inning runs for opponent.
   let inn=1,outs=0; const arr=[];
   const add=n=>{arr[inn-1]=(arr[inn-1]||0)+n;};
   for(const e of g.events){
-    if(e.t==="ENDINN"){inn++;outs=0;}
-    else if(e.t==="BR"){ if(e.run)add(e.run); outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
+    const sd=(e.side||"us");
+    if(e.t==="ENDINN"){ if(sd==="them"){inn++;outs=0;} continue; }
+    if(sd!=="them") continue;
+    if(e.t==="BR"){ if(e.run)add(e.run); outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
+    else if(e.t==="PA"){ add((e.runs||[]).length); outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;} }
+  }
+  return arr;
+}
+function replayUsByInning(g){
+  // Royals (us) side only — mirror inning tracking used elsewhere, filtered by side
+  let inn=1,outs=0; const arr=[];
+  const add=n=>{arr[inn-1]=(arr[inn-1]||0)+n;};
+  for(const e of g.events){
+    const sd=(e.side||"us");
+    if(e.t==="ENDINN"){ if(sd==="us"){inn++;outs=0;} continue; }
+    if(sd!=="us") continue; // never count opponent events in the Royals linescore
+    if(e.t==="BR"){ if(e.run)add(e.run); outs+=e.out||0; if(outs>=3){outs=0;inn++;} }
     else if(e.t==="PA"){ add((e.runs||[]).length); outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;} }
   }
   return arr;

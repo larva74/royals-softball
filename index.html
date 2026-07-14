@@ -86,6 +86,25 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .donut-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 2px;border-top:1px solid #EEF1F7;margin-top:4px}
 .donut-total span:first-child{font-size:12px;color:#5A6B8A}
 .donut-total-n{font-size:13px;font-weight:700;color:#C28A1F}
+.cn-tap{cursor:pointer}
+.cn-tap:hover{color:#0A1F6B;text-decoration:underline}
+.spray-plus{font-size:11px;color:#C28A1F;opacity:.7}
+.spray-modal{position:fixed;inset:0;background:rgba(10,31,107,.42);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px}
+.spray-card{background:#fff;border-radius:16px;width:100%;max-width:400px;box-shadow:0 10px 40px rgba(10,31,107,.28);overflow:hidden}
+.spray-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#0A1F6B;color:#fff;font-weight:800;font-size:15px}
+.spray-hd button{background:none;border:none;color:#fff;font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
+.spray-body{padding:18px}
+.spray-legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:#5A6B8A;font-weight:600}
+.spray-legend .sl-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.spray-count{text-align:center;font-size:12px;color:#5A6B8A;margin-top:8px;font-weight:600}
+.spray-empty{text-align:center;color:#5A6B8A;font-size:14px;line-height:1.5;padding:24px 12px}
+.spray-hint{font-size:12px;color:#C28A1F;background:#FBF1D9;border-radius:8px;padding:7px 12px;margin-bottom:10px;display:inline-block;font-weight:600}
+.recap-wrap{background:#FBFCFE;border:1px solid #E4E9F4;border-left:4px solid #C28A1F;border-radius:10px;margin:10px 0 4px;overflow:hidden}
+.recap-head{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;cursor:pointer}
+.recap-lbl{font-size:13px;font-weight:800;color:#0D1B3E}
+.recap-plus{font-size:18px;font-weight:800;color:#C28A1F;width:22px;height:22px;line-height:20px;text-align:center;border-radius:6px;background:#FBF1D9}
+.recap-body{padding:2px 16px 16px;font-size:14px;line-height:1.6;color:#2A3563}
+.card-rec{font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.22);padding:2px 9px;border-radius:20px;margin-left:6px;vertical-align:middle}
 .record-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:14px}
 .record-big{font-size:38px;font-weight:800;color:#0A1F6B;line-height:1}
 .record-stat{text-align:center}
@@ -1943,6 +1962,14 @@ const TOURNEY_GAMES = [
   }
 ];
 
+const GAME_RECAPS = {
+  "2026-07-13|IBB": "It was a rough Monday night under the lights at Mintleaf. The Royals ran into a red-hot IBB squad and dropped this one 26-5. The bats weren't silent — Emily Chan stayed locked in with a 3-hit night including a double and a pair of RBIs, and Kaitlyn Huynh crushed a triple as part of a 3-RBI evening — but IBB's offense simply would not cool off. Flora Sennett added two knocks and crossed the plate, and Milagros Roman scored twice. Some nights the other team is just dialed in. The Royals tip the cap and turn the page.",
+  "2026-07-13|Blitz": "Nightcap at Mintleaf, and the Royals brought the lumber — nineteen hits' worth — but Blitz brought a few more runs, taking it 16-8. This was a hit parade for the Royals: Joyce Lai went a perfect 3-for-3 with an RBI, Michelle Yuen laced three hits, Flora Sennett added three more, and Michelle Ito turned in a 3-hit, 2-double, 2-run night. The offense was clicking all over the order — four Royals with multi-hit games — it just wasn't quite enough to run down Blitz. The good news? The bats are awake. The runs will follow.",
+  "t3|1": "Barrie NSA, Game 1, and the Royals came out absolutely scorching. A 19-3 statement win over the Screaming Banshees to open the tournament. The offense was a wrecking crew top to bottom: Emily Chan did a little of everything with a double, a triple, three RBIs and two runs; Melanie Ly matched the fireworks with her own double-triple day and three runs scored; Rachel Tang chipped in three hits and a pair of RBIs; and Evelyn Koh reached base all afternoon with three hits and three runs. When the whole lineup is rolling like this, it's a long day for the other dugout. Statement made.",
+  "t3|2": "Game 2 of Barrie NSA and the Royals kept the hammer down, dispatching Rama Moccasin & Smoke 19-5. Leanne Kong was the story of this one — three hits, a double, and a monster four-RBI afternoon. But she had plenty of company: Kaitlyn Huynh drove in FIVE on the day, Carmen Tan added three hits and a couple of runs, and Evelyn Koh stayed piping hot with another 3-hit performance. Two games, two blowouts. The Royals were playing October baseball in July.",
+  "t3|3": "The rematch. Same opponent, much tighter game — and the Royals found a way. A gritty 4-2 win over the Screaming Banshees, a world away from the 19-run explosion earlier in the day. This one was about timely hitting and holding the line: Emily Chan doubled and drove in a run to keep her sensational tournament rolling, Kaitlyn Huynh added two more hits and scored, and Amanda Kwan and Carmen Tan each knocked in a run. Not every win is a laugher — some you grind out — and the Royals showed they could do both. Champions are built on days like this."
+};
+
 // Donuts claimed (eaten) per player — update as donuts are handed over. Owed is auto-computed from HRs.
 const DONUTS_CLAIMED = {
 };
@@ -2234,14 +2261,46 @@ const LEAGUE_GAMES = [
     "opponent": "IBB",
     "date": "2026-07-13",
     "time": "20:30",
-    "field": "Mintleaf"
+    "field": "Mintleaf",
+    "result": "L",
+    "rf": 5,
+    "ra": 26,
+    "stats": {
+      "Ashley Georgi": {"pa":3, "ab":3, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Emily Chan": {"pa":3, "ab":3, "h":3, "b1":2, "b2":1, "b3":0, "hr":0, "r":0, "rbi":2, "bb":0, "k":0},
+      "Evaine Chan": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Flora Sennett": {"pa":4, "ab":4, "h":2, "b1":2, "b2":0, "b3":0, "hr":0, "r":1, "rbi":0, "bb":0, "k":0},
+      "Joyce Lai": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":0, "bb":0, "k":0},
+      "Kaitlyn Huynh": {"pa":3, "ab":2, "h":2, "b1":1, "b2":0, "b3":1, "hr":0, "r":1, "rbi":3, "bb":1, "k":0},
+      "Michelle Ito": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Michelle Lim": {"pa":3, "ab":3, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Michelle Yuen": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Milagros Roman": {"pa":4, "ab":4, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":2, "rbi":0, "bb":0, "k":0},
+      "Sunita Tanna": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0}
+    }
   },
   {
     "venue": "away",
     "opponent": "Blitz",
     "date": "2026-07-13",
     "time": "21:45",
-    "field": "Mintleaf"
+    "field": "Mintleaf",
+    "result": "L",
+    "rf": 8,
+    "ra": 16,
+    "stats": {
+      "Ashley Georgi": {"pa":4, "ab":4, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Emily Chan": {"pa":4, "ab":4, "h":2, "b1":1, "b2":1, "b3":0, "hr":0, "r":0, "rbi":2, "bb":0, "k":0},
+      "Evaine Chan": {"pa":4, "ab":4, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":0, "bb":0, "k":0},
+      "Flora Sennett": {"pa":4, "ab":4, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Joyce Lai": {"pa":3, "ab":3, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":1, "rbi":1, "bb":0, "k":0},
+      "Kaitlyn Huynh": {"pa":4, "ab":4, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":2, "rbi":0, "bb":0, "k":0},
+      "Michelle Ito": {"pa":4, "ab":4, "h":3, "b1":1, "b2":2, "b3":0, "hr":0, "r":2, "rbi":0, "bb":0, "k":0},
+      "Michelle Lim": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":0, "rbi":1, "bb":0, "k":0},
+      "Michelle Yuen": {"pa":4, "ab":4, "h":3, "b1":2, "b2":0, "b3":1, "hr":0, "r":0, "rbi":1, "bb":0, "k":0},
+      "Milagros Roman": {"pa":4, "ab":4, "h":2, "b1":2, "b2":0, "b3":0, "hr":0, "r":1, "rbi":2, "bb":0, "k":0},
+      "Sunita Tanna": {"pa":3, "ab":2, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":1, "bb":1, "k":0}
+    }
   },
   {
     "venue": "away",
@@ -2475,11 +2534,14 @@ function renderHome(){
   }
 
   
-  // League card
+  // League card — with season record
+  let lw=0, ll=0, lt=0;
+  for(const g of LEAGUE_GAMES){ if(g.result==="W")lw++; else if(g.result==="L")ll++; else if(g.result==="T")lt++; }
+  const recStr = lw+"-"+ll+(lt?("-"+lt):"");
   h += '<div class="lbl lbl-purple">2026 League</div>';
   h += `<div class="card card-purple" onclick="showLeague()">
     <div class="lbl lbl-purple">League</div>
-    <div class="nm">YRLSPL &mdash; 2026 Season</div>
+    <div class="nm">YRLSPL &mdash; 2026 Season <span class="card-rec">${recStr}</span></div>
     <div class="meta">York Region Ladies Slopitch</div>
     <div class="cta">Tap to view schedule &rsaquo;</div>
   </div>`;
@@ -2508,6 +2570,7 @@ function renderHome(){
           <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.field}</div>
         </div>
       </div>`;
+      h += recapBlock(recapKeyLeague(g));
     }
     h += '</div>';
   }
@@ -2624,6 +2687,28 @@ function renderLeague(){
 }
 
 // ============== RENDER: REGULAR SEASON SCHEDULE ==============
+let _recapSeq=0;
+function recapKeyLeague(g){ return g.date+"|"+g.opponent; }
+function recapKeyTour(g){ return g.tournament+"|"+g.gameNum; }
+function hasRecap(key){ return !!GAME_RECAPS[key]; }
+function recapBlock(key){
+  if(!GAME_RECAPS[key]) return "";
+  const id="recap-"+(_recapSeq++);
+  return `<div class="recap-wrap">
+    <button class="recap-head" onclick="toggleRecap('${id}')">
+      <span class="recap-lbl">\uD83C\uDFA4 Game Recap</span>
+      <span class="recap-plus" id="${id}-p">+</span>
+    </button>
+    <div class="recap-body" id="${id}" style="display:none">${escHtmlIdx(GAME_RECAPS[key])}</div>
+  </div>`;
+}
+function toggleRecap(id){
+  const b=document.getElementById(id), p=document.getElementById(id+"-p");
+  if(!b) return;
+  const open=b.style.display!=="none";
+  b.style.display=open?"none":"block";
+  if(p) p.textContent=open?"+":"\u2212";
+}
 function renderLeagueRS(){
   const playedCount = leaguePlayed().length;
   let h = `<div class="back" onclick="showLeague()">&lsaquo; YRLSPL 2026</div>
@@ -2655,6 +2740,7 @@ function renderLeagueRS(){
           <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.field}${g.estimated ? ' &nbsp;&middot;&nbsp; <span style="color:#C28A1F">stats reconstructed</span>' : ''}</div>
         </div>
       </div>`;
+      h += recapBlock(recapKeyLeague(g));
     } else {
       // Upcoming game — show HOME/AWAY badge + opponent + time + field
       const bdgCls = g.venue==='home' ? 'bdg-home' : 'bdg-away';
@@ -2738,7 +2824,16 @@ function renderGame(gid){
       </div>
     </div>`;
   
-  h += statsTable([g], 'tbl_'+gid, false);
+  // Player Stats (collapsible) + Game Recap (collapsible)
+  const psId="ps-"+gid;
+  h += `<div class="recap-wrap" style="border-left-color:#0A1F6B">
+    <button class="recap-head" onclick="toggleRecap('${psId}')">
+      <span class="recap-lbl">\uD83D\uDCCA Player Stats</span>
+      <span class="recap-plus" id="${psId}-p" style="color:#0A1F6B;background:#E7ECFA">+</span>
+    </button>
+    <div class="recap-body" id="${psId}" style="display:none;padding:2px 10px 14px">${statsTable([g], 'tbl_'+gid, false)}</div>
+  </div>`;
+  h += recapBlock(recapKeyTour(g));
   
   document.getElementById('view-game').innerHTML = h;
 }
@@ -2746,6 +2841,65 @@ function renderGame(gid){
 // ============== STATS TABLE BUILDER ==============
 // Builds a sortable stats table from a list of game objects.
 // fullCols=true => include OBP/SLG/OPS/wOBA/OPS+. false => game-level (just AVG + wOBA).
+// ============== SPRAY CHART POPUP ==============
+const SPRAY_FIELDERS = {1:{x:150,y:210},2:{x:150,y:255},3:{x:210,y:180},4:{x:185,y:150},5:{x:90,y:180},6:{x:115,y:150},7:{x:70,y:78},8:{x:150,y:60},9:{x:230,y:78},10:{x:230,y:78}};
+const SPRAY_GAPS = {"56":{x:100,y:155},"64":{x:150,y:130},"43":{x:200,y:155},"78":{x:95,y:66},"89":{x:150,y:48},"9-10":{x:205,y:66},"7L":{x:48,y:96},"10R":{x:252,y:96},"5-2":{x:110,y:225},"3-2":{x:190,y:225}};
+function sprayGapKey(rest){ if(SPRAY_GAPS[rest])return rest; if(rest==="910")return "9-10"; if(rest==="52")return "5-2"; if(rest==="32")return "3-2"; return null; }
+function sprayLocToXY(loc){
+  if(!loc) return null;
+  const rest=loc.slice(1);
+  const gk=sprayGapKey(rest); if(gk&&SPRAY_GAPS[gk]) return {x:SPRAY_GAPS[gk].x,y:SPRAY_GAPS[gk].y};
+  const fn=parseInt(rest,10); if(SPRAY_FIELDERS[fn]) return {x:SPRAY_FIELDERS[fn].x,y:SPRAY_FIELDERS[fn].y};
+  if(/^\d\d$/.test(rest)){ const a=SPRAY_FIELDERS[+rest[0]],b=SPRAY_FIELDERS[+rest[1]]; if(a&&b) return {x:(a.x+b.x)/2,y:(a.y+b.y)/2}; }
+  return null;
+}
+function gamesForTid(tid){ return tid==="tbl_league_stats" ? leaguePlayed() : allTourGames().filter(g=>g.stats); }
+function openSprayPopup(name, tid){
+  const games=gamesForTid(tid);
+  const hits=[];
+  for(const g of games){
+    const st=g.stats && g.stats[name];
+    if(st && st.spray) for(const sp of st.spray) hits.push(sp);
+  }
+  const COLORS={G:"#FF7A00",L:"#00B358",F:"#5B3FD9",P:"#E0218A"};
+  const HX=150, HY=270;
+  let dots="";
+  for(const hspec of hits){
+    const xy=sprayLocToXY(hspec.loc); if(!xy) continue;
+    const c=COLORS[hspec.type]||"#FF7A00";
+    const air=(hspec.type==="F"||hspec.type==="P");
+    if(air){
+      const mx=(HX+xy.x)/2,my=(HY+xy.y)/2,dx=xy.x-HX,dy=xy.y-HY,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,bow=Math.min(len*0.28,42);
+      dots+=`<path d="M${HX} ${HY} Q ${(mx+nx*bow).toFixed(1)} ${(my+ny*bow).toFixed(1)} ${xy.x} ${xy.y}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>`;
+    } else {
+      dots+=`<line x1="${HX}" y1="${HY}" x2="${xy.x}" y2="${xy.y}" stroke="${c}" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>`;
+    }
+    dots+=`<circle cx="${xy.x}" cy="${xy.y}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+  }
+  const body = hits.length
+    ? `<svg viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:340px;display:block;margin:0 auto">
+        <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.16"/>
+        <line x1="150" y1="270" x2="255" y2="120" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
+        <line x1="150" y1="270" x2="45" y2="120" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
+        ${dots}
+      </svg>
+      <div class="spray-legend"><span><span class="sl-dot" style="background:#FF7A00"></span>Grounder</span><span><span class="sl-dot" style="background:#00B358"></span>Liner</span><span><span class="sl-dot" style="background:#5B3FD9"></span>Fly</span><span><span class="sl-dot" style="background:#E0218A"></span>Popup</span></div>
+      <div class="spray-count">${hits.length} tracked hit${hits.length===1?'':'s'}</div>`
+    : `<div class="spray-empty">New feature \u2014 spray data coming soon.</div>`;
+  showSprayModal(name, body);
+}
+function escHtmlIdx(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function showSprayModal(name, body){
+  let host=document.getElementById("spray-modal-host");
+  if(!host){ host=document.createElement("div"); host.id="spray-modal-host"; document.body.appendChild(host); }
+  host.innerHTML=`<div class="spray-modal" onclick="if(event.target===this)closeSprayModal()">
+    <div class="spray-card">
+      <div class="spray-hd"><span>${escHtmlIdx(name)} &middot; Spray Chart</span><button onclick="closeSprayModal()">&times;</button></div>
+      <div class="spray-body">${body}</div>
+    </div></div>`;
+}
+function closeSprayModal(){ const h=document.getElementById("spray-modal-host"); if(h) h.innerHTML=""; }
+
 function statsTable(games, tid, fullCols){
   const roster = rosterFrom(games);
   if(roster.length === 0){
@@ -2777,7 +2931,7 @@ function statsTable(games, tid, fullCols){
     const ops_p = (teamCalc.obp > 0 && teamCalc.slg > 0) ? opsPlus(c.obp, c.slg, teamCalc.obp, teamCalc.slg) : 0;
     
     h += '<tr>';
-    h += '<td class="cn">'+name+'</td>';
+    h += '<td class="cn cn-tap" onclick="openSprayPopup(\''+name.replace(/'/g,"\\'")+'\',\''+tid+'\')">'+name+' <span class="spray-plus">\u25F3</span></td>';
     if(fullCols) h += '<td>'+raw.g+'</td>';
     h += '<td class="cpa">'+raw.pa+'</td>';
     h += '<td>'+raw.ab+'</td>';
@@ -2842,6 +2996,7 @@ function renderLStats(){
     h += statsTableEmpty(LEAGUE_ROSTER, 'tbl_league_stats');
   } else {
     h += '<div class="tip">Tap any column to sort. OPS+ = 100 is team average.</div>';
+    h += '<div class="spray-hint">\u25F3 Tap a player\u2019s name to see their spray chart</div>';
     h += statsTable(lgames, 'tbl_league_stats', true);
   }
   
@@ -2884,6 +3039,7 @@ function renderTStats(){
   let h = `<div class="h1-big">Tournament Stats &mdash; 2026</div>
     <div class="sub-soft">All tournaments combined</div>
     <div class="tip">Tap any column to sort. OPS+ = 100 is team average. Blue PA = Plate Appearances (AB + BB).</div>`;
+  h += '<div class="spray-hint">◳ Tap a player’s name to see their spray chart</div>';
   h += statsTable(tgames, 'tbl_tour_stats', true);
   document.getElementById('view-tstats').innerHTML = h;
 }
