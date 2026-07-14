@@ -99,6 +99,12 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .spray-count{text-align:center;font-size:12px;color:#5A6B8A;margin-top:8px;font-weight:600}
 .spray-empty{text-align:center;color:#5A6B8A;font-size:14px;line-height:1.5;padding:24px 12px}
 .spray-hint{font-size:12px;color:#C28A1F;background:#FBF1D9;border-radius:8px;padding:7px 12px;margin-bottom:10px;display:inline-block;font-weight:600}
+.game-expanders{display:flex;gap:8px;margin:-6px 0 14px;flex-wrap:wrap}
+.gx-btn{flex:1;min-width:140px;display:flex;justify-content:space-between;align-items:center;background:#F4F6FB;border:1px solid #E4E9F4;border-radius:9px;padding:9px 13px;cursor:pointer;font-size:13px;font-weight:800;color:#0D1B3E}
+.gx-btn:hover{background:#EAEEF8}
+.gx-plus{font-size:17px;font-weight:800;color:#C28A1F;width:20px;height:20px;line-height:18px;text-align:center;border-radius:5px;background:#FBF1D9;flex-shrink:0}
+.gx-body{margin:-6px 0 14px}
+.gx-recap{background:#FBFCFE;border:1px solid #E4E9F4;border-left:4px solid #C28A1F;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.6;color:#2A3563}
 .recap-wrap{background:#FBFCFE;border:1px solid #E4E9F4;border-left:4px solid #C28A1F;border-radius:10px;margin:10px 0 4px;overflow:hidden}
 .recap-head{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;cursor:pointer}
 .recap-lbl{font-size:13px;font-weight:800;color:#0D1B3E}
@@ -2688,6 +2694,13 @@ function renderLeague(){
 
 // ============== RENDER: REGULAR SEASON SCHEDULE ==============
 let _recapSeq=0;
+function toggleGX(id){
+  const b=document.getElementById(id), p=document.getElementById(id+"-p");
+  if(!b) return;
+  const open=b.style.display!=="none";
+  b.style.display=open?"none":"block";
+  if(p) p.textContent=open?"+":"\u2212";
+}
 function recapKeyLeague(g){ return g.date+"|"+g.opponent; }
 function recapKeyTour(g){ return g.tournament+"|"+g.gameNum; }
 function hasRecap(key){ return !!GAME_RECAPS[key]; }
@@ -2788,15 +2801,23 @@ function renderTour(tid){
   
   for(const g of gs){
     const bdg = g.result==='W' ? 'bdg-w' : 'bdg-l';
-    h += `<div class="glist" onclick="showGame('${g.id}')">
+    const psId = "ps-"+g.id;
+    const rcKey = recapKeyTour(g);
+    const rcId = "rc-"+g.id;
+    h += `<div class="glist" style="cursor:default">
       <div class="bdg ${bdg}">${g.result}</div>
       <div class="score">${g.rf} &ndash; ${g.ra}</div>
       <div class="info">
         <div class="nm">vs ${g.opponent}</div>
         <div class="meta">Game ${g.gameNum} &nbsp;&middot;&nbsp; ${g.time} &nbsp;&middot;&nbsp; ${g.field}</div>
       </div>
-      <div class="arr">&rsaquo;</div>
-    </div>`;
+    </div>
+    <div class="game-expanders">
+      <button class="gx-btn" onclick="toggleGX('${psId}')"><span>&#128202; Player Stats</span><span class="gx-plus" id="${psId}-p">+</span></button>
+      ${GAME_RECAPS[rcKey]?`<button class="gx-btn" onclick="toggleGX('${rcId}')"><span>&#127908; Game Recap</span><span class="gx-plus" id="${rcId}-p">+</span></button>`:''}
+    </div>
+    <div class="gx-body" id="${psId}" style="display:none">${statsTable([g],'tbl_'+g.id,false)}</div>
+    ${GAME_RECAPS[rcKey]?`<div class="gx-body gx-recap" id="${rcId}" style="display:none">${escHtmlIdx(GAME_RECAPS[rcKey])}</div>`:''}`;
   }
   
   // Tournament totals table
