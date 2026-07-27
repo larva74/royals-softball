@@ -1287,7 +1287,25 @@ function saveDraft(){
   const d=captureSetupDraft();
   STORE.drafts.push(d); persistStore();
   updateDraftChrome();
-  toast(`Draft saved: ${d.opp||"game"} (${d.lineup.length} players)`);
+  clearSetupForm();
+  toast(`Draft saved: ${d.opp||"game"} \u2014 fresh screen ready for the next game`);
+}
+function clearSetupForm(){
+  // full reset to a fresh setup (keeps game type + tournament for fast turnaround)
+  setup.lineup=[]; setup.bench=[]; setup._newPlayers=[]; setup._fromDraft=null;
+  setup.jerseys={};
+  setup.opp=""; setup.date=""; setup.gnum=""; setup.time=""; setup.field="";
+  setup.oppLineup=[]; setup.oppJerseys=[]; setup.oppSubs=[]; setup.oppSubJerseys=[];
+  const ids=["f-opp","f-date","f-gnum","f-time","f-field"];
+  ids.forEach(id=>{ const e=document.getElementById(id); if(e) e.value=""; });
+  const sc=document.getElementById("f-sched"); if(sc) sc.value="";
+  // default date back to today
+  const dt=new Date(); const de=document.getElementById("f-date"); if(de) de.value=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+  clearRefPhoto("royals"); clearRefPhoto("opp");
+  setPickMode("order");
+  renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
+  if(setup.trackMode==="both") renderOppLineupSetup();
+  window.scrollTo&&window.scrollTo(0,0);
 }
 function loadDraftIntoSetup(id){
   const d=(STORE.drafts||[]).find(x=>x.id===id); if(!d) return;
