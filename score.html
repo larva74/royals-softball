@@ -83,6 +83,18 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .lu-row .mv button,.lu-row .rm{width:34px;height:34px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--navy)}
 .lu-row .rm{color:var(--red);font-size:20px}
 .lineup-empty{text-align:center;color:var(--muted);font-style:italic;padding:24px;font-size:14px}
+.btn-draft{background:#2A3352;color:#F0B429;border:2px solid #F0B429;border-radius:12px;padding:0 16px;font-weight:900;font-size:14px;white-space:nowrap;cursor:pointer}
+body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
+.drafts-empty{text-align:center;color:var(--muted);font-size:14px;line-height:1.6;padding:24px 10px}
+.draft-item{display:flex;align-items:stretch;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.draft-main{flex:1;padding:13px 14px;cursor:pointer}
+.draft-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.draft-opp{font-size:16px;font-weight:900;color:var(--ink)}
+.draft-meta{font-size:13px;color:var(--muted);font-weight:600}
+.draft-tag{font-size:9px;font-weight:900;padding:2px 7px;border-radius:6px;letter-spacing:.5px}
+.draft-tag.tour{background:#5B3FD9;color:#fff}
+.draft-tag.lg{background:#0A7A3B;color:#fff}
+.draft-del{background:none;border:none;border-left:1px solid var(--line);color:#B3261E;font-size:18px;font-weight:900;padding:0 16px;cursor:pointer}
 .start-bar{padding:14px 18px;border-top:1px solid var(--line);background:#fff}
 .btn-primary{width:100%;padding:17px;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;font-size:17px;letter-spacing:.5px}
 .btn-primary:disabled{background:#B8C0DC;color:#fff}
@@ -631,6 +643,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sub" id="seed-tag">offense logger</div>
     </div>
     <button id="theme-btn-s" onclick="toggleTheme()" style="background:rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:15px">☀</button>
+      <button id="drafts-btn" onclick="openDraftsView()" style="display:flex;align-items:center;gap:5px;background:rgba(240,180,41,.28);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">\u2637 Pending <span class="dc-n" style="background:#F0B429;color:#0A1F6B;border-radius:10px;padding:0 6px;font-size:12px">0</span></button>
       <button id="setup-games-btn" onclick="openGamesView()" style="display:none;background:rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">▦ Games <span id="setup-games-count"></span></button>
   </div>
   <div id="resume-host"></div>
@@ -714,7 +727,10 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
     </div>
   </div>
   <div class="start-bar">
-    <button class="btn-primary" id="start-btn" disabled onclick="startGame()">START GAME</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn-draft" id="draft-btn" onclick="saveDraft()">＋ Save as draft</button>
+      <button class="btn-primary" id="start-btn" disabled onclick="startGame()" style="flex:1">START GAME</button>
+    </div>
     <div class="count-note" id="start-note">0 batters — need at least 10</div>
   </div>
 </div>
@@ -853,13 +869,13 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
 const SEED = {
   builtFrom: "index.html @ 2026-07-12",
   leagueRoster: ["Amanda Kwan","Ashley Georgi","Emily Chan","Evaine Chan","Evelyn Koh","Flora Sennett","Holly Lee","Joyce Lai","Kaitlyn Huynh","Megan Abellera","Michelle Ito","Michelle Lim","Michelle Yuen","Milagros Roman","Sandra Cordeiro","Stephanie Szeto","Sunita Tanna"],
-  tourneyRoster: ["Amanda Kwan","Ashley Si","Carmen Tan","Clarissa Cheung","Elaine Park","Ellen Lau","Emily Chan","Evelyn Koh","Joyce Lai","Kaitlyn Huynh","Leanne Kong","Megan Abellera","Melanie Ly","Michelle Yuen","Milagros Roman","Miranda Lim","Rachel Tang","Sally Ng","Shannon Cheung","Stephanie Lo","Susanne Lee"],
+  tourneyRoster: ["Amanda Kwan","Ashley Si","Carmen Tan","Clarissa Cheung","Elaine Park","Ellen Lau","Emily Chan","Emily Ly","Evelyn Koh","Joyce Lai","Kaitlyn Huynh","Leanne Kong","Megan Abellera","Melanie Ly","Michelle Yuen","Milagros Roman","Miranda Lim","Rachel Tang","Sally Ng","Shannon Cheung","Stephanie Lo","Susanne Lee"],
   tournaments: [
     {id:"t1", name:"SPN Grand Slam 1", location:"Sesquicentennial Park, Brampton"},
     {id:"t2", name:"SPN Grand Slam 2", location:"Sesquicentennial Park, Brampton"},
     {id:"t3", name:"Barrie NSA", location:"Barrie Sports Complex, Barrie"},
     {id:"t4", name:"SPN Grand Slam 4", location:"Brampton"},
-    {id:"t5", name:"Cash on Grass", location:"Caledonia Aug 15 / Barrie Aug 22"}
+    {id:"t5", name:"Caledonia Cash on Grass", location:"Caledonia"}
   ],
   pastOpponents: ["Blitz","Dos Diamond","Super Base","Reign","Renown","I'm Sitting","IBB","Heras","Orangeville Royals","Vicious & Delicious","Hurricanes","Lady Mambas","Team Trash","TNA Show Me Your Hitties","Elektra","Screaming Banshees","Rama Moccasin & Smoke"],
   pastFields: ["Mintleaf","Highgate","Barrie Sports Complex","SQ1","SQ3","SQ4","SQ5","SQ6","SQ7","SQ8"],
@@ -1216,9 +1232,109 @@ function startGame(){
   G.oppBench.forEach((nm,i)=>{ const j=(setup.oppSubJerseys&&setup.oppSubJerseys[i]||"").trim(); if(j) G.jerseys[nm]=j; });
   // who bats first: away team. If Royals are home, opponent bats first.
   activeSide = (G.trackMode==="both" && setup.homeAway==="home") ? "them" : "us";
+  updateDraftAfterStart();
   saveGame();
   showGame();
   render();
+}
+
+/* ============ DRAFT QUEUE (pre-staged lineups) ============ */
+const MAX_DRAFTS=5;
+function captureSetupDraft(){
+  return {
+    id: "d"+Date.now(),
+    type:setup.type, tournamentId:setup.tournamentId,
+    opp:document.getElementById("f-opp").value.trim(),
+    date:document.getElementById("f-date").value,
+    gnum:document.getElementById("f-gnum").value.trim(),
+    time:document.getElementById("f-time").value.trim(),
+    field:document.getElementById("f-field").value.trim(),
+    homeAway:setup.homeAway, trackMode:setup.trackMode,
+    lineup:setup.lineup.slice(), bench:setup.bench.slice(),
+    jerseys:Object.assign({},setup.jerseys),
+    _newPlayers:(setup._newPlayers||[]).slice(),
+    oppLineup:(setup.oppLineup||[]).slice(), oppJerseys:(setup.oppJerseys||[]).slice(),
+    oppSubs:(setup.oppSubs||[]).slice(), oppSubJerseys:(setup.oppSubJerseys||[]).slice(),
+    savedAt:new Date().toISOString()
+  };
+}
+function saveDraft(){
+  if(!setup.lineup.length){ toast("Add a lineup first"); return; }
+  if(!STORE.drafts) STORE.drafts=[];
+  if(STORE.drafts.length>=MAX_DRAFTS){ toast(`Max ${MAX_DRAFTS} drafts — start or delete one first`); openDraftsView(); return; }
+  const d=captureSetupDraft();
+  STORE.drafts.push(d); persistStore();
+  updateDraftChrome();
+  toast(`Draft saved: ${d.opp||"game"} (${d.lineup.length} players)`);
+}
+function loadDraftIntoSetup(id){
+  const d=(STORE.drafts||[]).find(x=>x.id===id); if(!d) return;
+  setup.type=d.type; setup.tournamentId=d.tournamentId;
+  setup.homeAway=d.homeAway; setup.trackMode=d.trackMode;
+  setup.lineup=d.lineup.slice(); setup.bench=d.bench.slice();
+  setup.jerseys=Object.assign({},d.jerseys); setup._newPlayers=(d._newPlayers||[]).slice();
+  setup.oppLineup=(d.oppLineup||[]).slice(); setup.oppJerseys=(d.oppJerseys||[]).slice();
+  setup.oppSubs=(d.oppSubs||[]).slice(); setup.oppSubJerseys=(d.oppSubJerseys||[]).slice();
+  // populate form fields
+  document.getElementById("f-opp").value=d.opp||"";
+  document.getElementById("f-date").value=d.date||"";
+  document.getElementById("f-gnum").value=d.gnum||"";
+  document.getElementById("f-time").value=d.time||"";
+  document.getElementById("f-field").value=d.field||"";
+  setGameType(d.type);
+  if(d.type==="tournament") refreshTourneyDropdown(d.tournamentId);
+  setTrackMode(d.trackMode); setHomeAway(d.homeAway);
+  renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
+  if(setup.trackMode==="both") renderOppLineupSetup();
+  panelClose(); showSetup();
+  // remember which draft we loaded so Start can remove it
+  setup._fromDraft=id;
+  toast(`Loaded draft: ${d.opp||"game"} — edit, then Start`);
+}
+function deleteDraft(id){
+  STORE.drafts=(STORE.drafts||[]).filter(x=>x.id!==id); persistStore();
+  updateDraftChrome(); openDraftsView();
+}
+function updateDraftAfterStart(){
+  // called from startGame: if this setup came from a draft, remove it
+  if(setup._fromDraft){ STORE.drafts=(STORE.drafts||[]).filter(x=>x.id!==setup._fromDraft); setup._fromDraft=null; persistStore(); updateDraftChrome(); }
+}
+function fmtDraftDate(iso){
+  if(!iso) return "";
+  const [y,m,d]=iso.split("-").map(Number); if(!y) return iso;
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return months[m-1]+" "+d;
+}
+function openDraftsView(){
+  const drafts=STORE.drafts||[];
+  let body;
+  if(!drafts.length){
+    body=`<div class="drafts-empty">No pending games.<br><br>Set up a lineup, then tap \u201cSave as draft\u201d to stage it here. Handy for game days \u2014 pre-load tonight\u2019s games and just tap to start each one.</div>`;
+  } else {
+    body=drafts.map(d=>{
+      const vs=d.homeAway==="home"?"vs":"@";
+      const meta=[fmtDraftDate(d.date), d.time, d.opp?(vs+" "+d.opp):""].filter(Boolean).join(" \u00b7 ");
+      const typeTag=d.type==="tournament"?'<span class="draft-tag tour">TOURNEY</span>':'<span class="draft-tag lg">LEAGUE</span>';
+      return `<div class="draft-item">
+        <div class="draft-main" onclick="loadDraftIntoSetup('${d.id}')">
+          <div class="draft-top">${typeTag}<span class="draft-opp">${escHtml(d.opp||"(no opponent)")}</span></div>
+          <div class="draft-meta">${escHtml(meta||"no details")} \u00b7 ${d.lineup.length} players</div>
+        </div>
+        <button class="draft-del" onclick="event.stopPropagation();confirmDeleteDraft('${d.id}','${escAttr(d.opp||"game")}')">\u2715</button>
+      </div>`;
+    }).join("");
+  }
+  panelOpen(`<div class="panel-hd"><h2>Pending Games (${drafts.length}/${MAX_DRAFTS})</h2></div>
+    <div class="panel-body">${body}</div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+}
+function confirmDeleteDraft(id,label){
+  if(confirm("Delete draft: "+label+"?")) deleteDraft(id);
+}
+function updateDraftChrome(){
+  const n=(STORE.drafts||[]).length;
+  const btn=document.getElementById("drafts-btn");
+  if(btn){ btn.style.display = n>0 ? "flex" : "flex"; btn.querySelector(".dc-n").textContent=n; }
 }
 
 /* ============ EVENT MODEL & REPLAY ============ */
@@ -3289,11 +3405,11 @@ function persistStore(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(STO
 function loadStore(){
   try{
     const s=localStorage.getItem(STORE_KEY);
-    if(s){ const parsed=JSON.parse(s); STORE={current:parsed.current||null, archive:parsed.archive||[]}; return; }
+    if(s){ const parsed=JSON.parse(s); STORE={current:parsed.current||null, archive:parsed.archive||[], drafts:parsed.drafts||[]}; return; }
     // migrate legacy single-game key
     const legacy=localStorage.getItem(LS_KEY);
-    if(legacy){ const g=JSON.parse(legacy); STORE={current:g, archive:[]}; persistStore(); localStorage.removeItem(LS_KEY); return; }
-  }catch(e){ STORE={current:null, archive:[]}; }
+    if(legacy){ const g=JSON.parse(legacy); STORE={current:g, archive:[], drafts:[]}; persistStore(); localStorage.removeItem(LS_KEY); return; }
+  }catch(e){ STORE={current:null, archive:[], drafts:[]}; }
 }
 // G is the live in-progress game; saveGame mirrors it into STORE.current
 function saveGame(){ if(!G)return; STORE.current=G; persistStore(); }
@@ -3374,6 +3490,7 @@ function initSetup(){
   const d=new Date(); document.getElementById("f-date").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   setPickMode("order"); renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
   populateSchedule();
+  updateDraftChrome();
   refreshSetupChrome();
 }
 function refreshSetupChrome(){
