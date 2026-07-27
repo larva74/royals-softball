@@ -61,6 +61,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .tm-btn.active{border-color:var(--navy);background:#EEF2FF}
 .tm-btn .tm-t{font-weight:800;font-size:15px;color:var(--navy)}
 .tm-btn .tm-s{font-size:11px;color:var(--muted);font-weight:600}
+.photo-btn{background:#2A3352;color:#F0B429;border:1.5px solid #F0B429;border-radius:8px;padding:5px 11px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+body.light .photo-btn{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
+.ref-photo-host:not(:empty){margin:8px 0 4px}
+.ref-photo{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.ref-photo img{width:100%;max-height:220px;object-fit:contain;border-radius:8px;cursor:zoom-in;display:block}
+.ref-photo img.zoomed{max-height:none;cursor:zoom-out}
+.ref-remove{margin-top:6px;background:none;border:none;color:#B3261E;font-weight:800;font-size:12px;cursor:pointer}
+.ref-hint{font-size:11px;color:var(--muted);margin-top:2px}
 .roster-chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:11px 14px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:700;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:7px}
 .chip.picked{background:var(--green-l);border-color:var(--green);color:var(--green)}
@@ -700,7 +708,12 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       </div>
 
       <div class="sect">
-        <div class="sect-lbl">Tap players — adding to <span id="roster-src-lbl" style="font-weight:600;text-transform:none;letter-spacing:0"></span></div>
+        <div class="sect-lbl" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Tap players — adding to <span id="roster-src-lbl" style="font-weight:600;text-transform:none;letter-spacing:0"></span></span>
+          <button class="photo-btn" onclick="document.getElementById('photo-royals').click()">\uD83D\uDCF7 Ref photo</button>
+        </div>
+        <input type="file" id="photo-royals" accept="image/*" capture="environment" style="display:none" onchange="attachRefPhoto('royals', this)">
+        <div class="ref-photo-host" id="ref-royals"></div>
         <div class="pick-mode">
           <button class="pm-btn on" id="pm-order" onclick="setPickMode('order')">Batting order</button>
           <button class="pm-btn" id="pm-bench" onclick="setPickMode('bench')">Bench / subs</button>
@@ -719,7 +732,12 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       </div>
 
       <div class="sect" id="opp-lineup-sect" style="display:block">
-        <div class="sect-lbl">Opponent lineup <span style="font-weight:600;text-transform:none;letter-spacing:0">(name &amp; #; blanks become "Opp N"; edit anytime in game)</span></div>
+        <div class="sect-lbl" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Opponent lineup <span style="font-weight:600;text-transform:none;letter-spacing:0">(name &amp; #; blanks become "Opp N")</span></span>
+          <button class="photo-btn" onclick="document.getElementById('photo-opp').click()">\uD83D\uDCF7 Ref photo</button>
+        </div>
+        <input type="file" id="photo-opp" accept="image/*" capture="environment" style="display:none" onchange="attachRefPhoto('opp', this)">
+        <div class="ref-photo-host" id="ref-opp"></div>
         <div class="opp-lineup-list" id="opp-lineup-list"></div>
         <div class="sect-lbl" style="margin-top:12px">Opponent subs <span style="font-weight:600;text-transform:none;letter-spacing:0">(optional)</span></div>
         <div class="opp-lineup-list" id="opp-sub-list"></div>
@@ -3477,6 +3495,23 @@ function toggleTheme(){
   applyTheme(mode);
 }
 (function(){ let m="dark"; try{ m=localStorage.getItem("royals_theme")||"dark"; }catch(e){} applyTheme(m); })();
+function attachRefPhoto(which, input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const host=document.getElementById(which==="royals"?"ref-royals":"ref-opp");
+    if(!host) return;
+    host.innerHTML=`<div class="ref-photo">
+      <img src="${e.target.result}" onclick="toggleRefZoom(this)" alt="lineup reference">
+      <button class="ref-remove" onclick="clearRefPhoto('${which}')">\u2715 Remove photo</button>
+      <div class="ref-hint">Tap image to zoom \u00b7 type names below while you read it</div>
+    </div>`;
+  };
+  reader.readAsDataURL(file);
+  input.value="";
+}
+function clearRefPhoto(which){ const h=document.getElementById(which==="royals"?"ref-royals":"ref-opp"); if(h) h.innerHTML=""; }
+function toggleRefZoom(img){ img.classList.toggle("zoomed"); }
 function initSetup(){
   try{ applyTheme(localStorage.getItem("royals_theme")||"dark"); }catch(e){}
   loadStore();
