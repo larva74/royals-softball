@@ -198,7 +198,10 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
 .field-overlay .fz:active circle{fill:var(--gold)}
 .field-overlay .fz-gap{fill:rgba(240,180,41,.22);stroke:var(--gold);stroke-width:1;stroke-dasharray:3 3}
 .field-overlay .fz-gap:active{fill:var(--gold);opacity:.55}
-.field-overlay.disabled .fz,.field-overlay.disabled .fz-gap{opacity:.3;pointer-events:none}
+.field-overlay .fz-hr circle{fill:#E0218A;opacity:.9;stroke:#fff;stroke-width:1.5}
+.field-overlay .fz-hr text{fill:#fff;font-weight:800;pointer-events:none}
+.field-overlay .fz-hr:active circle{fill:var(--gold)}
+.field-overlay.disabled .fz,.field-overlay.disabled .fz-gap,.field-overlay.disabled .fz-hr{opacity:.3;pointer-events:none}
 /* location bar */
 .loc-bar{flex:0 0 auto;padding:8px 10px;background:var(--navy-d);border-top:2px solid var(--gold)}
 .loc-prompt{text-align:center;color:#fff;font-weight:800;font-size:14px;margin-bottom:7px}
@@ -453,6 +456,19 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
 .menu-list button .sub{font-size:12px;color:var(--muted);font-weight:600}
 .menu-list button .col{display:flex;flex-direction:column}
 .sub-pick{display:flex;flex-direction:column;gap:7px}
+.le-hint{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.le-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.le-row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.le-row.le-up{border-color:var(--gold);background:rgba(240,180,41,.10)}
+.le-num{font-weight:900;color:var(--muted);min-width:22px;font-size:15px}
+.le-name{flex:1;font-weight:800;color:var(--ink);font-size:16px}
+.le-badge{font-size:10px;font-weight:900;background:var(--gold);color:#0A1F6B;padding:2px 7px;border-radius:6px;margin-left:4px}
+.le-acts{display:flex;gap:5px}
+.le-mv{background:var(--navy);color:#fff;border:none;border-radius:7px;width:38px;height:38px;font-size:14px;cursor:pointer}
+.le-mv:disabled{opacity:.3}
+.le-rm{background:#3A2A2A;color:#FFB3A8;border:none;border-radius:7px;width:38px;height:38px;font-size:16px;font-weight:900;cursor:pointer}
+body.light .le-rm{background:#FBEAE8;color:#B3261E}
+.le-add{width:100%;background:var(--navy);color:#fff;border:2px dashed var(--gold);border-radius:10px;padding:12px;font-weight:800;font-size:15px;cursor:pointer}
 .sub-pick button{padding:14px 16px;border-radius:11px;background:var(--bg);font-weight:700;font-size:16px;text-align:left;display:flex;justify-content:space-between;align-items:center}
 .sub-pick button.pick-done{opacity:.5;text-decoration:line-through;background:#EEE}
 .sub-pick button .tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:14px;background:#E9ECF6;color:var(--muted)}
@@ -1563,17 +1579,21 @@ function renderBatterHistory(st){
   const host=document.getElementById("lp-history");
   const cur = st.lineup[st.slot];
   if(!cur){ host.innerHTML=""; return; }
-  // collect this batter's PA events with the inning they occurred in
+  // collect this batter's PA events with the inning they occurred in.
+  // Innings are tracked PER SIDE — each real inning has a top half (them) and
+  // bottom half (us). The batter's PA is labelled with THEIR side's inning number,
+  // so a hit in the batter's 2nd inning reads "2nd", not a half-inning count.
   const hist=[];
-  let inn=1, outs=0;
+  const inn={us:1, them:1}, outs={us:0, them:0};
   for(const e of G.events){
-    if(e.t==="ENDINN"){ inn++; outs=0; continue; }
-    if(e.t==="BR"){ outs+=e.out||0; if(outs>=3){outs=0;inn++;} continue; }
+    const sd=(e.side||"us");
+    if(e.t==="ENDINN"){ inn[sd]++; outs[sd]=0; continue; }
+    if(e.t==="BR"){ outs[sd]+=e.out||0; if(outs[sd]>=3){outs[sd]=0;inn[sd]++;} continue; }
     if(e.t==="PA"){
       if(e.batter===cur){
-        hist.push({inn, result:e.result, rbi:e.rbi||0, runs:(e.runs||[]).length, loc:e.loc||null});
+        hist.push({inn:inn[sd], result:e.result, rbi:e.rbi||0, runs:(e.runs||[]).length, loc:e.loc||null});
       }
-      outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;}
+      outs[sd]+=e.outsAdded||0; if(outs[sd]>=3){outs[sd]=0;inn[sd]++;}
     }
   }
   const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"out"};
@@ -2050,6 +2070,70 @@ function openBatterMenu(){
     </div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
 }
+// ---- FULL LINEUP EDITOR (add / remove / reorder, mid-game, stats preserved) ----
+function openLineupEditor(){
+  if(pending||brPending){ toast("Finish current play first"); return; }
+  if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
+  const side=activeSide;
+  const st=G._st;
+  const lineup = side==="us" ? G.origLineup : G.oppOrigLineup;
+  const curName = st.lineup[st.slot];  // who is up right now (by replayed lineup)
+  const teamName = side==="us" ? "Royals" : (G.meta.opp||"Opponent");
+  let rows="";
+  lineup.forEach((nm,i)=>{
+    const isUp = nm===curName;
+    rows+=`<div class="le-row${isUp?' le-up':''}">
+      <span class="le-num">${i+1}</span>
+      <span class="le-name">${escHtml(nm)}${isUp?' <span class="le-badge">at bat</span>':''}</span>
+      <span class="le-acts">
+        <button class="le-mv" ${i===0?'disabled':''} onclick="lineupMove(${i},-1)">\u25B2</button>
+        <button class="le-mv" ${i===lineup.length-1?'disabled':''} onclick="lineupMove(${i},1)">\u25BC</button>
+        <button class="le-rm" onclick="lineupRemove(${i})">\u2715</button>
+      </span>
+    </div>`;
+  });
+  panelOpen(`<div class="panel-hd"><h2>Edit ${escHtml(teamName)} lineup</h2></div>
+    <div class="panel-body">
+      <div class="le-hint">Reorder with \u25B2\u25BC \u00b7 remove with \u2715 (their recorded stats stay) \u00b7 changes affect who bats next, not past at-bats.</div>
+      <div class="le-list">${rows}</div>
+      <button class="le-add" onclick="openAddBatter()">+ Add a batter</button>
+    </div>
+    <div class="panel-foot"><button class="pf-confirm" onclick="panelClose()">Done</button></div>`);
+}
+function _lineupRefs(){
+  const side=activeSide;
+  return {
+    side,
+    lineup: side==="us" ? G.origLineup : G.oppOrigLineup,
+    setSize: (n)=>{ if(side==="us") G.lineupSize=n; else G.oppLineupSize=n; },
+    syncOpp: ()=>{ if(side!=="us") G.oppLineup=G.oppOrigLineup.slice(); }
+  };
+}
+function lineupMove(i, dir){
+  const {lineup,setSize,syncOpp}=_lineupRefs();
+  const j=i+dir;
+  if(j<0||j>=lineup.length) return;
+  const tmp=lineup[i]; lineup[i]=lineup[j]; lineup[j]=tmp;
+  setSize(lineup.length); syncOpp();
+  saveGame(); render(); openLineupEditor();
+}
+function lineupRemove(i){
+  const {lineup,setSize,syncOpp,side}=_lineupRefs();
+  const nm=lineup[i];
+  if(lineup.length<=1){ toast("Can't remove the last batter"); return; }
+  // stats are event-based (by name) and are preserved; we only remove from the batting order
+  const st=G._st;
+  const curName=st.lineup[st.slot];
+  if(nm===curName){
+    // removing the batter who is currently up — allowed, but warn
+    if(!confirm(firstName(nm)+" is at bat. Remove from the order? Their recorded stats stay; the next batter moves up.")) return;
+  } else {
+    if(!confirm("Remove "+firstName(nm)+" from the batting order? Their stats stay recorded.")) return;
+  }
+  lineup.splice(i,1);
+  setSize(lineup.length); syncOpp();
+  saveGame(); render(); openLineupEditor();
+}
 // ---- mid-game add batter (late arrival): pick player, then choose an eligible slot ----
 function openAddBatter(){
   const st=G._st;
@@ -2265,6 +2349,7 @@ function openMenu(){
       <button onclick="openEditField('all')"><span class="ic">✎</span><div class="col"><span>Edit game info</span><span class="sub">Opponent · date · field · time · game #</span></div></button>
       <button onclick="openEditPlay()"><span class="ic">↺</span><div class="col"><span>Edit a recent play</span><span class="sub">Fix an outcome the ump changed</span></div></button>
       <button onclick="openLineup()"><span class="ic">\u2630</span><div class="col"><span>Lineup / scoresheet</span><span class="sub">Order, results, tap a batter for actions</span></div></button>
+      <button onclick="openLineupEditor()"><span class="ic">\u270E</span><div class="col"><span>Edit lineup</span><span class="sub">Add, remove, or reorder batters \u2014 stats kept</span></div></button>
       <button onclick="panelClose();openPlayLog()"><span class="ic">▤</span><div class="col"><span>Play log</span><span class="sub">Full play-by-play by inning</span></div></button>
       <button onclick="panelClose();openSprayChart()"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart (all)</span><span class="sub">Where this side has hit the ball</span></div></button>
       <button onclick="pickScoresheet()"><span class="ic">\uD83D\uDDB6</span><div class="col"><span>Scoresheet (print)</span><span class="sub">Official SPN or NSA hand-in sheet</span></div></button>
@@ -2731,17 +2816,31 @@ let locStep=null; // {evIndex, ballType:null|'G'|'L'|'F'|'P'}
 function fieldOverlaySVG(active){
   let zones="";
   for(const k in GAPS){ const g=GAPS[k];
-    zones+=`<g class="fz-gap-g" onclick="locGapTap('${k}')"><circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="15"></circle><text x="${g.x}" y="${g.y+3}" font-size="8" font-weight="700" fill="#F0B429" text-anchor="middle" pointer-events="none">${g.l}</text></g>`;
+    zones+=`<g class="fz-gap-g" onclick="locGapTap('${k}')"><circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="13"></circle><text x="${g.x}" y="${g.y+3}" font-size="7" font-weight="700" fill="#F0B429" text-anchor="middle" pointer-events="none">${g.l}</text></g>`;
   }
   for(const n in FIELDERS){ const p=FIELDERS[n];
-    zones+=`<g class="fz" onclick="locFielderTap(${n})"><circle cx="${p.x}" cy="${p.y}" r="17"></circle><text x="${p.x}" y="${p.y+5}">${n}</text></g>`;
+    zones+=`<g class="fz" onclick="locFielderTap(${n})"><circle cx="${p.x}" cy="${p.y}" r="16"></circle><text x="${p.x}" y="${p.y+5}">${n}</text></g>`;
   }
-  return `<svg viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg">
+  // HR zones — distinct look, tap = auto fly-ball HR to that field
+  let hrzones="";
+  for(const k in HRZONES){ const g=HRZONES[k];
+    hrzones+=`<g class="fz-hr" onclick="locHRTap('${k}')"><circle cx="${g.x}" cy="${g.y}" r="14"></circle><text x="${g.x}" y="${g.y+3}" font-size="7" font-weight="800" text-anchor="middle" pointer-events="none">HR</text></g>`;
+  }
+  return `<svg viewBox="-25 -12 350 312" xmlns="http://www.w3.org/2000/svg">
     <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.22"/>
-    <line x1="150" y1="270" x2="255" y2="120" stroke="#fff" stroke-width="1" opacity="0.35"/>
-    <line x1="150" y1="270" x2="45" y2="120" stroke="#fff" stroke-width="1" opacity="0.35"/>
+    <path d="M150 270 L281 69 A240 240 0 0 0 19 69 Z" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.18" stroke-dasharray="3 3"/>
+    <line x1="150" y1="270" x2="281" y2="69" stroke="#fff" stroke-width="1" opacity="0.3"/>
+    <line x1="150" y1="270" x2="19" y2="69" stroke="#fff" stroke-width="1" opacity="0.3"/>
+    ${hrzones}
     ${zones}
   </svg>`;
+}
+function locHRTap(k){
+  // Over-the-wall location. Ball type stays whatever the user picked
+  // (a screaming liner or a towering fly can both clear the wall), exactly
+  // like every other zone — pick G/L/F/P first, then tap the spot.
+  if(!locStep||!locStep.ballType){ toast("Pick G / L / F / P first"); return; }
+  applyLocStep(locStep.ballType+k);
 }
 function beginLocStep(evIndex){
   locStep={evIndex, ballType:null};
@@ -2798,9 +2897,18 @@ const FIELDERS = {
 const GAPS = {
   "56":{x:100,y:155,l:"5-6"}, "64":{x:150,y:130,l:"6-4"}, "43":{x:200,y:155,l:"4-3"},
   "78":{x:95,y:66,l:"7-8"}, "89":{x:150,y:48,l:"8-9"}, "9-10":{x:205,y:66,l:"9-10"},
-  // fair territory near the lines (outside 7 / outside 10 / down the 3B & 1B lines)
   "7L":{x:48,y:96,l:"7L"}, "10R":{x:252,y:96,l:"10R"},
-  "5-2":{x:110,y:225,l:"5-2"}, "3-2":{x:190,y:225,l:"3-2"}
+  "5-2":{x:110,y:225,l:"5-2"}, "3-2":{x:190,y:225,l:"3-2"},
+  // shallow outfield (bloop — between infield and outfield)
+  "SL":{x:84,y:135,l:"SL"}, "SLC":{x:127,y:122,l:"SLC"}, "SRC":{x:173,y:122,l:"SRC"}, "SR":{x:216,y:135,l:"SR"},
+  // deep outfield / warning track (between outfielders and wall)
+  "DL":{x:54,y:89,l:"DL"}, "DLC":{x:111,y:69,l:"DLC"}, "DRC":{x:189,y:69,l:"DRC"}, "DR":{x:246,y:89,l:"DR"},
+  // foul territory up the lines
+  "FL1":{x:74,y:191,l:"FL"}, "FL2":{x:40,y:147,l:"FL"}, "FR1":{x:226,y:191,l:"FR"}, "FR2":{x:260,y:147,l:"FR"}
+};
+// Home-run spots (over the wall) — tapping auto-tags a fly ball to that field
+const HRZONES = {
+  "HRL":{x:19,y:69,l:"HR"}, "HRLC":{x:84,y:39,l:"HR"}, "HRC":{x:150,y:30,l:"HR"}, "HRRC":{x:216,y:39,l:"HR"}, "HRR":{x:281,y:69,l:"HR"}
 };
 let fieldCtx=null; // {evIndex, ballType:'G'|'L'|'F'}
 
@@ -2815,7 +2923,7 @@ function fieldSVG(opts){
       zones+=`<circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="15" onclick="pickGap('${k}')"></circle>`;
     }
     for(const n in FIELDERS){ const p=FIELDERS[n];
-      zones+=`<g class="fz" onclick="pickFielder(${n})"><circle cx="${p.x}" cy="${p.y}" r="17"></circle><text x="${p.x}" y="${p.y+4}">${n}</text></g>`;
+      zones+=`<g class="fz" onclick="pickFielder(${n})"><circle cx="${p.x}" cy="${p.y}" r="16"></circle><text x="${p.x}" y="${p.y+4}">${n}</text></g>`;
     }
   } else {
     for(const n in FIELDERS){ const p=FIELDERS[n];
@@ -2840,7 +2948,7 @@ function fieldSVG(opts){
     }
     dotEls+=path+`<circle cx="${dt.x}" cy="${dt.y}" r="7" fill="${c}" stroke="#fff" stroke-width="2"><title>${dt.label||""}</title></circle>`;
   });
-  return `<svg viewBox="0 0 300 290" class="field-svg" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="-25 -12 350 312" class="field-svg" xmlns="http://www.w3.org/2000/svg">
     <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.25"/>
     <path d="M150 270 L210 175 L150 120 L90 175 Z" fill="#9e7a3a" opacity="0.4"/>
     <line x1="150" y1="270" x2="210" y2="175" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
@@ -2900,6 +3008,7 @@ function locToDot(loc){
   // 1) exact GAPS key match (handles 7L,10R,52,32,910,64,78,89 via normalized lookup)
   const gk=gapKeyFromRest(rest);
   if(gk && GAPS[gk]) return {x:GAPS[gk].x, y:GAPS[gk].y, type, label:loc};
+  if(HRZONES[rest]) return {x:HRZONES[rest].x, y:HRZONES[rest].y, type, label:loc};
   // 2) single fielder (incl. 10)
   const fn=+rest; if(FIELDERS[fn]) return {x:FIELDERS[fn].x, y:FIELDERS[fn].y, type, label:loc};
   // 3) two-fielder gap fallback: midpoint

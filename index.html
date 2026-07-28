@@ -144,6 +144,7 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .bdg{font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 9px;border-radius:5px;flex-shrink:0;min-width:46px;text-align:center}
 .bdg-home{background:#FEF3C7;color:#92400E}
 .bdg-away{background:#EEF2FF;color:#1A45C0}
+.bdg-ppd{background:#EEF1F7;color:#7A8AA8;font-size:12px;padding:4px 11px;font-weight:800}
 .bdg-w{background:#E6F7EE;color:#1A7A40;font-size:12px;padding:4px 11px}
 .bdg-l{background:#FDEAEA;color:#B02020;font-size:12px;padding:4px 11px}
 .bdg-w-hero{background:#E6F7EE;color:#1A7A40;font-size:13px;padding:4px 12px;font-weight:700;letter-spacing:1px;border-radius:5px;flex-shrink:0}
@@ -2336,14 +2337,33 @@ const LEAGUE_GAMES = [
     "opponent": "Blitz",
     "date": "2026-07-27",
     "time": "20:30",
-    "field": "Highgate"
+    "field": "Highgate",
+    "result": "L",
+    "rf": 20,
+    "ra": 23,
+    "lineScore": {"us":[6,5,0,4,0,5], "them":[4,6,5,4,4]},
+    "stats": {
+      "Ashley Georgi": {"pa":4, "ab":4, "h":4, "b1":3, "b2":0, "b3":1, "hr":0, "r":2, "rbi":3, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"L910", "type":"L"}, {"result":"3B", "loc":"L910", "type":"L"}, {"result":"1B", "loc":"G4", "type":"G"}, {"result":"1B", "loc":"P8", "type":"P"}]},
+      "Elaine X": {"pa":3, "ab":3, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0},
+      "Emily Chan": {"pa":4, "ab":4, "h":4, "b1":3, "b2":1, "b3":0, "hr":0, "r":4, "rbi":4, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G6", "type":"G"}, {"result":"1B", "loc":"L89", "type":"L"}, {"result":"2B", "loc":"L78", "type":"L"}, {"result":"1B", "loc":"L78", "type":"L"}]},
+      "Evaine Chan": {"pa":4, "ab":3, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":0, "rbi":1, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G6", "type":"G"}, {"result":"1B", "loc":"L7", "type":"L"}, {"result":"SAC", "loc":"G1", "type":"G"}, {"result":"1B", "loc":"G6", "type":"G"}]},
+      "Flora Sennett": {"pa":4, "ab":4, "h":2, "b1":2, "b2":0, "b3":0, "hr":0, "r":2, "rbi":0, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"P78", "type":"P"}, {"result":"OUT", "loc":"G6", "type":"G"}, {"result":"OUT", "loc":"L6", "type":"L"}, {"result":"1B", "loc":"G6", "type":"G"}]},
+      "Holly Lee": {"pa":3, "ab":3, "h":1, "b1":1, "b2":0, "b3":0, "hr":0, "r":1, "rbi":0, "bb":0, "k":1, "spray":[{"result":"1B", "loc":"G4", "type":"G"}, {"result":"OUT", "loc":"G6", "type":"G"}]},
+      "Joyce Lai": {"pa":4, "ab":4, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":0, "rbi":2, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G6", "type":"G"}, {"result":"1B", "loc":"G6", "type":"G"}, {"result":"OUT", "loc":"P6", "type":"P"}, {"result":"1B", "loc":"L8", "type":"L"}]},
+      "Kaitlyn Huynh": {"pa":4, "ab":4, "h":4, "b1":3, "b2":1, "b3":0, "hr":0, "r":4, "rbi":3, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"L78", "type":"L"}, {"result":"2B", "loc":"F78", "type":"F"}, {"result":"1B", "loc":"L1", "type":"L"}, {"result":"1B", "loc":"G6", "type":"G"}]},
+      "Michelle Ito": {"pa":4, "ab":4, "h":0, "b1":0, "b2":0, "b3":0, "hr":0, "r":0, "rbi":0, "bb":0, "k":0, "spray":[{"result":"OUT", "loc":"P52", "type":"P"}, {"result":"OUT", "loc":"G6", "type":"G"}, {"result":"OUT", "loc":"P3", "type":"P"}, {"result":"OUT", "loc":"P8", "type":"P"}]},
+      "Michelle Lim": {"pa":4, "ab":4, "h":3, "b1":3, "b2":0, "b3":0, "hr":0, "r":0, "rbi":1, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G6", "type":"G"}, {"result":"1B", "loc":"L78", "type":"L"}, {"result":"1B", "loc":"G6", "type":"G"}, {"result":"OUT", "loc":"G4", "type":"G"}]},
+      "Michelle Yuen": {"pa":4, "ab":4, "h":4, "b1":3, "b2":1, "b3":0, "hr":0, "r":3, "rbi":5, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G5", "type":"G"}, {"result":"1B", "loc":"L7", "type":"L"}, {"result":"2B", "loc":"F7L", "type":"F"}, {"result":"1B", "loc":"G78", "type":"G"}]},
+      "Milagros Roman": {"pa":4, "ab":4, "h":4, "b1":3, "b2":1, "b3":0, "hr":0, "r":4, "rbi":1, "bb":0, "k":0, "spray":[{"result":"1B", "loc":"G64", "type":"G"}, {"result":"1B", "loc":"G64", "type":"G"}, {"result":"2B", "loc":"F78", "type":"F"}, {"result":"1B", "loc":"G78", "type":"G"}]}
+    }
   },
   {
     "venue": "away",
     "opponent": "Dos Diamond",
     "date": "2026-07-27",
     "time": "21:45",
-    "field": "Highgate"
+    "field": "Highgate",
+    "ppd": true
   },
   {
     "venue": "away",
@@ -2472,7 +2492,7 @@ function leaguePlayed(){return LEAGUE_GAMES.filter(g=>g.stats);}
 
 // Get next upcoming league game(s) — if multiple games on same date, return all
 function nextLeagueGames(){
-  const upcoming = LEAGUE_GAMES.filter(g => !g.stats);
+  const upcoming = LEAGUE_GAMES.filter(g => !g.stats && !g.ppd);
   if(upcoming.length === 0) return [];
   upcoming.sort((a,b) => (a.date||'').localeCompare(b.date||'') || (a.time||'').localeCompare(b.time||''));
   const nextDate = upcoming[0].date;
@@ -2758,7 +2778,16 @@ function renderLeagueRS(){
       dateStr = days[dt.getUTCDay()] + ' ' + months[m-1] + ' ' + d;
     }
     
-    if(g.stats){
+    if(g.ppd){
+      // Postponed / rained out — grey PPD badge, no result, not counted in record
+      h += `<div class="sched-card" style="cursor:default;opacity:.75">
+        <div class="bdg bdg-ppd">PPD</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:#0D1B3E">${prefix} ${g.opponent}</div>
+          <div style="font-size:12px;color:#5A6B8A;margin-top:2px">${dateStr} &nbsp;&middot;&nbsp; ${g.field} &nbsp;&middot;&nbsp; <span style="color:#7A8AA8;font-weight:600">Postponed — rain</span></div>
+        </div>
+      </div>`;
+    } else if(g.stats){
       // Played game — show W/L badge + score, opponent, date
       const bdgCls = g.result==='W' ? 'bdg-w' : 'bdg-l';
       h += `<div class="sched-card" style="cursor:default">
@@ -2880,12 +2909,14 @@ function renderGame(gid){
 // fullCols=true => include OBP/SLG/OPS/wOBA/OPS+. false => game-level (just AVG + wOBA).
 // ============== SPRAY CHART POPUP ==============
 const SPRAY_FIELDERS = {1:{x:150,y:210},2:{x:150,y:255},3:{x:210,y:180},4:{x:185,y:150},5:{x:90,y:180},6:{x:115,y:150},7:{x:70,y:78},8:{x:150,y:60},9:{x:230,y:78},10:{x:230,y:78}};
-const SPRAY_GAPS = {"56":{x:100,y:155},"64":{x:150,y:130},"43":{x:200,y:155},"78":{x:95,y:66},"89":{x:150,y:48},"9-10":{x:205,y:66},"7L":{x:48,y:96},"10R":{x:252,y:96},"5-2":{x:110,y:225},"3-2":{x:190,y:225}};
+const SPRAY_GAPS = {"56":{x:100,y:155},"64":{x:150,y:130},"43":{x:200,y:155},"78":{x:95,y:66},"89":{x:150,y:48},"9-10":{x:205,y:66},"7L":{x:48,y:96},"10R":{x:252,y:96},"5-2":{x:110,y:225},"3-2":{x:190,y:225},"SL":{x:84,y:135},"SLC":{x:127,y:122},"SRC":{x:173,y:122},"SR":{x:216,y:135},"DL":{x:54,y:89},"DLC":{x:111,y:69},"DRC":{x:189,y:69},"DR":{x:246,y:89},"FL1":{x:74,y:191},"FL2":{x:40,y:147},"FR1":{x:226,y:191},"FR2":{x:260,y:147}};
+const SPRAY_HRZONES = {"HRL":{x:19,y:69},"HRLC":{x:84,y:39},"HRC":{x:150,y:30},"HRRC":{x:216,y:39},"HRR":{x:281,y:69}};
 function sprayGapKey(rest){ if(SPRAY_GAPS[rest])return rest; if(rest==="910")return "9-10"; if(rest==="52")return "5-2"; if(rest==="32")return "3-2"; return null; }
 function sprayLocToXY(loc){
   if(!loc) return null;
   const rest=loc.slice(1);
   const gk=sprayGapKey(rest); if(gk&&SPRAY_GAPS[gk]) return {x:SPRAY_GAPS[gk].x,y:SPRAY_GAPS[gk].y};
+  if(SPRAY_HRZONES[rest]) return {x:SPRAY_HRZONES[rest].x,y:SPRAY_HRZONES[rest].y};
   const fn=parseInt(rest,10); if(SPRAY_FIELDERS[fn]) return {x:SPRAY_FIELDERS[fn].x,y:SPRAY_FIELDERS[fn].y};
   if(/^\d\d$/.test(rest)){ const a=SPRAY_FIELDERS[+rest[0]],b=SPRAY_FIELDERS[+rest[1]]; if(a&&b) return {x:(a.x+b.x)/2,y:(a.y+b.y)/2}; }
   return null;
@@ -2914,10 +2945,11 @@ function openSprayPopup(name, tid){
     dots+=`<circle cx="${xy.x}" cy="${xy.y}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
   }
   const body = hits.length
-    ? `<svg viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:340px;display:block;margin:0 auto">
+    ? `<svg viewBox="-25 -12 350 312" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;display:block;margin:0 auto">
         <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.16"/>
-        <line x1="150" y1="270" x2="255" y2="120" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
-        <line x1="150" y1="270" x2="45" y2="120" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
+        <path d="M150 270 L281 69 A240 240 0 0 0 19 69 Z" fill="none" stroke="#8CA0C8" stroke-width="0.5" opacity="0.25" stroke-dasharray="3 3"/>
+        <line x1="150" y1="270" x2="281" y2="69" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
+        <line x1="150" y1="270" x2="19" y2="69" stroke="#8CA0C8" stroke-width="1" opacity="0.4"/>
         ${dots}
       </svg>
       <div class="spray-legend"><span><span class="sl-dot" style="background:#FF7A00"></span>Grounder</span><span><span class="sl-dot" style="background:#00B358"></span>Liner</span><span><span class="sl-dot" style="background:#5B3FD9"></span>Fly</span><span><span class="sl-dot" style="background:#E0218A"></span>Popup</span></div>
