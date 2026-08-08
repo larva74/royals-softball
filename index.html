@@ -89,6 +89,7 @@ body{background:#F0F2F8;color:#0D1B3E;font-family:system-ui,-apple-system,sans-s
 .cn-tap{cursor:pointer}
 .cn-tap:hover{color:#0A1F6B;text-decoration:underline}
 .spray-plus{font-size:11px;color:#C28A1F;opacity:.7}
+.jno{font-size:11px;font-weight:700;color:#C28A1F;margin-left:5px;letter-spacing:.3px;font-family:system-ui,-apple-system,sans-serif}
 .spray-modal{position:fixed;inset:0;background:rgba(10,31,107,.42);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px}
 .spray-card{background:#fff;border-radius:16px;width:100%;max-width:400px;box-shadow:0 10px 40px rgba(10,31,107,.28);overflow:hidden}
 .spray-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#0A1F6B;color:#fff;font-weight:800;font-size:15px}
@@ -2421,6 +2422,15 @@ const LEAGUE_GAMES = [
 
 const LEAGUE_ROSTER = ["Amanda Kwan", "Ashley Georgi", "Emily Chan", "Evaine Chan", "Evelyn Koh", "Flora Sennett", "Holly Lee", "Joyce Lai", "Kaitlyn Huynh", "Megan Abellera", "Michelle Ito", "Michelle Lim", "Michelle Yuen", "Milagros Roman", "Sandra Cordeiro", "Stephanie Szeto", "Sunita Tanna"];
 
+// Jersey numbers (roster defaults). STRINGS to preserve leading zeros ("00" !== "0").
+// Partial by design — players without a number render nothing.
+// score.html SEED.jerseys must stay identical (runbook 1b).
+const JERSEYS = {"Emily Ly":"00","Emily Chan":"2","Shannon Cheung":"4","Stephanie Lo":"5","Clarissa Cheung":"8","Michelle Yuen":"11","Amanda Kwan":"17","Melanie Ly":"18","Kaitlyn Huynh":"20","Evelyn Koh":"23","Miranda Lim":"36","Elaine Park":"48","Leanne Kong":"55","Megan Abellera":"66","Carmen Tan":"99"};
+function jerseyBadge(name){
+  const v = JERSEYS[name];
+  return (v==null || String(v).trim()==="") ? "" : '<span class="jno">#'+String(v)+'</span>';
+}
+
 
 // ============== HELPERS ==============
 function clone(o){return JSON.parse(JSON.stringify(o));}
@@ -3008,7 +3018,7 @@ function statsTable(games, tid, fullCols){
     const ops_p = (teamCalc.obp > 0 && teamCalc.slg > 0) ? opsPlus(c.obp, c.slg, teamCalc.obp, teamCalc.slg) : 0;
     
     h += '<tr>';
-    h += '<td class="cn cn-tap" onclick="openSprayPopup(\''+name.replace(/'/g,"\\'")+'\',\''+tid+'\')">'+name+' <span class="spray-plus">\u25F3</span></td>';
+    h += '<td class="cn cn-tap" onclick="openSprayPopup(\''+name.replace(/'/g,"\\'")+'\',\''+tid+'\')">'+name+jerseyBadge(name)+' <span class="spray-plus">\u25F3</span></td>';
     if(fullCols) h += '<td>'+raw.g+'</td>';
     h += '<td class="cpa">'+raw.pa+'</td>';
     h += '<td>'+raw.ab+'</td>';
@@ -3092,7 +3102,7 @@ function statsTableEmpty(roster, tid){
   }
   h += '</tr></thead><tbody>';
   for(const name of roster){
-    h += '<tr><td class="cn">'+name+'</td>';
+    h += '<tr><td class="cn">'+name+jerseyBadge(name)+'</td>';
     h += '<td>0</td><td class="cpa">0</td><td>0</td><td>0</td><td>0</td>';
     h += '<td>'+fmtInt(0)+'</td><td>'+fmtInt(0)+'</td><td>'+fmtInt(0)+'</td>';
     h += '<td>0</td><td>0</td><td>'+fmtInt(0)+'</td><td>'+fmtInt(0)+'</td><td>'+fmtInt(0)+'</td>';
