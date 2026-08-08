@@ -132,6 +132,16 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
 #game.them-batting .atbat .card .meta .lbl,#game.them-batting .atbat .card .meta .nm,#game.them-batting .atbat .card .hint{color:#fff}
 #game.them-batting .outcomes{background:var(--them)}
 #game.them-batting .ob.k{background:var(--them-d)}
+/* on-deck recolor when opponent is batting (maroon theme, both light+dark) */
+#game.them-batting .ondeck{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.20)}
+#game.them-batting .od-hd{color:#F3C0C8}
+#game.them-batting .od-slot,#game.them-batting .od-jno{color:#E8A9B2}
+#game.them-batting .od-name{color:#fff}
+#game.them-batting .od-row{border-top-color:rgba(255,255,255,.14)}
+#game.them-batting .od-res.od-hit{color:#7BE0A8}
+#game.them-batting .od-res.od-out{color:#FFB3A8}
+#game.them-batting .od-res.od-bb{color:#FFD98A}
+#game.them-batting .od-first,#game.them-batting .od-untracked,#game.them-batting .od-more{color:#E8C4CA}
 /* full-width state strip */
 .g-state{background:var(--navy);padding:6px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .gs-opp{flex:1;min-width:0;color:#fff;font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -221,7 +231,7 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
 .lp-hd{font-size:11px;font-weight:800;color:#8B9BE8;letter-spacing:1.2px;margin-bottom:7px;text-transform:uppercase}
 .lp-play{margin-bottom:6px;opacity:.55}
 .lp-play.newest{opacity:1}
-.lp-bat{font-size:17px;font-weight:900;color:#fff;line-height:1.2;word-break:break-word;letter-spacing:.2px}
+.lp-bat{font-size:13px;font-weight:800;color:#fff;line-height:1.15;word-break:break-word}
 .lp-bat .res{color:var(--gold);font-weight:900}
 .rbi-inline{font-size:10px;font-weight:800;color:#9BB0FF}
 .lp-run{font-size:11px;font-weight:600;color:#C2CBF0;line-height:1.3;margin-top:3px;word-break:break-word}
@@ -268,18 +278,23 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
   .linescore{grid-area:line}
   .diamond-row{grid-area:diamond;min-height:0}
   .atbat{grid-area:atbat;padding:2px 8px}
-.ondeck{margin:6px 4px 0;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:8px 10px}
-.od-hd{font-size:11px;font-weight:900;letter-spacing:1.5px;color:#8B9BE8;margin-bottom:6px}
+.ondeck{margin:8px 4px 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:9px 12px}
+body.light .ondeck{background:#fff;border-color:var(--line)}
+.od-hd{font-size:12px;font-weight:900;letter-spacing:1.5px;color:#9BB0FF;margin-bottom:7px}
 body.light .od-hd{color:#3A4694}
-.od-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--line)}
+.od-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-top:1px solid rgba(255,255,255,.10)}
+body.light .od-row{border-top-color:var(--line)}
 .od-row:first-of-type{border-top:none}
-.od-slot{font-weight:900;color:var(--muted);min-width:20px;font-size:16px;text-align:center}
-.od-name{font-weight:900;color:var(--ink);font-size:18px;min-width:78px;white-space:nowrap}
-.od-jno{font-size:12px;color:var(--muted);font-weight:700;margin-left:3px}
-.od-seq{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:2px;font-size:16px;font-weight:800}
+.od-slot{font-weight:900;color:#8B9BE8;min-width:22px;font-size:17px;text-align:center}
+body.light .od-slot{color:#6B7491}
+.od-name{font-weight:900;color:#fff;font-size:19px;min-width:82px;white-space:nowrap}
+body.light .od-name{color:var(--ink)}
+.od-jno{font-size:12px;color:#9BB0FF;font-weight:700;margin-left:3px}
+body.light .od-jno{color:#6B7491}
+.od-seq{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-size:17px;font-weight:800}
 .od-res{padding:0 2px}
-.od-res.od-hit{color:#4FE3C1}
-.od-res.od-out{color:#FF8A7A}
+.od-res.od-hit{color:#5EEBC9}
+.od-res.od-out{color:#FF9B8C}
 .od-res.od-bb{color:#FFC24D}
 body.light .od-res.od-hit{color:#0A8F72}
 body.light .od-res.od-out{color:#C0392B}
