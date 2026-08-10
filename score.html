@@ -504,6 +504,49 @@ body.light .od-res.od-bb{color:#B8791A}
 .menu-list button .sub{font-size:12px;color:var(--muted);font-weight:600}
 .menu-list button .col{display:flex;flex-direction:column}
 .sub-pick{display:flex;flex-direction:column;gap:7px}
+/* ===== Tournament Hub ===== */
+.hub-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hub-rec{font-size:22px;font-weight:900;color:var(--gold);background:rgba(240,180,41,.14);padding:4px 16px;border-radius:20px}
+.hub-switch{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:700;font-size:14px}
+.hub-tabs{display:flex;gap:6px;margin-bottom:12px}
+.hub-tab{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-weight:800;font-size:14px;cursor:pointer}
+.hub-tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.hub-note{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+.hub-day{font-size:12px;font-weight:900;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin:12px 0 6px}
+.hub-game{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:8px;cursor:pointer}
+.hub-g-n{font-weight:900;color:var(--muted);min-width:26px;text-align:center;font-size:17px}
+.hub-g-d{flex:1}
+.hub-g-d b{font-size:16px;color:var(--ink)}
+.hub-g-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.hub-live{font-size:11px;color:var(--amber);font-weight:800;margin-left:4px}
+.hub-g-r{font-weight:900;font-size:15px;padding:3px 9px;border-radius:7px}
+.hub-g-r.hub-w{color:#0A8F52;background:rgba(31,140,79,.14)}
+.hub-g-r.hub-l{color:#C0392B;background:rgba(192,57,43,.12)}
+.hub-g-r.hub-t{color:var(--muted)}
+.hub-g-arr{color:var(--muted);font-size:20px;font-weight:700}
+body.dark .hub-switch,body.dark .hub-tab{background:rgba(255,255,255,.06);color:#DDE3FA;border-color:rgba(255,255,255,.14)}
+/* ===== Box score ===== */
+.bx-game-hd{font-size:15px;color:var(--ink);margin-bottom:6px}
+.bx-result{font-size:20px;font-weight:900;margin-bottom:14px}
+.bx-result.bx-w{color:#0A8F52}.bx-result.bx-l{color:#C0392B}
+.bx-team-hd{font-size:13px;font-weight:900;letter-spacing:.5px;color:var(--gold);margin:14px 0 6px;text-transform:uppercase}
+.bx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
+.bx-tbl{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.bx-tbl th,.bx-tbl td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.bx-tbl th{background:var(--bg);font-weight:800;color:var(--muted);font-size:12px;position:sticky;top:0}
+.bx-tbl .bx-nm{text-align:left;padding-left:12px;font-weight:800;color:var(--ink);min-width:120px;position:sticky;left:0;background:var(--card)}
+.bx-tbl th.bx-nm{background:var(--bg)}
+.bx-ln{font-weight:500;color:var(--muted);font-size:12px}
+.bx-jno{font-size:11px;color:var(--muted);margin-left:3px}
+.bx-h{font-weight:800;color:var(--navy)}
+.bx-hr{font-weight:900;color:#D81B8C}
+.bx-avg{font-weight:700}
+.bx-tot{font-weight:900}
+.bx-tot td{border-top:2px solid var(--ink);background:var(--bg)}
+.bx-tot .bx-nm{background:var(--bg)}
+body.dark .bx-tbl .bx-nm{background:var(--navy-d)}
+body.dark .bx-tot .bx-nm{background:rgba(255,255,255,.06)}
+body.dark .bx-h{color:#7EA8FF}
 .le-hint{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
 .le-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .le-row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
@@ -719,6 +762,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sub" id="seed-tag">offense logger</div>
     </div>
     <button id="theme-btn-s" onclick="toggleTheme()" style="background:rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:15px">☀</button>
+      <button id="hub-btn" onclick="openTournamentHub()" style="display:none;align-items:center;gap:5px;background:rgba(240,180,41,.30);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">\uD83C\uDFC6 Tournament</button>
       <button id="drafts-btn" onclick="openDraftsView()" style="display:flex;align-items:center;gap:5px;background:rgba(240,180,41,.28);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">\u2637 Pending <span class="dc-n" style="background:#F0B429;color:#0A1F6B;border-radius:10px;padding:0 6px;font-size:12px">0</span></button>
       <button id="setup-games-btn" onclick="openGamesView()" style="display:none;background:rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">▦ Games <span id="setup-games-count"></span></button>
   </div>
@@ -1113,12 +1157,25 @@ function setGameType(t){
   document.querySelectorAll("#type-seg button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
   document.getElementById("tourney-sect").style.display = (t==="tournament")?"block":"none";
   document.getElementById("roster-src-lbl").textContent = (t==="tournament")?"(tournament roster)":"(league roster)";
+  if(t==="tournament") suggestGameNum();
+  if(typeof refreshSetupChrome==="function") refreshSetupChrome();
   // prune lineup names not in this roster
   const r = rosterFor(t);
   setup.lineup = setup.lineup.filter(n=>r.includes(n));
   renderRosterChips(); renderLineup();
 }
-function onTourneyPick(){ setup.tournamentId = document.getElementById("f-tourney").value; }
+function onTourneyPick(){
+  setup.tournamentId = document.getElementById("f-tourney").value;
+  suggestGameNum();
+}
+// Auto-fill the next game number for the selected tournament (only if the field is empty)
+function suggestGameNum(){
+  const gn=document.getElementById("f-gnum");
+  if(!gn || gn.value.trim()) return;              // don't overwrite a manual entry
+  if(setup.type!=="tournament" || !setup.tournamentId) return;
+  const n=tournamentGames(setup.tournamentId).length;
+  gn.value=String(n+1);
+}
 
 function refreshTourneyDropdown(selectId){
   const sel=document.getElementById("f-tourney");
@@ -1371,7 +1428,7 @@ function clearSetupForm(){
   setup.lineup=[]; setup.bench=[]; setup._newPlayers=[]; setup._fromDraft=null;
   setup.jerseys={};
   setup.opp=""; setup.date=""; setup.gnum=""; setup.time=""; setup.field="";
-  setup.oppLineup=[]; setup.oppJerseys=[]; setup.oppSubs=[]; setup.oppSubJerseys=[];
+  setup.oppLineup=[]; setup.oppJerseys=[]; setup.oppSubs=[]; setup.oppSubJerseys=[]; setup.oppCount=0;
   const ids=["f-opp","f-date","f-gnum","f-time","f-field"];
   ids.forEach(id=>{ const e=document.getElementById(id); if(e) e.value=""; });
   const sc=document.getElementById("f-sched"); if(sc) sc.value="";
@@ -1381,6 +1438,7 @@ function clearSetupForm(){
   setPickMode("order");
   renderRosterChips(); renderLineup(); renderBench(); updateStartBtn();
   if(setup.trackMode==="both") renderOppLineupSetup();
+  if(typeof suggestGameNum==="function") suggestGameNum();  // keep tournament game # auto-incrementing
   window.scrollTo&&window.scrollTo(0,0);
 }
 function loadDraftIntoSetup(id){
@@ -3484,9 +3542,9 @@ function finishGame(){
   STORE.current=null; G=null; pending=null;
   persistStore();
   panelClose();
-  // reset setup form lineup but keep type/tournament for fast turnaround
-  setup.lineup=[]; setup._newPlayers=[];
-  renderRosterChips(); renderLineup(); updateStartBtn();
+  // reset the WHOLE setup form (lineup + opponent + names + fields) so the next
+  // game starts truly fresh — keeps game type + tournament for fast turnaround.
+  clearSetupForm();
   showSetup(); releaseWake(); refreshSetupChrome();
   // Final-score screen (persists until dismissed; game also stays in Saved Games)
   const wl = finalLabel.startsWith("W")?"win":finalLabel.startsWith("L")?"loss":"tie";
@@ -3508,12 +3566,178 @@ function confirmDiscard(){
 }
 function discardGame(){
   STORE.current=null; persistStore(); G=null; pending=null; panelClose();
-  setup.lineup=[]; setup._newPlayers=[];
-  renderRosterChips(); renderLineup(); updateStartBtn();
+  clearSetupForm();
   showSetup(); releaseWake(); refreshSetupChrome();
 }
 
 /* ============ GAMES VIEW ============ */
+/* ============ BOX SCORE + TOURNAMENT HUB ============ */
+function avgStr(h,ab){ if(!ab) return ".000"; const a=h/ab; return (a>=1?a.toFixed(3):a.toFixed(3).slice(1)); }
+
+// Box score table HTML for one aggregated stat set (ordered by lineup where given)
+function boxScoreTable(statObj, order){
+  const cols=["AB","R","H","RBI","1B","2B","3B","HR","BB","K","AVG"];
+  let head=`<tr><th class="bx-nm">Hitter</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  const names = order && order.length ? order.filter(n=>statObj[n]) : Object.keys(statObj);
+  // include any players in stats but not in order (subs, etc.)
+  Object.keys(statObj).forEach(n=>{ if(!names.includes(n)) names.push(n); });
+  let tot={ab:0,r:0,h:0,rbi:0,b1:0,b2:0,b3:0,hr:0,bb:0,k:0};
+  let rows=names.map(n=>{
+    const p=statObj[n]; if(!p) return "";
+    ["ab","r","h","rbi","b1","b2","b3","hr","bb","k"].forEach(k=>tot[k]+=p[k]||0);
+    const jno=(SEED.jerseys&&SEED.jerseys[n]!=null)?`<span class="bx-jno">#${SEED.jerseys[n]}</span>`:"";
+    return `<tr><td class="bx-nm">${escHtml(firstName(n))} <span class="bx-ln">${escHtml(n.split(" ").slice(1).join(" "))}</span>${jno}</td>
+      <td>${p.ab}</td><td>${p.r}</td><td class="bx-h">${p.h}</td><td>${p.rbi}</td>
+      <td>${p.b1}</td><td>${p.b2}</td><td>${p.b3}</td><td class="${p.hr?'bx-hr':''}">${p.hr}</td>
+      <td>${p.bb}</td><td>${p.k}</td><td class="bx-avg">${avgStr(p.h,p.ab)}</td></tr>`;
+  }).join("");
+  let totRow=`<tr class="bx-tot"><td class="bx-nm">Total</td><td>${tot.ab}</td><td>${tot.r}</td><td class="bx-h">${tot.h}</td><td>${tot.rbi}</td><td>${tot.b1}</td><td>${tot.b2}</td><td>${tot.b3}</td><td>${tot.hr}</td><td>${tot.bb}</td><td>${tot.k}</td><td>${avgStr(tot.h,tot.ab)}</td></tr>`;
+  return `<div class="bx-scroll"><table class="bx-tbl">${head}${rows}${totRow}</table></div>`;
+}
+
+// Single-game box score popup
+function openBoxScore(source){
+  // source: {archiveIdx} or {current:true}
+  let g;
+  if(source.current) g=STORE.current;
+  else g=STORE.archive[source.archiveIdx];
+  if(!g){ toast("Game not found"); return; }
+  const agg=aggregateGame(g);
+  const m=g.meta;
+  const label=gameResultLabel(g);
+  const themT=themTotal(m,g);
+  const table=boxScoreTable(agg.stats, (g.origLineup||[]).slice());
+  // opponent box (both-team games only)
+  let oppSection="";
+  if(g.trackMode==="both" && g.oppOrigLineup){
+    const oppAgg=aggregateOpp(g);
+    if(oppAgg && Object.keys(oppAgg).length){
+      oppSection=`<div class="bx-team-hd">${escHtml(m.opp||"Opponent")}</div>${boxScoreTable(oppAgg,(g.oppOrigLineup||[]).slice())}`;
+    }
+  }
+  const back = source.fromHub ? `openTournamentHub()` : `openGamesView()`;
+  panelOpen(`<div class="panel-hd"><h2>Box Score</h2></div>
+    <div class="panel-body">
+      <div class="bx-game-hd"><b>${escHtml(m.opp||"Opponent")}</b> ${m.gnum?'· Game '+escHtml(m.gnum):''}${m.date?' · '+escHtml(m.date):''}</div>
+      <div class="bx-result ${label[0]==='W'?'bx-w':label[0]==='L'?'bx-l':''}">${escHtml(label)}</div>
+      <div class="bx-team-hd">Royals</div>
+      ${table}
+      ${oppSection}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="${back}">Back</button></div>`);
+}
+
+// Opponent aggregate (both-team games)
+function aggregateOpp(g){
+  const stats={};
+  const ensure=n=>{ if(!stats[n])stats[n]={pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,r:0,rbi:0,bb:0,k:0}; return stats[n]; };
+  (g.oppAllPlayers||g.oppOrigLineup||[]).forEach(ensure);
+  for(const e of g.events){
+    if((e.side||"us")!=="them") continue;
+    if(e.t==="BR"){ if(e.run) ensure(e.name).r++; continue; }
+    if(e.t!=="PA")continue;
+    const s=ensure(e.batter); s.pa++; const res=e.result;
+    if(res==="1B"){s.ab++;s.h++;s.b1++;}else if(res==="2B"){s.ab++;s.h++;s.b2++;}else if(res==="3B"){s.ab++;s.h++;s.b3++;}
+    else if(res==="HR"){s.ab++;s.h++;s.hr++;}else if(res==="BB"){s.bb++;}else if(res==="K"||res==="Kl"){s.ab++;s.k++;}
+    else if(res==="FC"){s.ab++;}else if(res==="OUT"){s.ab++;}
+    s.rbi+=e.rbi||0;
+    for(const rn of(e.runs||[])) ensure(rn).r++;
+  }
+  return stats;
+}
+
+// Games belonging to a tournament (current + archived), oldest first
+function tournamentGames(tid){
+  const out=[];
+  STORE.archive.forEach((g,idx)=>{ if(g.meta&&g.meta.tournamentId===tid) out.push({g,archiveIdx:idx,current:false}); });
+  if(STORE.current && STORE.current.meta && STORE.current.meta.tournamentId===tid) out.push({g:STORE.current,current:true});
+  return out;
+}
+// Distinct tournament ids present in stored games (most recent first)
+function storedTournamentIds(){
+  const seen=[]; const push=t=>{ if(t&&!seen.includes(t))seen.push(t); };
+  if(STORE.current&&STORE.current.meta) push(STORE.current.meta.tournamentId);
+  STORE.archive.slice().reverse().forEach(g=>{ if(g.meta)push(g.meta.tournamentId); });
+  return seen.filter(Boolean);
+}
+function tourNameFor(tid){ const t=(SEED.tournaments||[]).find(t=>t.id===tid); return t?t.name:(tid||"Tournament"); }
+
+// Cumulative running totals across all games of a tournament
+function tournamentTotals(tid){
+  const games=tournamentGames(tid);
+  const tot={};
+  const add=(dst,src)=>{ ["pa","ab","h","b1","b2","b3","hr","r","rbi","bb","k"].forEach(k=>dst[k]=(dst[k]||0)+(src[k]||0)); };
+  games.forEach(({g})=>{
+    const agg=aggregateGame(g).stats;
+    for(const n in agg){ if(!tot[n])tot[n]={pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,r:0,rbi:0,bb:0,k:0}; add(tot[n],agg[n]); }
+  });
+  return tot;
+}
+
+let _hubTid=null, _hubMode="games"; // games | totals
+function openTournamentHub(tid){
+  const ids=storedTournamentIds();
+  if(tid) _hubTid=tid;
+  if(!_hubTid || !ids.includes(_hubTid)) _hubTid = ids[0] || (setup.tournamentId||null);
+  if(!_hubTid){ toast("No tournament games yet"); return; }
+  const games=tournamentGames(_hubTid);
+  const name=tourNameFor(_hubTid);
+  // record
+  let w=0,l=0,t=0;
+  games.forEach(({g})=>{ const lb=gameResultLabel(g); if(lb[0]==="W")w++;else if(lb[0]==="L")l++;else if(lb[0]==="T")t++; });
+  const rec=`${w}-${l}${t?"-"+t:""}`;
+  // switcher (only if >1 tournament stored)
+  let switcher="";
+  if(ids.length>1){
+    switcher=`<select class="hub-switch" onchange="openTournamentHub(this.value)">${ids.map(id=>`<option value="${id}" ${id===_hubTid?'selected':''}>${escHtml(tourNameFor(id))}</option>`).join("")}</select>`;
+  }
+  let body;
+  if(_hubMode==="totals"){
+    const tot=tournamentTotals(_hubTid);
+    // order by hits desc for the running view
+    const order=Object.keys(tot).sort((a,b)=> (tot[b].h-tot[a].h)||(tot[b].rbi-tot[a].rbi));
+    body=`<div class="hub-note">Cumulative stats across all ${games.length} game${games.length===1?'':'s'} this tournament.</div>${boxScoreTable(tot, order)}`;
+  } else {
+    // games grouped by day (date)
+    const byDay={};
+    games.forEach(x=>{ const d=x.g.meta.date||"—"; (byDay[d]=byDay[d]||[]).push(x); });
+    const days=Object.keys(byDay).sort();
+    const multi=days.length>1;
+    body=days.map((d,di)=>{
+      const rows=byDay[d].map(x=>{
+        const g=x.g,m=g.meta; const lb=gameResultLabel(g);
+        const cls=lb[0]==="W"?"hub-w":lb[0]==="L"?"hub-l":"hub-t";
+        const open = x.current?`openBoxScoreCurrent()`:`openBoxScoreHub(${x.archiveIdx})`;
+        const live = x.current?`<span class="hub-live">● live</span>`:"";
+        return `<div class="hub-game" onclick="${open}">
+          <div class="hub-g-n">${m.gnum||'•'}</div>
+          <div class="hub-g-d"><b>${escHtml(m.opp||'(opponent?)')}</b> ${live}<div class="hub-g-sub">${m.time?escHtml(m.time):''}${m.field?' · '+escHtml(m.field):''}</div></div>
+          <div class="hub-g-r ${cls}">${escHtml(lb)}</div>
+          <div class="hub-g-arr">›</div>
+        </div>`;
+      }).join("");
+      const dayHd = multi ? `<div class="hub-day">Day ${di+1}${d!=='—'?' · '+d:''}</div>` : "";
+      return dayHd+rows;
+    }).join("");
+    if(!games.length) body=`<div class="hub-note" style="text-align:center;padding:20px">No games yet in this tournament.</div>`;
+  }
+  const finished=games.filter(x=>!x.current).length;
+  panelOpen(`<div class="panel-hd"><h2>\uD83C\uDFC6 ${escHtml(name)}</h2></div>
+    <div class="panel-body">
+      <div class="hub-top"><span class="hub-rec">${rec}</span>${switcher}</div>
+      <div class="hub-tabs">
+        <button class="hub-tab ${_hubMode==='games'?'on':''}" onclick="setHubMode('games')">Games</button>
+        <button class="hub-tab ${_hubMode==='totals'?'on':''}" onclick="setHubMode('totals')">Running totals</button>
+      </div>
+      ${body}
+      ${finished>0 && _hubMode==='games'?`<button class="pf-confirm" style="width:100%;margin-top:14px;padding:14px;border-radius:12px" onclick="endTournament()">\u2B07 End tournament — download all ${finished} as one file</button>`:''}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+}
+function setHubMode(m){ _hubMode=m; openTournamentHub(); }
+function openBoxScoreHub(idx){ openBoxScore({archiveIdx:idx, fromHub:true}); }
+function openBoxScoreCurrent(){ openBoxScore({current:true, fromHub:true}); }
+
 function openGamesView(){
   if(pending){ toast("Finish current play first"); return; }
   const games=[];
@@ -3530,13 +3754,16 @@ function openGamesView(){
         ? `<span style="color:var(--amber);font-weight:800">● In progress</span>`
         : `<span style="color:var(--green);font-weight:800">✓ ${gameResultLabel(g)}</span>`;
       const meta = `${escHtml(m.opp||'(opponent?)')} ${m.gnum?'· G'+escHtml(m.gnum):''} ${m.type==='tournament'?'· '+escHtml(m.tournamentName||'tourney'):'· league'}`;
+      const boxBtn = x.current
+        ? `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({current:true})">\uD83D\uDCCA</button>`
+        : `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({archiveIdx:${idx}})">\uD83D\uDCCA</button>`;
       const btn = x.current
         ? `<button class="pe" onclick="resumeCurrent()">Resume</button>`
         : `<button class="pe" onclick="openArchived(${idx})">Export</button>`;
       return `<div class="play-row">
         <div class="pi">${m.gnum||(x.current?'•':'✓')}</div>
         <div class="pd"><b>${label}</b><div class="rs">${meta}${m.date?' · '+m.date:''}${m.time?' · '+escHtml(m.time):''}</div></div>
-        ${btn}${x.current?'':`<button class="pe" style="background:var(--red);margin-left:6px" onclick="deleteArchived(${idx})">×</button>`}
+        ${boxBtn}${btn}${x.current?'':`<button class="pe" style="background:var(--red);margin-left:6px" onclick="deleteArchived(${idx})">×</button>`}
       </div>`;
     }).join("");
   }
@@ -3843,6 +4070,12 @@ function refreshSetupChrome(){
   const cnt=totalGames();
   if(cnt>0){ btn.style.display="block"; document.getElementById("setup-games-count").textContent=`(${cnt})`; }
   else btn.style.display="none";
+  // Tournament Hub button — show if any tournament games are stored OR tournament type is selected
+  const hub=document.getElementById("hub-btn");
+  if(hub){
+    const hasTour = storedTournamentIds().length>0 || setup.type==="tournament";
+    hub.style.display = hasTour ? "flex" : "none";
+  }
   // resume banner for in-progress game
   const host=document.getElementById("resume-host");
   if(STORE.current && STORE.current.events){
