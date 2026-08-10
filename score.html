@@ -194,24 +194,36 @@ body.light .btn-draft{background:#FBF1D9;color:#B8860B;border-color:#E0A82E}
 .linescore tr.them .tot{color:#FF9E8F}
 
 /* diamond */
-.diamond-row{flex:1;display:flex;align-items:stretch;min-height:0;gap:4px}
+.diamond-row{flex:1;display:flex;align-items:stretch;min-height:0;gap:4px;position:relative}
 .diamond-wrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:6px}
 .diamond{position:relative;width:min(44vh,300px);height:min(44vh,300px);max-height:100%;max-width:100%;aspect-ratio:1}
 /* fielder overlay (location mode) */
-.field-overlay{position:absolute;inset:0;z-index:8;display:none}
-#game.loc-mode .field-overlay{display:block}
+/* location overlay — hidden until loc-mode. Covers the whole diamond-row
+   (gutter + diamond) so dots are big and well-spaced. Absolute within the row. */
+.field-overlay{position:absolute;inset:0;z-index:30;display:none;border-radius:12px;overflow:visible}
+#game.loc-mode .field-overlay{display:block;background:#0A1330}
+body.light #game.loc-mode .field-overlay{background:#DDE3F2}
+#game.loc-mode.them-batting .field-overlay{background:#2A0810}
+body.light #game.loc-mode.them-batting .field-overlay{background:#F0D5D9}
+#game.loc-mode .lastplay,#game.loc-mode .diamond-wrap{visibility:hidden}
 #game.loc-mode .base{opacity:.25;pointer-events:none}
 #game.loc-mode .out-zone{display:none}
-.field-overlay svg{width:100%;height:100%;overflow:visible}
-.field-overlay .fz circle{fill:var(--navy);opacity:.92;stroke:#fff;stroke-width:1.5}
-.field-overlay .fz text{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;pointer-events:none}
-.field-overlay .fz:active circle{fill:var(--gold)}
-.field-overlay .fz-gap{fill:rgba(240,180,41,.22);stroke:var(--gold);stroke-width:1;stroke-dasharray:3 3}
-.field-overlay .fz-gap:active{fill:var(--gold);opacity:.55}
-.field-overlay .fz-hr circle{fill:#E0218A;opacity:.9;stroke:#fff;stroke-width:1.5}
-.field-overlay .fz-hr text{fill:#fff;font-weight:800;pointer-events:none}
-.field-overlay .fz-hr:active circle{fill:var(--gold)}
-.field-overlay.disabled .fz,.field-overlay.disabled .fz-gap,.field-overlay.disabled .fz-hr{opacity:.3;pointer-events:none}
+.field-overlay svg{width:100%;height:100%;overflow:visible;display:block}
+/* fielders (numbered) — bold blue disc, white ring + text: reads on every background */
+.field-overlay .fz circle{fill:#2452E6;opacity:1;stroke:#fff;stroke-width:3}
+.field-overlay .fz text{fill:#fff;font-size:18px;font-weight:900;text-anchor:middle;pointer-events:none}
+.field-overlay .fz:active circle{fill:#F0B429;stroke:#fff}
+/* gap dots — solid disc with bright gold ring; white text. Same in all 4 modes. */
+.field-overlay .fz-gap-g circle.fz-gap{fill:#243A7A;stroke:#F5C542;stroke-width:3;opacity:1}
+body.light .field-overlay .fz-gap-g circle.fz-gap{fill:#5B7CC9;stroke:#B8791A}
+.field-overlay .fz-gap-g text{fill:#fff;font-weight:900}
+.field-overlay .fz-gap-g:active circle.fz-gap{fill:#F0B429;stroke:#fff}
+.field-overlay .fz-gap-g:active text{fill:#0D1B3E}
+/* HR arc dots — pink disc, white ring/text (all modes) */
+.field-overlay .fz-hr circle{fill:#E0218A;opacity:1;stroke:#fff;stroke-width:3}
+.field-overlay .fz-hr text{fill:#fff;font-weight:900;pointer-events:none}
+.field-overlay .fz-hr:active circle{fill:#F0B429}
+.field-overlay.disabled .fz,.field-overlay.disabled .fz-gap-g,.field-overlay.disabled .fz-hr{opacity:.34;pointer-events:none}
 /* location bar */
 .loc-bar{flex:0 0 auto;padding:8px 10px;background:var(--navy-d);border-top:2px solid var(--gold)}
 .loc-prompt{text-align:center;color:#fff;font-weight:800;font-size:14px;margin-bottom:7px}
@@ -831,13 +843,13 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
   <div class="linescore" id="linescore"></div>
 
   <div class="diamond-row">
+    <div class="field-overlay" id="field-overlay"></div>
     <div class="lastplay" id="lastplay">
       <div class="lp-section" id="lp-lastplay"></div>
       <div class="lp-section" id="lp-history"></div>
     </div>
     <div class="diamond-wrap">
       <div class="diamond">
-        <div class="field-overlay" id="field-overlay"></div>
         <div class="base b2" id="base-2" onclick="baseTap(2)"><div class="bn"></div></div>
         <div class="base b3" id="base-3" onclick="baseTap(3)"><div class="bn"></div></div>
         <div class="base b1" id="base-1" onclick="baseTap(1)"><div class="bn"></div></div>
@@ -1660,7 +1672,7 @@ function renderOnDeck(st){
         const shown=seq.slice(-4); // cap most recent 4
         const more=seq.length>4?`<span class="od-more">+${seq.length-4}</span>`:"";
         statHtml=more+shown.map(x=>{
-          const loc=x.loc?`<span class="od-loc">${escHtml(x.loc)}</span>`:"";
+          const loc=x.loc?`<span class="od-loc">${escHtml(locDisplay(x.loc))}</span>`:"";
           return `<span class="od-res ${resClass(x.result)}">${resMap[x.result]||x.result}${x.runs?`<span class="od-r">R</span>`:""}</span>`;
         }).join('<span class="od-dot">\u00b7</span>');
       }
@@ -1696,7 +1708,7 @@ function renderBatterHistory(st){
   if(!hist.length){ h+=`<div class="bh-empty">first at-bat</div>`; }
   else{
     h+=hist.map(x=>{
-      const loc = x.loc?` <span class="loc">${escHtml(x.loc)}</span>`:"";
+      const loc = x.loc?` <span class="loc">${escHtml(locDisplay(x.loc))}</span>`:"";
       const r = x.runs?` <span class="r">R</span>`:"";
       return `<div class="bh-row"><span class="inn">${ord(x.inn)} inning</span> — ${resMap[x.result]||x.result}${loc}${r}</div>`;
     }).join("");
@@ -1735,7 +1747,7 @@ function renderLastPlay(){
       return;
     }
     const resTxt=resMap[e.result]||e.result;
-    const loc=e.loc?` <span class="res">${escHtml(e.loc)}</span>`:"";
+    const loc=e.loc?` <span class="res">${escHtml(locDisplay(e.loc))}</span>`:"";
     let pl=`<div class="lp-play ${newest?'newest':''}"><div class="lp-bat">${escHtml(firstName(e.batter))} · <span class="res">${resTxt}</span>${loc}`;
     if(e.rbi>0) pl+=` <span class="rbi-inline">${e.rbi}RBI</span>`;
     pl+=`</div>`;
@@ -1750,7 +1762,7 @@ function renderLastPlay(){
       });
       // location chip / add-button on the newest batted-ball play
       if(battable.has(e.result)){
-        if(e.loc) pl+=`<span class="loc-chip" onclick="openFieldLoc(${idx})">\uD83D\uDCCD ${escHtml(e.loc)}</span>`;
+        if(e.loc) pl+=`<span class="loc-chip" onclick="openFieldLoc(${idx})">\uD83D\uDCCD ${escHtml(locDisplay(e.loc))}</span>`;
         else pl+=`<span class="loc-add" onclick="openFieldLoc(${idx})">\uD83D\uDCCD + where?</span>`;
       }
     }
@@ -2750,11 +2762,11 @@ function plogLine(e){
   if(e.t==="SKIP") return `<span class="plog-sub">\u2934 spot skipped</span>`;
   if(e.t==="BR"){
     const toTxt=e.to==="HOME"?"scored":(e.to==="OUT"?"out on bases":"to "+e.to);
-    const loc=e.loc?` <span class="plog-loc">${escHtml(e.loc)}</span>`:"";
+    const loc=e.loc?` <span class="plog-loc">${escHtml(locDisplay(e.loc))}</span>`:"";
     return `<span class="plog-name">${escHtml(firstName(e.name))}</span> ${toTxt}${loc}${e.out?` <span class="plog-out">out</span>`:""}${e.run?` <span class="plog-run">RUN</span>`:""}`;
   }
   if(e.t==="PA"){
-    const loc=e.loc?` <span class="plog-loc">${escHtml(e.loc)}</span>`:"";
+    const loc=e.loc?` <span class="plog-loc">${escHtml(locDisplay(e.loc))}</span>`:"";
     const rbi=e.rbi?` <span class="plog-rbi">${e.rbi} RBI</span>`:"";
     const runrs=(e.runs&&e.runs.length)?` <span class="plog-run">scored: ${e.runs.map(firstName).map(escHtml).join(", ")}</span>`:"";
     return `<span class="plog-name">${escHtml(firstName(e.batter))}</span> ${resMap[e.result]||e.result}${loc}${rbi}${runrs}`;
@@ -2908,21 +2920,25 @@ function deletePlay(gi){
 /* ===== INLINE LOCATION STEP (on the main diamond) ===== */
 let locStep=null; // {evIndex, ballType:null|'G'|'L'|'F'|'P'}
 function fieldOverlaySVG(active){
+  // Bigger dots now that the overlay goes full-screen. Gap labels use fielder-number
+  // names (e.g. 6-7) sized to fit; multi-number labels get a smaller font.
   let zones="";
   for(const k in GAPS){ const g=GAPS[k];
-    zones+=`<g class="fz-gap-g" onclick="locGapTap('${k}')"><circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="13"></circle><text x="${g.x}" y="${g.y+3}" font-size="7" font-weight="700" fill="#F0B429" text-anchor="middle" pointer-events="none">${g.l}</text></g>`;
+    const lblLen=(g.l||k).length;
+    const fs = lblLen>=6 ? 6 : (lblLen>=4 ? 7 : 9);
+    zones+=`<g class="fz-gap-g" onclick="locGapTap('${k}')"><circle class="fz-gap" cx="${g.x}" cy="${g.y}" r="13"></circle><text x="${g.x}" y="${g.y+3}" font-size="${fs}" text-anchor="middle" pointer-events="none">${g.l||k}</text></g>`;
   }
   for(const n in FIELDERS){ const p=FIELDERS[n];
-    zones+=`<g class="fz" onclick="locFielderTap(${n})"><circle cx="${p.x}" cy="${p.y}" r="16"></circle><text x="${p.x}" y="${p.y+5}">${n}</text></g>`;
+    zones+=`<g class="fz" onclick="locFielderTap(${n})"><circle cx="${p.x}" cy="${p.y}" r="14"></circle><text x="${p.x}" y="${p.y+5}" font-size="13">${n}</text></g>`;
   }
-  // HR zones — distinct look, tap = auto fly-ball HR to that field
   let hrzones="";
   for(const k in HRZONES){ const g=HRZONES[k];
-    hrzones+=`<g class="fz-hr" onclick="locHRTap('${k}')"><circle cx="${g.x}" cy="${g.y}" r="14"></circle><text x="${g.x}" y="${g.y+3}" font-size="7" font-weight="800" text-anchor="middle" pointer-events="none">HR</text></g>`;
+    hrzones+=`<g class="fz-hr" onclick="locHRTap('${k}')"><circle cx="${g.x}" cy="${g.y}" r="13"></circle><text x="${g.x}" y="${g.y+3}" font-size="8" text-anchor="middle" pointer-events="none">HR</text></g>`;
   }
-  return `<svg viewBox="-25 -12 350 312" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="4 -16 292 301" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
     <path d="M150 270 L255 120 A150 150 0 0 0 45 120 Z" fill="#1d6b3a" opacity="0.22"/>
-    <path d="M150 270 L281 69 A240 240 0 0 0 19 69 Z" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.18" stroke-dasharray="3 3"/>
+    <path d="M150 270 L210 175 L150 120 L90 175 Z" fill="#9e7a3a" opacity="0.30"/>
+    <path d="M150 270 L281 69 A240 240 0 0 0 19 69 Z" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.20" stroke-dasharray="3 3"/>
     <line x1="150" y1="270" x2="281" y2="69" stroke="#fff" stroke-width="1" opacity="0.3"/>
     <line x1="150" y1="270" x2="19" y2="69" stroke="#fff" stroke-width="1" opacity="0.3"/>
     ${hrzones}
@@ -2961,7 +2977,7 @@ function locFielderTap(n){
 }
 function locGapTap(k){
   if(!locStep||!locStep.ballType){ toast("Pick G/L/F/P first"); return; }
-  applyLocStep(locStep.ballType+k.replace("-",""));
+  applyLocStep(locStep.ballType+k);
 }
 function applyLocStep(loc){
   const e=G.events[locStep.evIndex];
@@ -2989,20 +3005,24 @@ const FIELDERS = {
 };
 // gap zones (no-dash "through" hits) -> records like G64; midpoint between two fielders
 const GAPS = {
-  "56":{x:100,y:155,l:"5-6"}, "64":{x:150,y:130,l:"6-4"}, "43":{x:200,y:155,l:"4-3"},
-  "78":{x:95,y:66,l:"7-8"}, "89":{x:150,y:48,l:"8-9"}, "9-10":{x:205,y:66,l:"9-10"},
-  "7L":{x:48,y:96,l:"7L"}, "10R":{x:252,y:96,l:"10R"},
-  "5-2":{x:110,y:225,l:"5-2"}, "3-2":{x:190,y:225,l:"3-2"},
-  // shallow outfield (bloop — between infield and outfield)
-  "SL":{x:84,y:135,l:"SL"}, "SLC":{x:127,y:122,l:"SLC"}, "SRC":{x:173,y:122,l:"SRC"}, "SR":{x:216,y:135,l:"SR"},
-  // deep outfield / warning track (between outfielders and wall)
-  "DL":{x:54,y:89,l:"DL"}, "DLC":{x:111,y:69,l:"DLC"}, "DRC":{x:189,y:69,l:"DRC"}, "DR":{x:246,y:89,l:"DR"},
-  // foul territory up the lines
-  "FL1":{x:74,y:191,l:"FL"}, "FL2":{x:40,y:147,l:"FL"}, "FR1":{x:226,y:191,l:"FR"}, "FR2":{x:260,y:147,l:"FR"}
+  // infield gaps
+  "5-6":{x:92,y:148,l:"5-6"}, "6-4":{x:150,y:128,l:"6-4"}, "4-3":{x:208,y:148,l:"4-3"},
+  // short / comebacker (pitcher to each infielder + up the middle)
+  "1-2":{x:150,y:238,l:"1-2"}, "1-5":{x:106,y:198,l:"1-5"}, "1-6":{x:124,y:180,l:"1-6"},
+  "1-6-4":{x:150,y:172,l:"1-6-4"}, "1-4":{x:176,y:180,l:"1-4"}, "1-3":{x:194,y:198,l:"1-3"},
+  // infield<->outfield gaps (where bloops/gappers drop)
+  "5-7":{x:74,y:118,l:"5-7"}, "6-7":{x:88,y:102,l:"6-7"}, "8-6":{x:114,y:92,l:"8-6"},
+  "8-9-6-4":{x:150,y:76,l:"8-9-6-4"}, "9-4":{x:186,y:92,l:"9-4"}, "4-10":{x:212,y:102,l:"4-10"}, "3-10":{x:226,y:118,l:"3-10"},
+  // deep outfield (behind each outfielder + deep gaps)
+  "d7":{x:48,y:30,l:"deep 7"}, "d7-8":{x:82,y:16,l:"deep 7-8"}, "d8":{x:112,y:8,l:"deep 8"},
+  "d8-9":{x:150,y:4,l:"deep 8-9"}, "d9":{x:188,y:8,l:"deep 9"}, "d9-10":{x:218,y:16,l:"deep 9-10"}, "d10":{x:252,y:30,l:"deep 10"},
+  // foul territory (X = foul; outside the lines) — shallow + deep both sides
+  "XL":{x:79,y:208,l:"foul L"}, "XLd":{x:34,y:142,l:"deep foul L"},
+  "XR":{x:221,y:208,l:"foul R"}, "XRd":{x:266,y:142,l:"deep foul R"}
 };
 // Home-run spots (over the wall) — tapping auto-tags a fly ball to that field
 const HRZONES = {
-  "HRL":{x:19,y:69,l:"HR"}, "HRLC":{x:84,y:39,l:"HR"}, "HRC":{x:150,y:30,l:"HR"}, "HRRC":{x:216,y:39,l:"HR"}, "HRR":{x:281,y:69,l:"HR"}
+  "HRL":{x:16,y:46,l:"HR"}, "HRLC":{x:60,y:12,l:"HR"}, "HRC":{x:150,y:2,l:"HR"}, "HRRC":{x:240,y:12,l:"HR"}, "HRR":{x:284,y:46,l:"HR"}
 };
 let fieldCtx=null; // {evIndex, ballType:'G'|'L'|'F'}
 
@@ -3110,14 +3130,31 @@ function locToDot(loc){
   return null;
 }
 // normalize a code's "rest" back to a GAPS key
+// Human-readable location for history/log. Stored code is <type><zone>, e.g. "G6-7".
+// We drop the leading ball-type letter (already shown as the result) and map the zone
+// to a clean label: fielder number, number-gap (6-7), deep (deep 8), or foul (foul L).
+function locDisplay(loc){
+  if(!loc) return "";
+  const rest=loc.slice(1); // strip ball type G/L/F/P
+  if(GAPS[rest]) return GAPS[rest].l || rest;
+  if(HRZONES[rest]) return "HR";
+  if(FIELDERS[+rest]) return String(+rest);
+  // normalized gap fallbacks
+  const gk=gapKeyFromRest(rest);
+  if(gk && GAPS[gk]) return GAPS[gk].l || gk;
+  return rest;
+}
 function gapKeyFromRest(rest){
-  if(GAPS[rest]) return rest;                       // 7L, 10R, 64, 78, 89
-  if(rest==="910") return "9-10";
-  if(rest==="52") return "5-2";
-  if(rest==="32") return "3-2";
-  if(rest==="56") return "56";
-  if(rest==="43") return "43";
-  // hyphenated input
+  if(GAPS[rest]) return rest;                       // exact: 6-7, 8-9-4, XL, d8, etc.
+  // legacy codes from older games -> nearest current zone
+  const legacy={
+    "910":"d9-10","89":"d8-9","78":"d7-8","7L":"XLd","10R":"XRd",
+    "52":"1-5","32":"1-3","56":"5-6","64":"6-4","43":"4-3",
+    "SL":"5-7","SLC":"6-7","SRC":"9-4","SR":"4-10",
+    "DL":"d7","DLC":"d8","DRC":"d9","DR":"d10",
+    "FL1":"XL","FL2":"XLd","FR1":"XR","FR2":"XRd"
+  };
+  if(legacy[rest] && GAPS[legacy[rest]]) return legacy[rest];
   if(GAPS[rest.replace("-","")]) return rest.replace("-","");
   return null;
 }
