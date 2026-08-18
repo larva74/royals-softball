@@ -207,6 +207,9 @@ body.light #game.loc-mode .field-overlay{background:#DDE3F2}
 body.light #game.loc-mode.them-batting .field-overlay{background:#F0D5D9}
 #game.loc-mode .lastplay,#game.loc-mode .diamond-wrap{visibility:hidden}
 #game.loc-mode .base{opacity:.25;pointer-events:none}
+/* keep .diamond-row (and therefore the hit chart) identical on both sides:
+   the opponent-only wrap button would otherwise shrink the overlay box */
+#game.loc-mode .wrap-btn{display:none!important}
 #game.loc-mode .out-zone{display:none}
 .field-overlay svg{width:100%;height:100%;overflow:visible;display:block}
 /* fielders (numbered) — bold blue disc, white ring + text: reads on every background */
@@ -998,7 +1001,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
 
 /* ---- SEED (refreshed-on-build alongside index.html) ---- */
 const SEED = {
-  builtFrom: "index.html @ 2026-08-11",
+  builtFrom: "index.html @ 2026-08-17",
   leagueRoster: ["Amanda Kwan","Ashley Georgi","Emily Chan","Evaine Chan","Evelyn Koh","Flora Sennett","Holly Lee","Joyce Lai","Kaitlyn Huynh","Megan Abellera","Michelle Ito","Michelle Lim","Michelle Yuen","Milagros Roman","Sandra Cordeiro","Stephanie Szeto","Sunita Tanna"],
   tourneyRoster: ["Amanda Kwan","Ashley Si","Carmen Tan","Clarissa Cheung","Elaine Park","Ellen Lau","Emily Chan","Emily Ly","Evelyn Koh","Joyce Lai","Kaitlyn Huynh","Leanne Kong","Megan Abellera","Melanie Ly","Michelle Yuen","Milagros Roman","Miranda Lim","Rachel Tang","Sally Ng","Shannon Cheung","Stephanie Lo","Susanne Lee"],
   jerseys: {"Emily Ly":"00","Emily Chan":"2","Shannon Cheung":"4","Stephanie Lo":"5","Clarissa Cheung":"8","Michelle Yuen":"11","Amanda Kwan":"17","Melanie Ly":"18","Kaitlyn Huynh":"20","Evelyn Koh":"23","Miranda Lim":"36","Elaine Park":"48","Leanne Kong":"55","Megan Abellera":"66","Carmen Tan":"99"},
@@ -1030,7 +1033,7 @@ const SEED = {
     {date:"2026-07-27", opp:"Blitz", field:"Highgate", time:"20:30", venue:"away", played:false},
     {date:"2026-07-27", opp:"Dos Diamond", field:"Highgate", time:"21:45", venue:"away", played:false},
     {date:"2026-08-10", opp:"IBB", field:"Highgate", time:"21:45", venue:"away", played:true},
-    {date:"2026-08-17", opp:"Reign", field:"Mintleaf", time:"19:15", venue:"away", played:false},
+    {date:"2026-08-17", opp:"Reign", field:"Mintleaf", time:"19:15", venue:"away", played:true},
     {date:"2026-08-24", opp:"Renown", field:"Mintleaf", time:"19:15", venue:"home", played:false},
     {date:"2026-08-24", opp:"Super Base", field:"Mintleaf", time:"20:30", venue:"away", played:false},
     {date:"2026-08-31", opp:"Reign", field:"Highgate", time:"19:15", venue:"home", played:false},
@@ -2299,30 +2302,53 @@ function lineupRemove(i){
   saveGame(); render(); openLineupEditor();
 }
 // ---- mid-game add batter (late arrival): pick player, then choose an eligible slot ----
+// Names already seen on the opponent side THIS GAME. Opponents have no persistent
+// roster, so this is the only legitimate suggestion source for "them".
+function oppKnownNames(){
+  const seen=[].concat(G.oppOrigLineup||[], G.oppBench||[]);
+  for(const e of G.events){ if((e.side||"us")==="them"){ if(e.batter)seen.push(e.batter); if(e.in)seen.push(e.in); } }
+  return [...new Set(seen.map(n=>(n||"").trim()).filter(Boolean))];
+}
 function openAddBatter(){
   const st=G._st;
   const inLineup=st.lineup;
-  const pre=(G.bench||[]).filter(n=>!inLineup.includes(n));
-  const roster=rosterFor(G.meta.type==="tournament"?"tournament":"league");
-  const rest=roster.filter(n=>!inLineup.includes(n) && !pre.includes(n) && !st.subbedOut.includes(n));
+  const them=(activeSide==="them");
+  let pre, rest;
+  if(them){
+    // STRICT SIDE SPLIT: never surface the Royals roster or Royals bench here.
+    pre=(G.oppBench||[]).filter(n=>!inLineup.includes(n));
+    rest=oppKnownNames().filter(n=>!inLineup.includes(n) && !pre.includes(n));
+  } else {
+    pre=(G.bench||[]).filter(n=>!inLineup.includes(n));
+    const roster=rosterFor(G.meta.type==="tournament"?"tournament":"league");
+    rest=roster.filter(n=>!inLineup.includes(n) && !pre.includes(n) && !st.subbedOut.includes(n));
+  }
   const mk=(n,tag)=>`<button onclick="pickAddBatter('${esc(n)}')">${escHtml(n)}${tag?`<span class="tag">${tag}</span>`:""}</button>`;
-  let h=pre.map(n=>mk(n,"bench")).join("")+rest.map(n=>mk(n,"")).join("");
+  let h=pre.map(n=>mk(n,them?"opp bench":"bench")).join("")+rest.map(n=>mk(n,them?"seen":"")).join("");
+  if(them && !h) h=`<div style="color:var(--muted);text-align:center;padding:12px">No opponent names on file yet — type one below.</div>`;
   h+=`<button onclick="openAddBatterNew()" style="border:2px dashed var(--navy);color:var(--navy);justify-content:center">+ Type a new name</button>`;
-  panelOpen(`<div class="panel-hd"><h2>Add batter</h2></div>
-    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Pick who is arriving. Next you'll choose where they bat (only slots that haven't come up yet).</div><div class="sub-pick">${h}</div></div>
+  const hint = them
+    ? "Opponent batters only — jersey # or a description is fine. Nothing here touches the Royals roster."
+    : "Pick who is arriving. Next you'll choose where they bat (only slots that haven't come up yet).";
+  panelOpen(`<div class="panel-hd"><h2>Add ${them?"opponent ":""}batter</h2></div>
+    <div class="panel-body"><div style="font-size:12px;color:var(--muted);margin-bottom:10px">${hint}</div><div class="sub-pick">${h}</div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="openBatterMenu()">Back</button></div>`);
 }
 function openAddBatterNew(){
-  panelOpen(`<div class="panel-hd"><h2>Add new batter</h2></div>
+  const them=(activeSide==="them");
+  panelOpen(`<div class="panel-hd"><h2>Add new ${them?"opponent ":""}batter</h2></div>
     <div class="panel-body"><div class="dedupe-warn" id="dd-warn-ab"></div>
-      <div class="field-edit"><label>Name</label><input id="ab-new-name" placeholder="Full name" autocomplete="off"></div></div>
+      ${them?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Opponent batter — not added to the Royals roster.</div>`:""}
+      <div class="field-edit"><label>${them?"Name / jersey # / description":"Full name"}</label><input id="ab-new-name" placeholder="${them?"e.g. #7, tall lefty":"Full name"}" autocomplete="off"></div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="openAddBatter()">Back</button><button class="pf-confirm" onclick="confirmAddBatterNew()">Next</button></div>`);
   const inp=document.getElementById("ab-new-name"); setTimeout(()=>inp.focus(),60);
-  inp.addEventListener("input",()=>dedupeCheck(inp.value, rosterFor(G.meta.type), "dd-warn-ab"));
+  // dedupe against the correct side's names only
+  inp.addEventListener("input",()=>dedupeCheck(inp.value, them?oppKnownNames():rosterFor(G.meta.type), "dd-warn-ab"));
 }
 function confirmAddBatterNew(){
   const v=document.getElementById("ab-new-name").value.trim();
   if(!v){ toast("Name required"); return; }
+  if(activeSide==="them"){ pickAddBatter(v); return; }  // opponent: never touch SEED roster or G.newPlayers
   const roster=rosterFor(G.meta.type);
   if(!roster.includes(v)){ if(G.meta.type==="tournament")SEED.tourneyRoster.push(v); else SEED.leagueRoster.push(v); G.newPlayers=G.newPlayers||[]; G.newPlayers.push(v); }
   pickAddBatter(v);
@@ -2499,6 +2525,7 @@ function openAddPlayerGame(){
 function confirmAddPlayerGame(){
   const v=document.getElementById("npg-name").value.trim();
   if(!v){ toast("Name required"); return; }
+  if(activeSide==="them"){ doSub(v); return; }  // opponent: never touch SEED roster or G.newPlayers
   const roster=rosterFor(G.meta.type);
   if(!roster.includes(v)){ (G.meta.type==="tournament"?SEED.tourneyRoster:SEED.leagueRoster).push(v); if(!G.newPlayers.includes(v))G.newPlayers.push(v); }
   doSub(v);
@@ -3412,7 +3439,13 @@ function buildGameObject(g){
     opponent:m.opp||"", date:m.date||"", gameNum:m.gnum||"", time:m.time||"", field:m.field||"",
     rf:agg.teamR, ra, result,
     ...(themT!=null?{lineScore:{us:replayUsByInning(g), them:(g.trackMode==="both"?replayThemByInning(g):(m.themByInning||[]))}}:{}),
-    ...((g.newPlayers&&g.newPlayers.length)?{newPlayers:g.newPlayers}:{}),
+    ...(function(){
+      // Backstop: only names that actually appear on the Royals side may be exported
+      // as new players. Blocks opponent-lineup leakage into the Royals roster.
+      const ours=new Set([].concat(g.allPlayers||[], Object.keys(stats)));
+      const np=(g.newPlayers||[]).filter(n=>ours.has(n));
+      return np.length?{newPlayers:np}:{};
+    })(),
     stats
   };
 }
