@@ -1001,8 +1001,8 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
 
 /* ---- SEED (refreshed-on-build alongside index.html) ---- */
 const SEED = {
-  builtFrom: "index.html @ 2026-08-17",
-  leagueRoster: ["Amanda Kwan","Ashley Georgi","Emily Chan","Evaine Chan","Evelyn Koh","Flora Sennett","Holly Lee","Joyce Lai","Kaitlyn Huynh","Megan Abellera","Michelle Ito","Michelle Lim","Michelle Yuen","Milagros Roman","Sandra Cordeiro","Stephanie Szeto","Sunita Tanna"],
+  builtFrom: "index.html @ 2026-08-24",
+  leagueRoster: ["Alyssa X","Amanda Kwan","Ashley Georgi","Elaine X","Emily Chan","Evaine Chan","Evelyn Koh","Flora Sennett","Holly Lee","Joanna Lau","Joyce Lai","Kaitlyn Huynh","Laura X","Megan Abellera","Michelle Ito","Michelle Lim","Michelle Yuen","Milagros Roman","Miranda Lim","Sandra Cordeiro","Sara X","Sarah W","Stephanie Szeto","Sunita Tanna"],
   tourneyRoster: ["Amanda Kwan","Ashley Si","Carmen Tan","Clarissa Cheung","Elaine Park","Ellen Lau","Emily Chan","Emily Ly","Evelyn Koh","Joyce Lai","Kaitlyn Huynh","Leanne Kong","Megan Abellera","Melanie Ly","Michelle Yuen","Milagros Roman","Miranda Lim","Rachel Tang","Sally Ng","Shannon Cheung","Stephanie Lo","Susanne Lee"],
   jerseys: {"Emily Ly":"00","Emily Chan":"2","Shannon Cheung":"4","Stephanie Lo":"5","Clarissa Cheung":"8","Michelle Yuen":"11","Amanda Kwan":"17","Melanie Ly":"18","Kaitlyn Huynh":"20","Evelyn Koh":"23","Miranda Lim":"36","Elaine Park":"48","Leanne Kong":"55","Megan Abellera":"66","Carmen Tan":"99"},
   tournaments: [
@@ -1034,8 +1034,8 @@ const SEED = {
     {date:"2026-07-27", opp:"Dos Diamond", field:"Highgate", time:"21:45", venue:"away", played:false},
     {date:"2026-08-10", opp:"IBB", field:"Highgate", time:"21:45", venue:"away", played:true},
     {date:"2026-08-17", opp:"Reign", field:"Mintleaf", time:"19:15", venue:"away", played:true},
-    {date:"2026-08-24", opp:"Renown", field:"Mintleaf", time:"19:15", venue:"home", played:false},
-    {date:"2026-08-24", opp:"Super Base", field:"Mintleaf", time:"20:30", venue:"away", played:false},
+    {date:"2026-08-24", opp:"Renown", field:"Mintleaf", time:"19:15", venue:"home", played:true},
+    {date:"2026-08-24", opp:"Super Base", field:"Mintleaf", time:"20:30", venue:"away", played:true},
     {date:"2026-08-31", opp:"Reign", field:"Highgate", time:"19:15", venue:"home", played:false},
     {date:"2026-08-31", opp:"Renown", field:"Highgate", time:"20:30", venue:"away", played:false},
     {date:"2026-09-14", opp:"Super Base", field:"Highgate", time:"21:45", venue:"home", played:false}
@@ -2350,7 +2350,8 @@ function confirmAddBatterNew(){
   if(!v){ toast("Name required"); return; }
   if(activeSide==="them"){ pickAddBatter(v); return; }  // opponent: never touch SEED roster or G.newPlayers
   const roster=rosterFor(G.meta.type);
-  if(!roster.includes(v)){ if(G.meta.type==="tournament")SEED.tourneyRoster.push(v); else SEED.leagueRoster.push(v); G.newPlayers=G.newPlayers||[]; G.newPlayers.push(v); }
+  if(!roster.includes(v)){ if(G.meta.type==="tournament")SEED.tourneyRoster.push(v); else SEED.leagueRoster.push(v); }
+  G.newPlayers=G.newPlayers||[]; if(!G.newPlayers.includes(v)) G.newPlayers.push(v);
   pickAddBatter(v);
 }
 function pickAddBatter(name){
@@ -3443,7 +3444,7 @@ function buildGameObject(g){
       // Backstop: only names that actually appear on the Royals side may be exported
       // as new players. Blocks opponent-lineup leakage into the Royals roster.
       const ours=new Set([].concat(g.allPlayers||[], Object.keys(stats)));
-      const np=(g.newPlayers||[]).filter(n=>ours.has(n));
+      const np=[...new Set(g.newPlayers||[])].filter(n=>ours.has(n));
       return np.length?{newPlayers:np}:{};
     })(),
     stats
