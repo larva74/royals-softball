@@ -241,8 +241,13 @@ body.light .field-overlay .fz-gap-g circle.fz-gap{fill:#5B7CC9;stroke:#B8791A}
 .lastplay.empty{opacity:1}
 .lp-section{min-height:0}
 #lp-lastplay{flex:0 0 auto;max-height:38%;overflow-y:auto;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
-#lp-history{flex:1 1 auto;overflow-y:auto}
+#lp-history{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 #lp-lastplay:empty,#lp-history:empty{display:none}
+.bh-pane{overflow-y:auto;min-height:0}
+#bh-thisgame{flex:0 1 auto;max-height:48%;padding-bottom:6px}
+#bh-vsteam{flex:1 1 auto;padding-top:7px;margin-top:6px;border-top:1px solid rgba(255,255,255,.08)}
+#bh-vsteam:empty{display:none;margin:0;border:0;padding:0;flex:0 0 0}
+#bh-thisgame:has(+ #bh-vsteam:empty){flex:1 1 auto;max-height:none}
 .lp-hd{font-size:11px;font-weight:800;color:#8B9BE8;letter-spacing:1.2px;margin-bottom:7px;text-transform:uppercase}
 .lp-play{margin-bottom:6px;opacity:.55}
 .lp-play.newest{opacity:1}
@@ -669,13 +674,42 @@ body.light .le-rm{background:#FBEAE8;color:#B3261E}
 .ra-input .res.w{background:var(--green-l);color:var(--green)}
 .ra-input .res.l{background:var(--red-l);color:var(--red)}
 
-.toast{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:24px;font-size:14px;font-weight:700;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:90%;text-align:center}
+.toast{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:24px;font-size:14px;font-weight:700;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:90%;text-align:center;display:flex;align-items:center;gap:10px;justify-content:center}
 .toast.show{opacity:.96}
+.toast-undo{pointer-events:auto;background:var(--gold);color:var(--navy-d);font-weight:900;font-size:12px;letter-spacing:.5px;padding:5px 12px;border-radius:14px;flex-shrink:0}
 
 .dedupe-warn{background:#FFF6E5;border:1px solid var(--amber);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--gold-d);font-weight:600;margin-bottom:10px;display:none}
 .dedupe-warn.show{display:block}
 .dedupe-warn b{color:var(--ink)}
 .dedupe-warn button{background:var(--navy);color:#fff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;margin-left:6px}
+
+.ls-qa{display:flex;gap:4px;flex-shrink:0;margin-right:2px}
+.ls-qa button{width:30px;height:30px;border-radius:8px;background:var(--bg);color:var(--navy);font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.ls-qa button.qa-re{color:var(--gold-d)}
+body.dark .ls-qa button{background:rgba(255,255,255,.08);color:#DDE3FA}
+
+/* ===== SCOUT REPORT ===== */
+.scout-hint{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.scout-match{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:8px;cursor:pointer}
+.scout-match b{font-size:15px;color:var(--ink)}
+.scout-match .sm-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.scout-match .sm-arr{color:var(--muted);font-size:18px;margin-left:auto}
+.scout-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.scout-tbl th,.scout-tbl td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line)}
+.scout-tbl th{background:var(--bg);font-weight:800;color:var(--muted);font-size:11px}
+.scout-tbl td.sc-nm{text-align:left;font-weight:800;color:var(--ink)}
+.scout-tbl td.sc-jno{font-weight:900;color:var(--gold-d)}
+.scout-tbl tr{cursor:pointer}
+.scout-tbl tr:active{background:var(--bg)}
+.scout-names{font-size:11px;color:var(--muted);font-weight:600}
+.scout-names b{color:var(--ink)}
+.scout-pa-row{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid var(--line);font-size:13px}
+.scout-pa-row .sp-g{color:var(--muted);min-width:74px}
+.scout-pa-row .sp-r{font-weight:800}
+.scout-jersey-hero{width:100%;padding:14px 14px;border:2px solid var(--line);border-radius:12px;font-size:22px;font-weight:900;text-align:center;outline:none;-webkit-user-select:text;user-select:text;margin-bottom:6px;letter-spacing:1px}
+.scout-jersey-hero:focus{border-color:var(--navy)}
+.opp-prefill-hint{font-size:12px;color:var(--gold-d);background:#FEF6E3;border:1px solid var(--gold-d);border-radius:9px;padding:9px 11px;margin:-4px 0 12px;font-weight:700;cursor:pointer;display:none}
+.opp-prefill-hint.show{display:block}
 
 /* ===== SCORESHEET (print) ===== */
 #sheet-view{z-index:65}
@@ -755,7 +789,6 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
 </style>
 </head>
 <body>
-
 <!-- ============ SETUP SCREEN ============ -->
 <div id="setup" class="screen active">
   <div class="setup-hd">
@@ -765,8 +798,8 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sub" id="seed-tag">offense logger</div>
     </div>
     <button id="theme-btn-s" onclick="toggleTheme()" style="background:rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:15px">☀</button>
-      <button id="hub-btn" onclick="openTournamentHub()" style="display:none;align-items:center;gap:5px;background:rgba(240,180,41,.30);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">\uD83C\uDFC6 Tournament</button>
-      <button id="drafts-btn" onclick="openDraftsView()" style="display:flex;align-items:center;gap:5px;background:rgba(240,180,41,.28);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">\u2637 Pending <span class="dc-n" style="background:#F0B429;color:#0A1F6B;border-radius:10px;padding:0 6px;font-size:12px">0</span></button>
+      <button id="hub-btn" onclick="openTournamentHub()" style="display:none;align-items:center;gap:5px;background:rgba(240,180,41,.30);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">🏆 Tournament</button>
+      <button id="drafts-btn" onclick="openDraftsView()" style="display:flex;align-items:center;gap:5px;background:rgba(240,180,41,.28);color:#fff;padding:9px 12px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">⚗ Pending <span class="dc-n" style="background:#F0B429;color:#0A1F6B;border-radius:10px;padding:0 6px;font-size:12px">0</span></button>
       <button id="setup-games-btn" onclick="openGamesView()" style="display:none;background:rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:9px;font-weight:800;font-size:13px;white-space:nowrap">▦ Games <span id="setup-games-count"></span></button>
   </div>
   <div id="resume-host"></div>
@@ -795,7 +828,8 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
 
       <div class="sect">
         <div class="sect-lbl">Game info <span style="font-weight:600;text-transform:none;letter-spacing:0">(all optional — edit anytime in game)</span></div>
-        <div class="fld"><label>Opponent</label><input id="f-opp" placeholder="e.g. Reign" list="opp-list" autocomplete="off"><datalist id="opp-list"></datalist></div>
+        <div class="fld"><label>Opponent</label><input id="f-opp" placeholder="e.g. Reign" list="opp-list" autocomplete="off" oninput="suggestOppPrefill()"><datalist id="opp-list"></datalist></div>
+        <div class="opp-prefill-hint" id="opp-prefill-hint"></div>
         <div class="fld-row">
           <div class="fld"><label>Date</label><input id="f-date" type="date"></div>
           <div class="fld"><label>Game #</label><input id="f-gnum" inputmode="numeric" placeholder="—"></div>
@@ -825,7 +859,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sect">
         <div class="sect-lbl" style="display:flex;justify-content:space-between;align-items:center">
           <span>Tap players — adding to <span id="roster-src-lbl" style="font-weight:600;text-transform:none;letter-spacing:0"></span></span>
-          <button class="photo-btn" onclick="document.getElementById('photo-royals').click()">\uD83D\uDCF7 Ref photo</button>
+          <button class="photo-btn" onclick="document.getElementById('photo-royals').click()">📷 Ref photo</button>
         </div>
         <input type="file" id="photo-royals" accept="image/*" capture="environment" style="display:none" onchange="attachRefPhoto('royals', this)">
         <div class="ref-photo-host" id="ref-royals"></div>
@@ -849,7 +883,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
       <div class="sect" id="opp-lineup-sect" style="display:block">
         <div class="sect-lbl" style="display:flex;justify-content:space-between;align-items:center">
           <span>Opponent lineup <span style="font-weight:600;text-transform:none;letter-spacing:0">(name &amp; #; blanks become "Opp N")</span></span>
-          <button class="photo-btn" onclick="document.getElementById('photo-opp').click()">\uD83D\uDCF7 Ref photo</button>
+          <button class="photo-btn" onclick="document.getElementById('photo-opp').click()">📷 Ref photo</button>
         </div>
         <input type="file" id="photo-opp" accept="image/*" capture="environment" style="display:none" onchange="attachRefPhoto('opp', this)">
         <div class="ref-photo-host" id="ref-opp"></div>
@@ -883,6 +917,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
     </div>
     <div class="recon ok" id="g-recon" title="Runs vs RBI">✓</div>
     <button class="gs-menu" id="theme-btn-g" onclick="toggleTheme()" title="Day / night">☀</button>
+    <button class="gs-menu" onclick="openLineupEditor()" title="Quick edit lineup">✎</button>
     <button class="gs-menu" onclick="openLineup()" title="Lineup">☰</button>
     <button class="gs-menu" onclick="openMenu()">⋯</button>
   </div>
@@ -893,7 +928,10 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
     <div class="field-overlay" id="field-overlay"></div>
     <div class="lastplay" id="lastplay">
       <div class="lp-section" id="lp-lastplay"></div>
-      <div class="lp-section" id="lp-history"></div>
+      <div class="lp-section" id="lp-history">
+        <div class="bh-pane" id="bh-thisgame"></div>
+        <div class="bh-pane" id="bh-vsteam"></div>
+      </div>
     </div>
     <div class="diamond-wrap">
       <div class="diamond">
@@ -936,7 +974,7 @@ body.light #game.them-batting .gs-menu{background:rgba(255,255,255,.18);color:#f
     <div class="out-row">
       <button class="ob walk" onclick="outcome('BB')">BB</button>
       <button class="ob k" onclick="outcome('K')">K</button>
-      <button class="ob k" onclick="outcome('Kl')">&#1191;<small>looking</small></button>
+      <button class="ob k" onclick="outcome('Kl')">Ǩ<small>looking</small></button>
       <button class="ob sac" onclick="outcome('SAC')">SAC</button>
       <button class="ob fc" onclick="outcome('FC')">FC</button>
       <button class="ob out" onclick="outcome('OUT')">OUT</button>
@@ -1151,7 +1189,7 @@ function onSchedPick(){
   document.getElementById("f-field").value=g.field||"";
   setup.opp=g.opp||""; setup.date=g.date||""; setup.time=g.time||""; setup.field=g.field||"";
   setHomeAway(g.venue==="home"?"home":"away");
-  toast("Loaded: "+g.opp+" \u2014 edit anything if needed");
+  toast("Loaded: "+g.opp+" — edit anything if needed");
 }
 function setGameType(t){
   setup.type = t;
@@ -1424,7 +1462,7 @@ function saveDraft(){
   STORE.drafts.push(d); persistStore();
   updateDraftChrome();
   clearSetupForm();
-  toast(`Draft saved: ${d.opp||"game"} \u2014 fresh screen ready for the next game`);
+  toast(`Draft saved: ${d.opp||"game"} — fresh screen ready for the next game`);
 }
 function clearSetupForm(){
   // full reset to a fresh setup (keeps game type + tournament for fast turnaround)
@@ -1486,18 +1524,18 @@ function openDraftsView(){
   const drafts=STORE.drafts||[];
   let body;
   if(!drafts.length){
-    body=`<div class="drafts-empty">No pending games.<br><br>Set up a lineup, then tap \u201cSave as draft\u201d to stage it here. Handy for game days \u2014 pre-load tonight\u2019s games and just tap to start each one.</div>`;
+    body=`<div class="drafts-empty">No pending games.<br><br>Set up a lineup, then tap “Save as draft” to stage it here. Handy for game days — pre-load tonight's games and just tap to start each one.</div>`;
   } else {
     body=drafts.map(d=>{
       const vs=d.homeAway==="home"?"vs":"@";
-      const meta=[fmtDraftDate(d.date), d.time, d.opp?(vs+" "+d.opp):""].filter(Boolean).join(" \u00b7 ");
+      const meta=[fmtDraftDate(d.date), d.time, d.opp?(vs+" "+d.opp):""].filter(Boolean).join(" · ");
       const typeTag=d.type==="tournament"?'<span class="draft-tag tour">TOURNEY</span>':'<span class="draft-tag lg">LEAGUE</span>';
       return `<div class="draft-item">
         <div class="draft-main" onclick="loadDraftIntoSetup('${d.id}')">
           <div class="draft-top">${typeTag}<span class="draft-opp">${escHtml(d.opp||"(no opponent)")}</span></div>
-          <div class="draft-meta">${escHtml(meta||"no details")} \u00b7 ${d.lineup.length} players</div>
+          <div class="draft-meta">${escHtml(meta||"no details")} · ${d.lineup.length} players</div>
         </div>
-        <button class="draft-del" onclick="event.stopPropagation();confirmDeleteDraft('${d.id}','${escAttr(d.opp||"game")}')">\u2715</button>
+        <button class="draft-del" onclick="event.stopPropagation();confirmDeleteDraft('${d.id}','${escAttr(d.opp||"game")}')">✕</button>
       </div>`;
     }).join("");
   }
@@ -1632,7 +1670,7 @@ function render(){
   renderOnDeck(st);
   const cur = st.lineup[st.slot];
   document.getElementById("ab-ord").textContent = st.slot+1;
-  const bomb = (cur && G.bombs && G.bombs[cur]) ? " \uD83D\uDCA3" : "";
+  const bomb = (cur && G.bombs && G.bombs[cur]) ? " 💣" : "";
   const jno = (cur && G.jerseys && G.jerseys[cur]) ? (" - #"+G.jerseys[cur]) : "";
   document.getElementById("ab-name").textContent = (cur||"—")+jno+bomb;
   // wrap button: opponent, both-mode, not yet locked, and at least one batter has come up
@@ -1645,6 +1683,10 @@ function render(){
   saveGame();
   G._st = st; G._agg = agg; G._sides = sides;
   renderSidePane(st);
+  const lineupFs=document.getElementById("lineup-fs");
+  if(lineupFs && lineupFs.classList.contains("show")){
+    document.getElementById("lineup-body").innerHTML=lineupRowsHTML(activeSide, st);
+  }
 }
 
 function renderLinescore(sides){
@@ -1714,7 +1756,7 @@ function renderOnDeck(st){
   if(!size){ host.innerHTML=""; return; }
   const side=activeSide;
   const both=G.trackMode==="both";
-  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"out"};
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Ǩ","SAC":"SAC","FC":"FC","OUT":"out"};
   const resClass=r=>(r==="OUT"||r==="K"||r==="Kl"||r==="FC")?"od-out":(r==="BB"?"od-bb":"od-hit");
   // next 3 slots after current
   let rows="";
@@ -1735,7 +1777,7 @@ function renderOnDeck(st){
         statHtml=more+shown.map(x=>{
           const loc=x.loc?`<span class="od-loc">${escHtml(locDisplay(x.loc))}</span>`:"";
           return `<span class="od-res ${resClass(x.result)}">${resMap[x.result]||x.result}${x.runs?`<span class="od-r">R</span>`:""}</span>`;
-        }).join('<span class="od-dot">\u00b7</span>');
+        }).join('<span class="od-dot">·</span>');
       }
     }
     rows+=`<div class="od-row"><span class="od-slot">${slot+1}</span><span class="od-name">${escHtml(firstName(nm))}${jno}</span><span class="od-seq">${statHtml}</span></div>`;
@@ -1743,9 +1785,12 @@ function renderOnDeck(st){
   host.innerHTML=`<div class="od-hd">ON DECK</div>${rows}`;
 }
 function renderBatterHistory(st){
-  const host=document.getElementById("lp-history");
+  const histSection=document.getElementById("lp-history");
+  const thisGameHost=document.getElementById("bh-thisgame");
+  const vsTeamHost=document.getElementById("bh-vsteam");
   const cur = st.lineup[st.slot];
-  if(!cur){ host.innerHTML=""; return; }
+  if(!cur){ histSection.style.display="none"; thisGameHost.innerHTML=""; vsTeamHost.innerHTML=""; return; }
+  histSection.style.display="";
   // collect this batter's PA events with the inning they occurred in.
   // Innings are tracked PER SIDE — each real inning has a top half (them) and
   // bottom half (us). The batter's PA is labelled with THEIR side's inning number,
@@ -1763,7 +1808,7 @@ function renderBatterHistory(st){
       outs[sd]+=e.outsAdded||0; if(outs[sd]>=3){outs[sd]=0;inn[sd]++;}
     }
   }
-  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"out"};
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Ǩ","SAC":"SAC","FC":"FC","OUT":"out"};
   const ord=n=>n+(["th","st","nd","rd"][(n%100>>3^1&&n%10)||0]||"th");
   let h=`<div class="bh-name">${escHtml(firstName(cur))}</div><div class="lp-hd">THIS GAME</div>`;
   if(!hist.length){ h+=`<div class="bh-empty">first at-bat</div>`; }
@@ -1774,7 +1819,20 @@ function renderBatterHistory(st){
       return `<div class="bh-row"><span class="inn">${ord(x.inn)} inning</span> — ${resMap[x.result]||x.result}${loc}${r}</div>`;
     }).join("");
   }
-  host.innerHTML=h;
+  thisGameHost.innerHTML=h;
+
+  let vh="";
+  if(activeSide==="them"){
+    const lt=lastTimeVsOpp(cur);
+    if(lt){
+      vh=`<div class="lp-hd">VS THIS TEAM${lt.jersey?(' — #'+escHtml(lt.jersey)):''} (${lt.avg})</div>`;
+      vh+=lt.groups.map(g=>
+        `<div class="bh-row" style="font-size:13px;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.03em;margin-top:6px">${escHtml(g.label)}</div>`+
+        g.codes.map(c=>`<div class="bh-row" style="font-size:15px">${escHtml(c)}</div>`).join("")
+      ).join("");
+    }
+  }
+  vsTeamHost.innerHTML=vh;
 }
 function renderBase(n, name, st){
   const el = document.getElementById("base-"+n);
@@ -1795,7 +1853,7 @@ function renderLastPlay(){
     if((e.t==="PA"||e.t==="BR") && (e.side||"us")===activeSide) plays.push({e,idx:i});
   }
   if(!plays.length){ host.innerHTML=""; return; }
-  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"OUT"};
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Ǩ","SAC":"SAC","FC":"FC","OUT":"OUT"};
   // batted-ball results that make sense to locate
   const battable=new Set(["1B","2B","3B","HR","SAC","FC","OUT"]);
   let h=`<div class="lp-hd">LAST PLAYS</div>`;
@@ -1823,8 +1881,8 @@ function renderLastPlay(){
       });
       // location chip / add-button on the newest batted-ball play
       if(battable.has(e.result)){
-        if(e.loc) pl+=`<span class="loc-chip" onclick="openFieldLoc(${idx})">\uD83D\uDCCD ${escHtml(locDisplay(e.loc))}</span>`;
-        else pl+=`<span class="loc-add" onclick="openFieldLoc(${idx})">\uD83D\uDCCD + where?</span>`;
+        if(e.loc) pl+=`<span class="loc-chip" onclick="openFieldLoc(${idx})">📍 ${escHtml(locDisplay(e.loc))}</span>`;
+        else pl+=`<span class="loc-add" onclick="openFieldLoc(${idx})">📍 + where?</span>`;
       }
     }
     pl+=`</div>`;
@@ -2212,15 +2270,15 @@ function openBatterMenu(){
   if(locStep){ toast("Mark the hit location first (or Skip)"); return; }
   const st=G._st; const cur=st.lineup[st.slot];
   const isBomb=G.bombs && G.bombs[cur];
-  const bombBtn=`<button onclick="toggleBomb()"><span class="ic">\uD83D\uDCA3</span><div class="col"><span>${isBomb?"Remove power-hitter flag":"Flag as power hitter"}</span><span class="sub">${isBomb?"Currently flagged":"Marks next to name everywhere"}</span></div></button>`;
+  const bombBtn=`<button onclick="toggleBomb()"><span class="ic">💣</span><div class="col"><span>${isBomb?"Remove power-hitter flag":"Flag as power hitter"}</span><span class="sub">${isBomb?"Currently flagged":"Marks next to name everywhere"}</span></div></button>`;
   if(activeSide==="them"){
     panelOpen(`<div class="panel-hd"><h2>#${st.slot+1} ${escHtml(cur)}</h2></div>
       <div class="panel-body"><div class="menu-list">
         <button onclick="openRenameOpp()"><span class="ic">✎</span><div class="col"><span>Rename / ID this batter</span><span class="sub">Jersey #, description</span></div></button>
         ${bombBtn}
-        <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
+        <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">📍</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
         <button onclick="openAddBatter()"><span class="ic">+</span><div class="col"><span>Add batter (late arrival)</span><span class="sub">Insert into an upcoming slot or the bottom</span></div></button>
-        ${G.oppLineupLocked ? '' : `<button onclick="panelClose();wrapToTop()"><span class="ic">\u27F2</span><div class="col"><span>End of lineup \u2014 loop to #1</span><span class="sub">Locks the order; next batter is #1</span></div></button>`}
+        ${G.oppLineupLocked ? '' : `<button onclick="panelClose();wrapToTop()"><span class="ic">⟲</span><div class="col"><span>End of lineup — loop to #1</span><span class="sub">Locks the order; next batter is #1</span></div></button>`}
         <button onclick="doSkip()"><span class="ic">⤼</span><div class="col"><span>Skip this spot</span><span class="sub">Advance without a plate appearance</span></div></button>
       </div></div>
       <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
@@ -2231,7 +2289,7 @@ function openBatterMenu(){
       <button onclick="openSubPick()"><span class="ic">⇄</span><div class="col"><span>Substitute</span><span class="sub">Bring in a bench player for this slot</span></div></button>
       <button onclick="openReenterPick()"><span class="ic">↩</span><div class="col"><span>Re-enter player</span><span class="sub">Return a subbed-out player</span></div></button>
       ${bombBtn}
-      <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
+      <button onclick="panelClose();openSprayChart(G._st.lineup[G._st.slot])"><span class="ic">📍</span><div class="col"><span>Spray chart</span><span class="sub">Where this batter has hit</span></div></button>
       <button onclick="openAddBatter()"><span class="ic">+</span><div class="col"><span>Add batter (late arrival)</span><span class="sub">Insert into an upcoming slot or the bottom</span></div></button>
       <button onclick="doSkip()"><span class="ic">⤼</span><div class="col"><span>Skip this spot</span><span class="sub">Advance without a plate appearance</span></div></button>
     </div></div>
@@ -2253,15 +2311,15 @@ function openLineupEditor(){
       <span class="le-num">${i+1}</span>
       <span class="le-name">${escHtml(nm)}${isUp?' <span class="le-badge">at bat</span>':''}</span>
       <span class="le-acts">
-        <button class="le-mv" ${i===0?'disabled':''} onclick="lineupMove(${i},-1)">\u25B2</button>
-        <button class="le-mv" ${i===lineup.length-1?'disabled':''} onclick="lineupMove(${i},1)">\u25BC</button>
-        <button class="le-rm" onclick="lineupRemove(${i})">\u2715</button>
+        <button class="le-mv" ${i===0?'disabled':''} onclick="lineupMove(${i},-1)">▲</button>
+        <button class="le-mv" ${i===lineup.length-1?'disabled':''} onclick="lineupMove(${i},1)">▼</button>
+        <button class="le-rm" onclick="lineupRemove(${i})">✕</button>
       </span>
     </div>`;
   });
   panelOpen(`<div class="panel-hd"><h2>Edit ${escHtml(teamName)} lineup</h2></div>
     <div class="panel-body">
-      <div class="le-hint">Reorder with \u25B2\u25BC \u00b7 remove with \u2715 (their recorded stats stay) \u00b7 changes affect who bats next, not past at-bats.</div>
+      <div class="le-hint">Reorder with ▲▼ · remove with ✕ (their recorded stats stay) · changes affect who bats next, not past at-bats.</div>
       <div class="le-list">${rows}</div>
       <button class="le-add" onclick="openAddBatter()">+ Add a batter</button>
     </div>
@@ -2393,18 +2451,27 @@ function toggleBomb(){
 }
 function openRenameOpp(){
   const st=G._st; const slot=st.slot; const cur=st.lineup[slot];
+  const curJ=(G.jerseys&&G.jerseys[cur])||"";
   panelOpen(`<div class="panel-hd"><h2>ID opponent batter</h2></div>
-    <div class="panel-body"><div class="field-edit"><label>ID this batter (jersey #, description)</label>
-    <input id="opp-rn" value="${escAttr(cur)}" autocomplete="off" placeholder="e.g. #7, tall lefty"></div></div>
+    <div class="panel-body">
+      <div class="field-edit"><label>Jersey #</label>
+      <input id="opp-rn-j" class="scout-jersey-hero" inputmode="numeric" value="${escAttr(curJ)}" autocomplete="off" placeholder="#"></div>
+      <div class="field-edit"><label>Name / description</label>
+      <input id="opp-rn" value="${escAttr(cur)}" autocomplete="off" placeholder="e.g. tall lefty"></div>
+    </div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button><button class="pf-confirm" onclick="saveRenameOpp(${slot})">Save</button></div>`);
-  setTimeout(()=>{const e=document.getElementById("opp-rn");if(e){e.focus();e.select();}},60);
+  setTimeout(()=>{const e=document.getElementById("opp-rn-j");if(e){e.focus();e.select();}},60);
 }
 function saveRenameOpp(slot){
   const v=document.getElementById("opp-rn").value.trim();
+  const jv=document.getElementById("opp-rn-j").value.trim();
   if(!v){ toast("Name required"); return; }
   const old=G.oppOrigLineup[slot];
   G.oppOrigLineup[slot]=v;
   if(G.bombs && G.bombs[old]){ delete G.bombs[old]; G.bombs[v]=true; }
+  if(!G.jerseys) G.jerseys={};
+  if(old!==v) delete G.jerseys[old];
+  if(jv) G.jerseys[v]=jv; else delete G.jerseys[v];
   for(const e of G.events){
     if((e.side||"us")!=="them") continue;
     if(e.batter===old) e.batter=v;
@@ -2413,7 +2480,7 @@ function saveRenameOpp(slot){
     if(e.runs) e.runs=e.runs.map(n=>n===old?v:n);
     if(e.in===old) e.in=v; if(e.out===old) e.out=v;
   }
-  panelClose(); render(); saveGame(); toast("Renamed to "+v);
+  panelClose(); render(); saveGame(); toast("Renamed to "+v+(jv?" (#"+jv+")":""));
 }
 // Track each player's sub history for the active side to enforce re-entry rules.
 // Starter: out(1st)->reenter->out(2nd)->done (one re-entry allowed).
@@ -2481,10 +2548,11 @@ function openSubPick(){
 }
 function doSub(name){
   const st=G._st; const slot=curSubSlot();
+  const outName=st.lineup[slot];
   clearRedo();
-  G.events.push({t:"SUB", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
+  G.events.push({t:"SUB", side:activeSide, slot:slot, out:outName, in:name});
   if(activeSide==="us" && !G.allPlayers.includes(name)) G.allPlayers.push(name);
-  subSlot=null; panelClose(); render(); toast(name+" subbed in");
+  subSlot=null; panelClose(); render(); toastWithUndo(name+" subbed in for "+firstName(outName));
 }
 function openReenterPick(){
   const st=G._st; const slot=curSubSlot();
@@ -2503,9 +2571,10 @@ function openReenterPick(){
 }
 function doReenter(name){
   const st=G._st; const slot=curSubSlot();
+  const outName=st.lineup[slot];
   clearRedo();
-  G.events.push({t:"REENTER", side:activeSide, slot:slot, out:st.lineup[slot], in:name});
-  subSlot=null; panelClose(); render(); toast(name+" re-entered");
+  G.events.push({t:"REENTER", side:activeSide, slot:slot, out:outName, in:name});
+  subSlot=null; panelClose(); render(); toastWithUndo(name+" re-entered for "+firstName(outName));
 }
 function doSkip(){
   const st=G._st;
@@ -2519,7 +2588,7 @@ function openAddPlayerGame(){
       <div class="dedupe-warn" id="dd-warn-g"></div>
       <div class="field-edit"><label>Player name</label><input id="npg-name" placeholder="Full name" autocomplete="off"></div>
     </div>
-    <div class="panel-foot"><button class="pf-cancel" onclick="openSubPick()">Back</button><button class="pf-confirm" onclick="confirmAddPlayerGame()">Add & sub in</button></div>`);
+    <div class="panel-foot"><button class="pf-cancel" onclick="openSubPick()">Back</button><button class="pf-confirm" onclick="confirmAddPlayerGame()">Add &amp; sub in</button></div>`);
   const inp=document.getElementById("npg-name"); setTimeout(()=>inp.focus(),60);
   inp.addEventListener("input",()=>dedupeCheck(inp.value, rosterFor(G.meta.type), "dd-warn-g"));
 }
@@ -2540,11 +2609,12 @@ function openMenu(){
     <div class="panel-body"><div class="menu-list">
       <button onclick="openEditField('all')"><span class="ic">✎</span><div class="col"><span>Edit game info</span><span class="sub">Opponent · date · field · time · game #</span></div></button>
       <button onclick="openEditPlay()"><span class="ic">↺</span><div class="col"><span>Edit a recent play</span><span class="sub">Fix an outcome the ump changed</span></div></button>
-      <button onclick="openLineup()"><span class="ic">\u2630</span><div class="col"><span>Lineup / scoresheet</span><span class="sub">Order, results, tap a batter for actions</span></div></button>
-      <button onclick="openLineupEditor()"><span class="ic">\u270E</span><div class="col"><span>Edit lineup</span><span class="sub">Add, remove, or reorder batters \u2014 stats kept</span></div></button>
+      <button onclick="openLineup()"><span class="ic">☰</span><div class="col"><span>Lineup / scoresheet</span><span class="sub">Order, results, tap a batter for actions</span></div></button>
+      <button onclick="openLineupEditor()"><span class="ic">✎</span><div class="col"><span>Edit lineup</span><span class="sub">Add, remove, or reorder batters — stats kept</span></div></button>
+      <button onclick="panelClose();openScoutPanel(G.meta.opp)"><span class="ic">🔍</span><div class="col"><span>Scout opponent</span><span class="sub">Past games vs this team, by jersey #</span></div></button>
       <button onclick="panelClose();openPlayLog()"><span class="ic">▤</span><div class="col"><span>Play log</span><span class="sub">Full play-by-play by inning</span></div></button>
-      <button onclick="panelClose();openSprayChart()"><span class="ic">\uD83D\uDCCD</span><div class="col"><span>Spray chart (all)</span><span class="sub">Where this side has hit the ball</span></div></button>
-      <button onclick="pickScoresheet()"><span class="ic">\uD83D\uDDB6</span><div class="col"><span>Scoresheet (print)</span><span class="sub">Official SPN or NSA hand-in sheet</span></div></button>
+      <button onclick="panelClose();openSprayChart()"><span class="ic">📍</span><div class="col"><span>Spray chart (all)</span><span class="sub">Where this side has hit the ball</span></div></button>
+      <button onclick="pickScoresheet()"><span class="ic">🖶</span><div class="col"><span>Scoresheet (print)</span><span class="sub">Official SPN or NSA hand-in sheet</span></div></button>
       <button onclick="endInningManual()"><span class="ic">▸</span><div class="col"><span>End inning now</span><span class="sub">Mercy / walk-off (under 3 outs)</span></div></button>
       <button onclick="openExport()"><span class="ic">⬆</span><div class="col"><span>End game &amp; save</span><span class="sub">Archive, auto-download, next game</span></div></button>
       <button onclick="openGamesView()"><span class="ic">▦</span><div class="col"><span>Saved games</span><span class="sub">View / export / end tournament</span></div></button>
@@ -2597,7 +2667,7 @@ function editHomeAway(v){
     activeSide = (G.trackMode==="both" && v==="home") ? "them" : "us";
     if(G._st) G._st.slot = G._st.slot; // no-op; render recomputes
   } else {
-    toast("\u26A0 Changed after play started \u2014 current batting side unchanged; review innings");
+    toast("⚠ Changed after play started — current batting side unchanged; review innings");
   }
   saveGame(); render(); openEditField('all');
 }
@@ -2710,6 +2780,7 @@ function buildScorebookData(side){
   }
   return {slots:out, innings:Math.max(lastInning, 7)};
 }
+
 /* ===== SCOREBOOK RENDER (SPN landscape / NSA portrait) ===== */
 function sbCellSVG(cells){
   if(!cells||!cells.length) return '<svg viewBox="0 0 60 54" class="sbc"><path d="M30 48 L48 30 L30 12 L12 30 Z" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="2 2"/></svg>';
@@ -2734,7 +2805,7 @@ function sbCellSVG(cells){
     if(c.out){
       body+=`<line x1="20" y1="20" x2="40" y2="40" stroke="#000" stroke-width="2.4"/><line x1="40" y1="20" x2="20" y2="40" stroke="#000" stroke-width="2.4"/>`;
     }
-    const res=c.result==="Kl"?"\u1191":c.result;
+    const res=c.result==="Kl"?"Ǩ":c.result;
     body+=`<text x="3" y="11" font-size="11" font-weight="800" fill="#000">${res}</text>`;
     if(c.rbi) body+=`<text x="57" y="11" font-size="10" font-weight="800" fill="#000" text-anchor="end">${c.rbi}RBI</text>`;
     svg+=`<g transform="translate(0,${y})">${body}</g>`;
@@ -2796,7 +2867,7 @@ function sbTeamPanel(style, side){
                               : '<th class="sum">H</th><th class="sum">AB</th><th class="sum">RBI</th><th class="sum">K</th>';
   let innHd=''; for(let i=1;i<=innN;i++) innHd+=`<th>${i}</th>`;
   const hdr = style==="spn"
-    ? `<div class="sheet-hd"><span class="sh-brand">PLAY SLO-PITCH \u2014 SPN</span>
+    ? `<div class="sheet-hd"><span class="sh-brand">PLAY SLO-PITCH — SPN</span>
        <span>Team: <b>${escHtml(teamName)}</b></span><span>vs <b>${escHtml(oppName)}</b></span>
        <span>Date: <b>${escHtml(hm.date)}</b></span><span>Time: <b>${escHtml(hm.time)}</b></span>
        <span>Park: <b>${escHtml(hm.park)}</b></span><span>Game #: <b>${escHtml(hm.gnum)}</b></span>
@@ -2806,8 +2877,8 @@ function sbTeamPanel(style, side){
        <span>Played at: <b>${escHtml(hm.park)}</b></span><span>Time: <b>${escHtml(hm.time)}</b></span>
        <span>Date: <b>${escHtml(hm.date)}</b></span><span>Final Score: <b>____</b></span></div>`;
   const legend = style==="nsa"
-    ? `<div class="sheet-legend">1B Single \u00b7 2B Double \u00b7 3B Triple \u00b7 HR Home Run \u00b7 BB Base on Balls \u00b7 K Strikeout \u00b7 FC Fielder's Choice \u00b7 SAC Sacrifice \u00b7 \u2715 Out \u00b7 Filled diamond = Run scored \u00b7 \u25cf = held at base</div>`
-    : `<div class="sheet-legend">Filled diamond = run scored \u00b7 \u25cf = held at base \u00b7 \u2715 = out \u00b7 RBI noted top-right of cell</div>`;
+    ? `<div class="sheet-legend">1B Single · 2B Double · 3B Triple · HR Home Run · BB Base on Balls · K Strikeout · FC Fielder's Choice · SAC Sacrifice · ✕ Out · Filled diamond = Run scored · ● = held at base</div>`
+    : `<div class="sheet-legend">Filled diamond = run scored · ● = held at base · ✕ = out · RBI noted top-right of cell</div>`;
   return `<div class="sheet ${style}">
     ${hdr}
     <table class="sheet-grid">
@@ -2836,16 +2907,16 @@ function printScoresheet(){ window.print(); }
 function pickScoresheet(){
   panelOpen(`<div class="panel-hd"><h2>Scoresheet format</h2></div>
     <div class="panel-body"><div class="menu-list">
-      <button onclick="openScoresheet('spn')"><span class="ic">\u25ad</span><div class="col"><span>SPN \u2014 landscape</span><span class="sub">Play Slo-Pitch long-form sheet</span></div></button>
-      <button onclick="openScoresheet('nsa')"><span class="ic">\u25af</span><div class="col"><span>NSA \u2014 portrait</span><span class="sub">NSA Canada book-style sheet</span></div></button>
+      <button onclick="openScoresheet('spn')"><span class="ic">▭</span><div class="col"><span>SPN — landscape</span><span class="sub">Play Slo-Pitch long-form sheet</span></div></button>
+      <button onclick="openScoresheet('nsa')"><span class="ic">▯</span><div class="col"><span>NSA — portrait</span><span class="sub">NSA Canada book-style sheet</span></div></button>
     </div></div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Cancel</button></div>`);
 }
 function plogLine(e){
   const resMap={"1B":"single","2B":"double","3B":"triple","HR":"home run","BB":"walk","K":"strikeout","Kl":"strikeout looking","SAC":"sacrifice","FC":"fielder's choice","OUT":"out"};
-  if(e.t==="SUB") return `<span class="plog-sub">\u2194 ${escHtml(firstName(e.in))} subs in for ${escHtml(firstName(e.out))}</span>`;
-  if(e.t==="REENTER") return `<span class="plog-sub">\u21A9 ${escHtml(firstName(e.in))} re-enters</span>`;
-  if(e.t==="SKIP") return `<span class="plog-sub">\u2934 spot skipped</span>`;
+  if(e.t==="SUB") return `<span class="plog-sub">↔ ${escHtml(firstName(e.in))} subs in for ${escHtml(firstName(e.out))}</span>`;
+  if(e.t==="REENTER") return `<span class="plog-sub">↩ ${escHtml(firstName(e.in))} re-enters</span>`;
+  if(e.t==="SKIP") return `<span class="plog-sub">⤴ spot skipped</span>`;
   if(e.t==="BR"){
     const toTxt=e.to==="HOME"?"scored":(e.to==="OUT"?"out on bases":"to "+e.to);
     const loc=e.loc?` <span class="plog-loc">${escHtml(locDisplay(e.loc))}</span>`:"";
@@ -2892,12 +2963,12 @@ function openPlayLog(){
     body+= usLines.length ? usLines.map(l=>`<div class="plog-line">${l}</div>`).join("") : `<div class="plog-line plog-empty">no plays</div>`;
     body+=`</div>`;
     const themRuns=themBI[i-1];
-    body+=`<div class="plog-half them-half"><div class="plog-half-hd them">${escHtml(oppName)}<span class="sc">${themRuns!=null?themRuns+' run'+(themRuns===1?'':'s'):'\u2014'}</span></div>`;
+    body+=`<div class="plog-half them-half"><div class="plog-half-hd them">${escHtml(oppName)}<span class="sc">${themRuns!=null?themRuns+' run'+(themRuns===1?'':'s'):'—'}</span></div>`;
     if(both){
       const tl=themLog[i]||[];
       body+= tl.length ? tl.map(l=>`<div class="plog-line">${l}</div>`).join("") : `<div class="plog-line plog-empty">no plays</div>`;
     } else {
-      body+=`<div class="plog-line plog-empty">${themRuns!=null?'scored '+themRuns:'not recorded'} \u2014 (offense-only mode)</div>`;
+      body+=`<div class="plog-line plog-empty">${themRuns!=null?'scored '+themRuns:'not recorded'} — (offense-only mode)</div>`;
     }
     body+=`</div></div>`;
   }
@@ -2927,14 +2998,14 @@ function openEditPlay(gi){
   if(e.t==="PA"){
     const results=["1B","2B","3B","HR","BB","K","Kl","FC","SAC","OUT"];
     const map={"1B":"Single","2B":"Double","3B":"Triple","HR":"Home run","BB":"Walk","K":"Strikeout","Kl":"K looking","FC":"Fielder's choice","SAC":"Sacrifice","OUT":"Out"};
-    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.batter)} \u2014 change result:</div>
+    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.batter)} — change result:</div>
       <div class="edit-res-grid">${results.map(r=>`<button class="${r===e.result?'sel':''}" onclick="setEditResult(${gi},'${r}')">${map[r]}</button>`).join("")}</div>
       <div style="margin-top:12px;font-size:13px">RBI on this play: <b id="edit-rbi-val">${e.rbi||0}</b>
-        <button class="rbi-adj" onclick="adjEditRbi(${gi},-1)">\u2212</button>
+        <button class="rbi-adj" onclick="adjEditRbi(${gi},-1)">−</button>
         <button class="rbi-adj" onclick="adjEditRbi(${gi},1)">+</button></div>`;
     if(e.runs&&e.runs.length) body+=`<div style="margin-top:8px;font-size:12px;color:var(--muted)">Scored: ${e.runs.map(escHtml).join(", ")} (adjust via runner plays)</div>`;
   } else { // BR
-    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.name)} \u2014 change outcome:</div>
+    body=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${escHtml(e.name)} — change outcome:</div>
       <div class="edit-res-grid">
         <button class="${e.to==='1B'?'sel':''}" onclick="setEditBR(${gi},'1B',false,false)">to 1B</button>
         <button class="${e.to==='2B'?'sel':''}" onclick="setEditBR(${gi},'2B',false,false)">to 2B</button>
@@ -2967,8 +3038,8 @@ function editWithRippleCheck(mutate){
   if(before!==after){
     // surface a warning banner at top of play log
     const b=document.getElementById("playlog-body");
-    if(b) b.insertAdjacentHTML("afterbegin", `<div class="ripple-warn">\u26A0 This edit changed when an inning ended or the out count. Plays after it may now fall in a different inning \u2014 review the log below and fix any that look wrong.</div>`);
-    toast("Updated \u2014 inning structure changed, review");
+    if(b) b.insertAdjacentHTML("afterbegin", `<div class="ripple-warn">⚠ This edit changed when an inning ended or the out count. Plays after it may now fall in a different inning — review the log below and fix any that look wrong.</div>`);
+    toast("Updated — inning structure changed, review");
   } else {
     toast("Play updated");
   }
@@ -3001,7 +3072,6 @@ function deletePlay(gi){
   const e=G.events[gi];
   editWithRippleCheck(()=>{ G.events.splice(gi,1); });
 }
-
 
 /* ===== INLINE LOCATION STEP (on the main diamond) ===== */
 let locStep=null; // {evIndex, ballType:null|'G'|'L'|'F'|'P'}
@@ -3268,14 +3338,14 @@ function closeSpray(){ document.getElementById("spray-fs").classList.remove("sho
 /* ===== LINEUP SCORESHEET VIEW ===== */
 function codesFor(name, side){
   side=side||activeSide;
-  const map={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"\u1191","SAC":"SAC","FC":"FC","OUT":"\u2715"};
+  const map={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Ǩ","SAC":"SAC","FC":"FC","OUT":"✕"};
   const cls=r=>(["1B","2B","3B","HR"].includes(r)?"c-hit":(r==="BB"?"c-walk":"c-out"));
   const out=[];
   for(const e of G.events){
     if((e.side||"us")!==side) continue;
     if(e.t==="PA" && e.batter===name){
       const code=map[e.result]||e.result;
-      const loc=e.loc?("\u00b7"+e.loc):"";
+      const loc=e.loc?("·"+e.loc):"";
       out.push(`<span class="${cls(e.result)}">${code}${loc}</span>`);
     }
   }
@@ -3293,12 +3363,13 @@ function lineupRowsHTML(side, st){
     const isCur=(i===st.slot);
     const isNext=(i>st.slot && i<=st.slot+3);
     const cls=["ls-row"]; if(isCur)cls.push("cur"); else if(isNext)cls.push("next");
-    const bomb=(G.bombs&&G.bombs[nm])?" \uD83D\uDCA3":"";
+    const bomb=(G.bombs&&G.bombs[nm])?" 💣":"";
     h+=`<div class="${cls.join(' ')}" onclick="openPlayerDetail(${i})">
       <div class="ls-ord">${i+1}</div>
       <div class="ls-nm"><div class="nm">${escHtml(nm)}${j}${bomb}${isCur?'<span class="ls-tag">AT BAT</span>':''}</div>
-        <div class="ls-codes">${codes||'<span style="opacity:.5">\u2014</span>'}</div></div>
-      <div class="ls-chev">\u203A</div>
+        <div class="ls-codes">${codes||'<span style="opacity:.5">—</span>'}</div></div>
+      <div class="ls-qa"><button onclick="event.stopPropagation();openSubPickAt(${i})" title="Sub">⇄</button><button class="qa-re" onclick="event.stopPropagation();openReenterPickAt(${i})" title="Re-enter">↩</button></div>
+      <div class="ls-chev">›</div>
     </div>`;
   }
   const benchList = side==="us" ? (G.bench||[]) : (G.oppBench||[]);
@@ -3309,7 +3380,7 @@ function lineupRowsHTML(side, st){
       const j=(G.jerseys&&G.jerseys[nm])?` <span class="jno">- #${escHtml(G.jerseys[nm])}</span>`:"";
       const tag = onF?'<span class="ls-tag">in game</span>':(done?'<span class="ls-tag bench">used</span>':'<span class="ls-tag bench">available</span>');
       h+=`<div class="ls-row ${done?'done':''}"><div class="ls-ord" style="background:var(--gold-d)">S</div>
-        <div class="ls-nm"><div class="nm">${escHtml(nm)}${j} ${tag}</div><div class="ls-codes">${codesFor(nm,side)||'<span style="opacity:.5">\u2014</span>'}</div></div></div>`;
+        <div class="ls-nm"><div class="nm">${escHtml(nm)}${j} ${tag}</div><div class="ls-codes">${codesFor(nm,side)||'<span style="opacity:.5">—</span>'}</div></div></div>`;
     });
   }
   return h;
@@ -3345,7 +3416,7 @@ function renderSidePane(st){
   const sp=document.getElementById("side-pane");
   if(!sp) return;
   const teamName = activeSide==="us" ? "ROYALS" : (G.meta.opp||"OPPONENT").toUpperCase();
-  const hd=document.getElementById("sp-hd"); const span=hd.querySelector("span"); const label=teamName+" \u2014 LINEUP"; if(span) span.textContent=label; else hd.textContent=label;
+  const hd=document.getElementById("sp-hd"); const span=hd.querySelector("span"); const label=teamName+" — LINEUP"; if(span) span.textContent=label; else hd.textContent=label;
   document.getElementById("sp-body").innerHTML = lineupRowsHTML(activeSide, st);
 }
 function closeLineup(){ document.getElementById("lineup-fs").classList.remove("show"); }
@@ -3366,17 +3437,19 @@ function openPlayerDetail(slot){
     if(e.t==="ENDINN"){inn++;outs=0;continue;}
     if(e.t==="BR"){outs+=e.out||0;if(outs>=3){outs=0;inn++;}continue;}
     if(e.t==="PA"){
-      if(e.batter===nm){ const loc=e.loc?` <span class="loc" style="color:var(--blue);font-weight:800">${escHtml(e.loc)}</span>`:""; const rbi=e.rbi?` <span style="color:var(--gold-d);font-weight:700">${e.rbi}RBI</span>`:""; rows.push(`<div style="padding:6px 4px;border-bottom:1px solid var(--line);font-size:14px"><b>${ord(inn)}</b> \u2014 ${map[e.result]||e.result}${loc}${rbi}</div>`); }
+      if(e.batter===nm){ const loc=e.loc?` <span class="loc" style="color:var(--blue);font-weight:800">${escHtml(e.loc)}</span>`:""; const rbi=e.rbi?` <span style="color:var(--gold-d);font-weight:700">${e.rbi}RBI</span>`:""; rows.push(`<div style="padding:6px 4px;border-bottom:1px solid var(--line);font-size:14px"><b>${ord(inn)}</b> — ${map[e.result]||e.result}${loc}${rbi}</div>`); }
       outs+=e.outsAdded||0;if(outs>=3){outs=0;inn++;}
     }
   }
   const histHtml = rows.length?rows.join(""):'<div style="color:var(--muted);font-style:italic;padding:8px 4px">no at-bats yet</div>';
   let actions=`<button onclick="closeLineup();jumpSubFor(${slot})">Sub out</button>`;
-  actions+=`<button class="warn" onclick="toggleBombFor('${esc(nm)}')">${(G.bombs&&G.bombs[nm])?'Unflag \uD83D\uDCA3':'Flag \uD83D\uDCA3'}</button>`;
+  actions+=`<button class="warn" onclick="toggleBombFor('${esc(nm)}')">${(G.bombs&&G.bombs[nm])?'Unflag 💣':'Flag 💣'}</button>`;
   actions+=`<button onclick="panelClose();closeLineup();openSprayChart('${esc(nm)}')">Spray</button>`;
-  actions+=`<button onclick="closeLineup();jumpReenterFor(${slot})">Re-enter\u2026</button>`;
+  actions+=`<button onclick="closeLineup();jumpReenterFor(${slot})">Re-enter…</button>`;
+  const jerseyRow=`<div class="field-edit" style="margin-bottom:10px"><label>Jersey #</label><input value="${escAttr((G.jerseys&&G.jerseys[nm])||"")}" inputmode="numeric" placeholder="#" onchange="saveJerseyFor('${esc(nm)}',this.value)"></div>`;
   panelOpen(`<div class="panel-hd"><h2>${escHtml(nm)}${j}</h2></div>
     <div class="panel-body">
+      ${jerseyRow}
       <div class="pd-actions">${actions}</div>
       <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:4px">THIS GAME</div>
       ${histHtml}
@@ -3386,8 +3459,175 @@ function openPlayerDetail(slot){
 function jumpSubFor(slot){ openSubPickAt(slot); }
 function jumpReenterFor(slot){ openReenterPickAt(slot); }
 function toggleBombFor(nm){ if(!G.bombs)G.bombs={}; if(G.bombs[nm])delete G.bombs[nm]; else G.bombs[nm]=true; render(); saveGame(); panelClose(); openLineup(); toast((G.bombs[nm]?firstName(nm)+" flagged":firstName(nm)+" unflagged")); }
+function saveJerseyFor(nm,val){ if(!G.jerseys)G.jerseys={}; const v=(val||"").trim(); if(v) G.jerseys[nm]=v; else delete G.jerseys[nm]; render(); saveGame(); toast(v?"#"+v+" saved for "+firstName(nm):"Jersey cleared"); }
 
-
+/* ============ OPPONENT SCOUTING (cross-game, jersey-first) ============ */
+// Fuzzy-match a typed opponent name against every opponent name we've faced before
+// (archived games + the in-progress one), so a typo doesn't hide a repeat matchup.
+function allStoredGames(){
+  const out=STORE.archive.slice();
+  if(STORE.current) out.push(STORE.current);
+  if(G && (!STORE.current || STORE.current!==G)) out.push(G); // live in-memory game not yet persisted
+  return [...new Set(out)];
+}
+function oppNameCandidates(query){
+  const q=(query||"").trim().toLowerCase();
+  if(q.length<2) return [];
+  const names=new Set();
+  allStoredGames().forEach(g=>{ if(g.meta && g.meta.opp) names.add(g.meta.opp); });
+  return [...names].filter(n=>{
+    const l=n.toLowerCase();
+    return l===q || l.startsWith(q) || q.startsWith(l) || (lev(l,q)<=2 && Math.abs(l.length-q.length)<=3);
+  });
+}
+// Games actually usable for scouting: both-team mode only (opponent side was tracked)
+function gamesForOpponent(oppName){
+  const cands=new Set(oppNameCandidates(oppName).map(n=>n.toLowerCase()));
+  if(oppName) cands.add(oppName.trim().toLowerCase());
+  return allStoredGames().filter(g=>g.meta && g.meta.opp && cands.has(g.meta.opp.toLowerCase()) && g.trackMode==="both" && g.events && g.events.some(e=>(e.side||"us")==="them"));
+}
+// In-game glance: this batter's jersey-matched history from EARLIER games vs this
+// (fuzzy-matched) opponent, excluding the game in progress. Grouped by source game,
+// most recent game first ("Last game", "2 games ago", ...), one row per past at-bat
+// in chronological order within that game. Shorthand mirrors the raw ball-type+location
+// code when one was recorded (e.g. "F3","G6-4"), else the plain result ("K","BB","1B").
+function lastTimeVsOpp(batterName){
+  if(!G || activeSide!=="them" || !G.meta.opp) return null;
+  const jersey=(G.jerseys&&G.jerseys[batterName])||"";
+  const games=gamesForOpponent(G.meta.opp).filter(g=>g!==G);
+  if(!games.length) return null;
+  const report=buildScoutReport(games);
+  const b = jersey ? report.find(x=>x.jersey===jersey) : report.find(x=>x.names.has(batterName));
+  if(!b || !b.log.length) return null;
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Kˈ","SAC":"SAC","FC":"FC","OUT":"OUT"};
+  const isOutResult=r=>(r==="OUT"||r==="FC"||r==="SAC"||r==="K"||r==="Kl");
+  // group consecutive at-bats by source game (b.log is already oldest->newest, both
+  // across games and within a game), then label each group by recency instead of date
+  const byGame=[];
+  for(const x of b.log){
+    let code;
+    if(!x.loc) code=resMap[x.result]||x.result;
+    else code = isOutResult(x.result) ? x.loc : (resMap[x.result]||x.result)+" "+x.loc; // out: bare code (scorebook convention); hit: result prefixed so a reached-base ball isn't mistaken for an out
+    const last=byGame[byGame.length-1];
+    if(last && last.gameKey===x.game) last.codes.push(code);
+    else byGame.push({gameKey:x.game, codes:[code]});
+  }
+  const lastN=byGame.slice(-3).reverse(); // most recent 3 games vs this opponent, most recent first
+  const groups=lastN.map((gr,i)=>({label: i===0?"Last game":(i+1)+" games ago", codes:gr.codes}));
+  return {jersey:b.jersey, groups, avg:avgStr(b.h,b.ab)};
+}
+// Build a jersey-indexed hitting report across one or more past games.
+// Falls back to raw name only when no jersey was ever recorded for that batter —
+// this is what makes it tolerant of a typo'd/inconsistent opponent name between games.
+function buildScoutReport(games){
+  const buckets={};
+  const ensure=(key,jersey)=>{ if(!buckets[key]) buckets[key]={jersey,names:new Set(),pa:0,ab:0,h:0,b1:0,b2:0,b3:0,hr:0,bb:0,k:0,log:[]}; return buckets[key]; };
+  games.forEach(g=>{
+    const label=(g.meta.date||"")+(g.meta.gnum?" G"+g.meta.gnum:"");
+    let inn=1,outs=0;
+    for(const e of g.events){
+      if((e.side||"us")!=="them") continue;
+      if(e.t==="ENDINN"){ inn++; outs=0; continue; }
+      if(e.t==="BR"){ outs+=e.out||0; if(outs>=3){outs=0;inn++;} continue; }
+      if(e.t!=="PA") continue;
+      const jersey=(g.jerseys&&g.jerseys[e.batter])||"";
+      const key=jersey?("#"+jersey):("n:"+e.batter);
+      const b=ensure(key,jersey);
+      b.names.add(e.batter);
+      b.pa++;
+      const r=e.result;
+      if(r==="1B"){b.ab++;b.h++;b.b1++;}else if(r==="2B"){b.ab++;b.h++;b.b2++;}else if(r==="3B"){b.ab++;b.h++;b.b3++;}
+      else if(r==="HR"){b.ab++;b.h++;b.hr++;}else if(r==="BB"){b.bb++;}else if(r==="K"||r==="Kl"){b.ab++;b.k++;}
+      else if(r==="FC"||r==="OUT"){b.ab++;}
+      b.log.push({game:label, inn, result:r, loc:e.loc||null});
+      outs+=e.outsAdded||0; if(outs>=3){outs=0;inn++;}
+    }
+  });
+  return Object.values(buckets).sort((a,b)=>{
+    if(a.jersey && b.jersey) return (parseInt(a.jersey,10)||0)-(parseInt(b.jersey,10)||0);
+    if(a.jersey) return -1; if(b.jersey) return 1;
+    return [...a.names][0].localeCompare([...b.names][0]);
+  });
+}
+let _scoutGames=null, _scoutOpp=null, _scoutReport=null;
+function openScoutPanel(oppGuess){
+  const games=gamesForOpponent(oppGuess||"");
+  _scoutGames=games; _scoutOpp=oppGuess||"";
+  renderScoutPanel();
+}
+function renderScoutPanel(){
+  const games=_scoutGames||[];
+  const title=_scoutOpp?`Scout: ${escHtml(_scoutOpp)}`:"Scout opponent";
+  if(!games.length){
+    panelOpen(`<div class="panel-hd"><h2>${title}</h2></div>
+      <div class="panel-body"><div class="scout-hint">No past games found vs this opponent with both-team tracking on. Scouting needs "Both teams" mode from a previous matchup.</div></div>
+      <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+    return;
+  }
+  const matches=games.map((g,i)=>{
+    const lb=gameResultLabel(g);
+    const m=g.meta;
+    return `<div class="scout-match"><div><b>${escHtml(m.opp)}</b><div class="sm-sub">${escHtml(m.date||"")}${m.gnum?' · G'+escHtml(m.gnum):''} · ${escHtml(lb)}</div></div><span class="sm-arr">${i+1}/${games.length}</span></div>`;
+  }).join("");
+  const report=buildScoutReport(games);
+  let rows="";
+  if(!report.length){
+    rows=`<div class="scout-hint">No opponent at-bats recorded in ${games.length===1?'that game':'those games'} yet.</div>`;
+  } else {
+    rows=`<table class="scout-tbl"><thead><tr><th>#</th><th class="sc-nm" style="text-align:left">Name(s) seen</th><th>PA</th><th>AB</th><th>H</th><th>HR</th><th>BB</th><th>K</th><th>AVG</th></tr></thead><tbody>`;
+    report.forEach((b,i)=>{
+      const names=[...b.names];
+      const nmHtml=names.length>1?`<b>${escHtml(names[0])}</b> <span class="scout-names">+${names.length-1} spelling${names.length>2?'s':''}</span>`:`<b>${escHtml(names[0])}</b>`;
+      rows+=`<tr onclick="openScoutBatterDetail(${i})"><td class="sc-jno">${b.jersey?('#'+escHtml(b.jersey)):'—'}</td><td class="sc-nm">${nmHtml}</td><td>${b.pa}</td><td>${b.ab}</td><td>${b.h}</td><td>${b.hr}</td><td>${b.bb}</td><td>${b.k}</td><td>${avgStr(b.h,b.ab)}</td></tr>`;
+    });
+    rows+=`</tbody></table>`;
+  }
+  panelOpen(`<div class="panel-hd"><h2>${title}</h2></div>
+    <div class="panel-body">
+      <div class="scout-hint">${games.length} past game${games.length===1?'':'s'} vs this team. Grouped by jersey # so a typo'd name between games still counts together — name spelling(s) shown per row for reference.</div>
+      ${matches}
+      ${rows}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
+  _scoutReport=report;
+}
+function openScoutBatterDetail(i){
+  const b=_scoutReport&&_scoutReport[i]; if(!b) return;
+  const names=[...b.names].map(escHtml).join(", ");
+  const resMap={"1B":"1B","2B":"2B","3B":"3B","HR":"HR","BB":"BB","K":"K","Kl":"Ǩ","SAC":"SAC","FC":"FC","OUT":"out"};
+  const log=b.log.slice(-25).reverse().map(x=>`<div class="scout-pa-row"><span class="sp-g">${escHtml(x.game)} · inn ${x.inn}</span><span class="sp-r">${resMap[x.result]||x.result}</span>${x.loc?` <span style="color:var(--blue)">${escHtml(locDisplay(x.loc))}</span>`:''}</div>`).join("");
+  panelOpen(`<div class="panel-hd"><h2>${b.jersey?('#'+escHtml(b.jersey)):'Unnumbered'} — ${escHtml([...b.names][0])}</h2></div>
+    <div class="panel-body">
+      <div class="scout-names" style="margin-bottom:10px">Seen as: <b>${names}</b></div>
+      <div class="idet-runs">${b.pa} PA · ${b.h}-for-${b.ab} · ${avgStr(b.h,b.ab)} avg · ${b.hr} HR · ${b.bb} BB · ${b.k} K</div>
+      ${log||'<div class="scout-hint">No logged at-bats.</div>'}
+    </div>
+    <div class="panel-foot"><button class="pf-cancel" onclick="renderScoutPanel()">Back</button></div>`);
+}
+// setup-screen prefill: as Jack types the opponent name, surface a "played them before" hint
+function suggestOppPrefill(){
+  const host=document.getElementById("opp-prefill-hint");
+  if(!host) return;
+  const v=document.getElementById("f-opp").value.trim();
+  if(v.length<2){ host.classList.remove("show"); host.innerHTML=""; return; }
+  const games=gamesForOpponent(v);
+  if(!games.length){ host.classList.remove("show"); host.innerHTML=""; return; }
+  const last=games[games.length-1];
+  const lb=gameResultLabel(last);
+  host.innerHTML=`Played <b>${escHtml(last.meta.opp)}</b> before (${escHtml(lb)}${last.meta.date?', '+escHtml(last.meta.date):''}) — tap to prefill their lineup + scout`;
+  host.classList.add("show");
+  host.onclick=()=>applyOppPrefill(last);
+}
+function applyOppPrefill(game){
+  setup.oppLineup=(game.oppOrigLineup||[]).slice();
+  setup.oppJerseys=setup.oppLineup.map(nm=>(game.jerseys&&game.jerseys[nm])||"");
+  setup.oppSubs=(game.oppBench||[]).slice();
+  setup.oppSubJerseys=setup.oppSubs.map(nm=>(game.jerseys&&game.jerseys[nm])||"");
+  setup.oppCount=Math.max(setup.oppLineup.length, setup.lineup.length, 10);
+  if(setup.trackMode==="both") renderOppLineupSetup();
+  toast("Prefilled opponent lineup from last matchup");
+  openScoutPanel(document.getElementById("f-opp").value.trim());
+}
 
 /* ============ EXPORT BUILDERS (work on any game object) ============ */
 function aggregateGame(g){
@@ -3585,9 +3825,9 @@ function finishGame(){
   panelOpen(`<div class="panel-hd"><h2>Final</h2></div>
     <div class="panel-body" style="text-align:center">
       <div class="final-wl final-${wl}">${wl==="win"?"WIN":wl==="loss"?"LOSS":"TIE"}</div>
-      <div class="final-score">${usR} <span class="final-dash">\u2013</span> ${themT!=null?themT:"?"}</div>
+      <div class="final-score">${usR} <span class="final-dash">–</span> ${themT!=null?themT:"?"}</div>
       <div class="final-opp">Royals vs ${escHtml(oppName)}</div>
-      <div class="final-note">Saved & downloaded. You can pull this up anytime under \u2630 \u2192 Saved games until you delete it.</div>
+      <div class="final-note">Saved & downloaded. You can pull this up anytime under ☰ → Saved games until you delete it.</div>
     </div>
     <div class="panel-foot"><button class="pf-confirm" onclick="panelClose()">Done</button></div>`);
   toast(`Saved ${opp} · downloaded · ${totalGames()} game(s) stored`);
@@ -3756,7 +3996,7 @@ function openTournamentHub(tid){
     if(!games.length) body=`<div class="hub-note" style="text-align:center;padding:20px">No games yet in this tournament.</div>`;
   }
   const finished=games.filter(x=>!x.current).length;
-  panelOpen(`<div class="panel-hd"><h2>\uD83C\uDFC6 ${escHtml(name)}</h2></div>
+  panelOpen(`<div class="panel-hd"><h2>🏆 ${escHtml(name)}</h2></div>
     <div class="panel-body">
       <div class="hub-top"><span class="hub-rec">${rec}</span>${switcher}</div>
       <div class="hub-tabs">
@@ -3764,7 +4004,7 @@ function openTournamentHub(tid){
         <button class="hub-tab ${_hubMode==='totals'?'on':''}" onclick="setHubMode('totals')">Running totals</button>
       </div>
       ${body}
-      ${finished>0 && _hubMode==='games'?`<button class="pf-confirm" style="width:100%;margin-top:14px;padding:14px;border-radius:12px" onclick="endTournament()">\u2B07 End tournament — download all ${finished} as one file</button>`:''}
+      ${finished>0 && _hubMode==='games'?`<button class="pf-confirm" style="width:100%;margin-top:14px;padding:14px;border-radius:12px" onclick="endTournament()">⬇ End tournament — download all ${finished} as one file</button>`:''}
     </div>
     <div class="panel-foot"><button class="pf-cancel" onclick="panelClose()">Close</button></div>`);
 }
@@ -3789,8 +4029,8 @@ function openGamesView(){
         : `<span style="color:var(--green);font-weight:800">✓ ${gameResultLabel(g)}</span>`;
       const meta = `${escHtml(m.opp||'(opponent?)')} ${m.gnum?'· G'+escHtml(m.gnum):''} ${m.type==='tournament'?'· '+escHtml(m.tournamentName||'tourney'):'· league'}`;
       const boxBtn = x.current
-        ? `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({current:true})">\uD83D\uDCCA</button>`
-        : `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({archiveIdx:${idx}})">\uD83D\uDCCA</button>`;
+        ? `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({current:true})">📊</button>`
+        : `<button class="pe" style="background:var(--navy)" onclick="openBoxScore({archiveIdx:${idx}})">📊</button>`;
       const btn = x.current
         ? `<button class="pe" onclick="resumeCurrent()">Resume</button>`
         : `<button class="pe" onclick="openArchived(${idx})">Export</button>`;
@@ -3885,7 +4125,7 @@ function openInningDetail(side, inn){
   let body="";
   if(!rows.length){
     if(side==="them" && !both){
-      body=`<div class="idet-empty">Opponent batting not tracked in Royals-only mode \u2014 only the run total was recorded for this inning.</div>`;
+      body=`<div class="idet-empty">Opponent batting not tracked in Royals-only mode — only the run total was recorded for this inning.</div>`;
     } else {
       body=`<div class="idet-empty">No plays recorded in this inning.</div>`;
     }
@@ -3898,7 +4138,7 @@ function openInningDetail(side, inn){
       return `<div class="idet-row ${cls}"><span class="idet-who">${escHtml(shortName(r.who))}</span><span class="idet-desc">${escHtml(r.desc)}${rbi}</span>${tag}</div>`;
     }).join("");
   }
-  panelOpen(`<div class="panel-hd"><h2>${escHtml(sideLabel)} \u2014 Inning ${inn}</h2></div>
+  panelOpen(`<div class="panel-hd"><h2>${escHtml(sideLabel)} — Inning ${inn}</h2></div>
     <div class="panel-body">
       <div class="idet-runs">${runs} run${runs===1?'':'s'} this inning</div>
       ${body}
@@ -3924,6 +4164,19 @@ function esc(s){ return String(s).replace(/'/g,"\\'"); }
 function escHtml(s){ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function escAttr(s){ return escHtml(s); }
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"),1700); }
+function toastWithUndo(msg){
+  const t=document.getElementById("toast");
+  t.innerHTML = `<span>${escHtml(msg)}</span><button class="toast-undo" onclick="event.stopPropagation();toastUndoTap()">UNDO</button>`;
+  t.classList.add("show");
+  clearTimeout(t._tm);
+  t._tm=setTimeout(()=>t.classList.remove("show"),3200);
+}
+function toastUndoTap(){
+  const t=document.getElementById("toast");
+  t.classList.remove("show");
+  clearTimeout(t._tm);
+  undo();
+}
 
 /* ============ PANEL ============ */
 function panelOpen(html){ document.getElementById("panel").innerHTML=html; document.getElementById("overlay").classList.add("show"); }
@@ -4008,7 +4261,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 /* ===== THEME (dark default / sunlight) ===== */
 function applyTheme(mode){
   document.body.classList.toggle("light", mode==="light");
-  const glyph = mode==="light" ? "\uD83C\uDF19" : "\u2600";
+  const glyph = mode==="light" ? "🌙" : "☀";
   const g=document.getElementById("theme-btn-g"); if(g) g.textContent=glyph;
   const st=document.getElementById("theme-btn-s"); if(st) st.textContent=glyph;
 }
@@ -4030,12 +4283,12 @@ function attachRefPhoto(which, input){
         <img src="${e.target.result}" class="ref-img" alt="lineup reference" draggable="false">
       </div>
       <div class="ref-controls">
-        <button onclick="refZoom('${vp}',-1)">\u2212</button>
+        <button onclick="refZoom('${vp}',-1)">−</button>
         <button onclick="refZoom('${vp}',0)">Reset</button>
         <button onclick="refZoom('${vp}',1)">+</button>
-        <button class="ref-remove-btn" onclick="clearRefPhoto('${which}')">\u2715</button>
+        <button class="ref-remove-btn" onclick="clearRefPhoto('${which}')">✕</button>
       </div>
-      <div class="ref-hint">Pinch to zoom \u00b7 drag to move \u00b7 type names below while you read</div>
+      <div class="ref-hint">Pinch to zoom · drag to move · type names below while you read</div>
     </div>`;
     setTimeout(()=>initRefZoom(vp),0);
   };
@@ -4121,6 +4374,7 @@ function resumeGame(){ G=STORE.current; activeSide="us"; pending=null; brPending
 function dismissResume(){ document.getElementById("resume-host").innerHTML=""; }
 
 initSetup();
+
 </script>
 </body>
 </html>
