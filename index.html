@@ -4242,8 +4242,9 @@ function showSprayModal(name, body){
 }
 function closeSprayModal(){ const h=document.getElementById("spray-modal-host"); if(h) h.innerHTML=""; }
 
-function statsTable(games, tid, fullCols){
-  const roster = rosterFrom(games);
+function statsTable(games, tid, fullCols, rosterOverride, showFooter){
+  const roster = rosterOverride || rosterFrom(games);
+  if(showFooter === undefined) showFooter = true;
   if(roster.length === 0){
     return '<div class="empty"><div class="desc">No game data yet for this view.</div></div>';
   }
@@ -4299,30 +4300,34 @@ function statsTable(games, tid, fullCols){
     }
     h += '</tr>';
   }
-  h += '</tbody><tfoot><tr>';
-  h += '<td class="cn">TEAM</td>';
-  if(fullCols) h += '<td>&mdash;</td>';
-  h += '<td class="cpa">'+teamRaw.pa+'</td>';
-  h += '<td>'+teamRaw.ab+'</td>';
-  h += '<td>'+teamRaw.h+'</td>';
-  h += '<td>'+fmtInt(teamRaw.b1)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.b2)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.b3)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.hr)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.r)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.rbi)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.bb)+'</td>';
-  h += '<td>'+fmtInt(teamCalc.sac)+'</td>';
-  h += '<td>'+fmtInt(teamRaw.k)+'</td>';
-  h += '<td>'+fmtAvg(teamCalc.avg)+'</td>';
-  if(fullCols){
-    h += '<td>'+fmtAvg(teamCalc.obp)+'</td>';
-    h += '<td>'+fmtAvg(teamCalc.slg)+'</td>';
-    h += '<td>'+fmtOps(teamCalc.ops)+'</td>';
+  h += '</tbody>';
+  if(showFooter){
+    h += '<tfoot><tr>';
+    h += '<td class="cn">TEAM</td>';
+    if(fullCols) h += '<td>&mdash;</td>';
+    h += '<td class="cpa">'+teamRaw.pa+'</td>';
+    h += '<td>'+teamRaw.ab+'</td>';
+    h += '<td>'+teamRaw.h+'</td>';
+    h += '<td>'+fmtInt(teamRaw.b1)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.b2)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.b3)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.hr)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.r)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.rbi)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.bb)+'</td>';
+    h += '<td>'+fmtInt(teamCalc.sac)+'</td>';
+    h += '<td>'+fmtInt(teamRaw.k)+'</td>';
+    h += '<td>'+fmtAvg(teamCalc.avg)+'</td>';
+    if(fullCols){
+      h += '<td>'+fmtAvg(teamCalc.obp)+'</td>';
+      h += '<td>'+fmtAvg(teamCalc.slg)+'</td>';
+      h += '<td>'+fmtOps(teamCalc.ops)+'</td>';
+    }
+    h += '<td>'+fmtAvg(teamCalc.woba)+'</td>';
+    if(fullCols) h += '<td>100</td>';
+    h += '</tr></tfoot>';
   }
-  h += '<td>'+fmtAvg(teamCalc.woba)+'</td>';
-  if(fullCols) h += '<td>100</td>';
-  h += '</tr></tfoot></table></div>';
+  h += '</table></div>';
   return h;
 }
 
@@ -4382,7 +4387,29 @@ function renderTStats(){
     <div class="sub-soft">All tournaments combined</div>
     <div class="tip">Tap any column to sort. OPS+ = 100 is team average. Blue PA = Plate Appearances (AB + BB).</div>`;
   h += '<div class="spray-hint">◳ Tap a player’s name to see their spray chart</div>';
-  h += statsTable(tgames, 'tbl_tour_stats', true);
+
+  // Split roster into qualified leaderboard vs. honourable mentions.
+  // Qualifying threshold: 20% of the team leader's plate appearances (PA) —
+  // mirrors how major leagues set a minimum-PA bar for batting-title eligibility,
+  // scaled down for a rec-league roster where most players don't play every game.
+  const fullRoster = rosterFrom(tgames);
+  const paByName = {};
+  for(const name of fullRoster) paByName[name] = sumStat(tgames, name).pa;
+  const maxPA = Math.max(0, ...Object.values(paByName));
+  const leaderName = fullRoster.find(n => paByName[n] === maxPA) || '';
+  const QUALIFY_PCT = 0.20;
+  const paThreshold = Math.ceil(maxPA * QUALIFY_PCT);
+  const qualified = fullRoster.filter(n => paByName[n] >= paThreshold).sort();
+  const mentioned = fullRoster.filter(n => paByName[n] < paThreshold).sort();
+
+  h += statsTable(tgames, 'tbl_tour_stats', true, qualified);
+
+  if(mentioned.length > 0){
+    h += `<div class="lbl-soft mt">Honourable Mentions</div>
+      <div class="tip" style="background:#F4F6FB;border-left-color:#8A98B8;color:#5A6B8A">Fewer than ${paThreshold} plate appearances this year (20% of team leader ${leaderName}'s ${maxPA} PA) &mdash; not enough action to qualify for the leaderboard above, but they suited up and contributed.</div>`;
+    h += statsTable(tgames, 'tbl_tour_stats_hm', true, mentioned, false);
+  }
+
   document.getElementById('view-tstats').innerHTML = h;
 }
 
